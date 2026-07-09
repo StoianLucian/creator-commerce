@@ -1,5 +1,10 @@
-export default function Login() {
-  return (
-    <h1>Login</h1>
-  )
+import LoginPage from "../components/LoginPage"
+
+
+function Login() {
+    return (
+        <LoginPage />
+    )
 }
+
+export default Login
