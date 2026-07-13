@@ -18,8 +18,6 @@ export default function AuthForm({ children }: AuthForm) {
 
   const isLogin = pathname.includes(AppPaths.LOGIN)
 
-  console.log(isLogin)
-
   return (
     <div className="min-h-screen w-full bg-background">
       <div className="flex min-h-screen w-full">

@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { z } from "zod";
 import { TogglePasswordInput } from "@/app/components/InputComponent";
+import useAuth from "../context/AuthContext";
 
 const loginSchema = z.object({
   username: z
@@ -20,6 +21,9 @@ const loginSchema = z.object({
 type LoginFormData = z.infer<typeof loginSchema>;
 
 export function LoginForm() {
+
+  const { login } = useAuth()
+
   const { control, handleSubmit } = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
@@ -29,7 +33,8 @@ export function LoginForm() {
   });
 
   function onSubmit(data: LoginFormData) {
-    console.log("Form submitted:", data);
+    const { username, password } = data
+    login(username, password)
   }
 
   return (

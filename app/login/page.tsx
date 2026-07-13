@@ -1,7 +1,5 @@
 import { LoginForm } from "../components/LoginForm"
 import AuthForm from "../components/AuthForm"
-import LoginPage from "../components/AuthForm"
-
 
 function Login() {
     return (
