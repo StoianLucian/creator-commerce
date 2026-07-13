@@ -4,9 +4,22 @@ import { Card } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Loader2 } from "lucide-react";
-import { LoginForm } from "./LoginForm";
+import { ReactNode } from "react";
+import { usePathname } from "next/navigation";
+import { AppPaths } from "@/enums/AppPaths";
 
-export default function LoginPage() {
+interface AuthForm {
+  children: ReactNode
+}
+
+export default function AuthForm({ children }: AuthForm) {
+
+  const pathname = usePathname();
+
+  const isLogin = pathname.includes(AppPaths.LOGIN)
+
+  console.log(isLogin)
+
   return (
     <div className="min-h-screen w-full bg-background">
       <div className="flex min-h-screen w-full">
@@ -56,7 +69,7 @@ export default function LoginPage() {
 
               {/* Login Form */}
               <div className="mb-6">
-                <LoginForm />
+                {children}
               </div>
 
               <Separator className="bg-white/20" />
@@ -77,18 +90,28 @@ export default function LoginPage() {
 
               <Separator className="bg-white/20 my-6" />
 
-              <Alert className="bg-white/10 border-white/20 text-white/80">
+              {isLogin ? <Alert className="bg-white/10 border-white/20 text-white/80">
                 <AlertDescription className="text-white/90">
-                  Don't have an account?{" "}
+                  Don't have an account?
                   <a
-                    href="/signup"
+                    href={`${AppPaths.REGISTER}`}
                     className="font-medium underline underline-offset-4 hover:text-white"
                   >
                     Create one now
                   </a>
                 </AlertDescription>
+              </Alert> : <Alert className="bg-white/10 border-white/20 text-white/80">
+                <AlertDescription className="text-white/90">
+                  Already have an account?
+                  <a
+                    href={`${AppPaths.LOGIN}`}
+                    className="font-medium underline underline-offset-4 hover:text-white"
+                  >
+                    Click here to login
+                  </a>
+                </AlertDescription>
               </Alert>
-
+              }
               {/* Footer */}
               <div className="mt-6 text-center text-white/50 text-xs">
                 <p>

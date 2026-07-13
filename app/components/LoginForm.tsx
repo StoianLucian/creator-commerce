@@ -7,18 +7,15 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { z } from "zod";
+import { TogglePasswordInput } from "@/app/components/InputComponent";
 
 const loginSchema = z.object({
   username: z
     .string()
     .min(3, "Username must be at least 3 characters")
     .max(30, "Username must be less than 31 characters"),
-  password: z.string().min(8, "Password must be at least 8 characters"),
-  confirmPassword: z.string().min(8, "Confirm password must be at least 8 characters"),
-}).refine((data) => data.password === data.confirmPassword, {
-  message: "Passwords do not match",
-  path: ["confirmPassword"],
-});
+  password: z.string().min(8, "Password must be at least 8 characters")
+})
 
 type LoginFormData = z.infer<typeof loginSchema>;
 
@@ -28,7 +25,6 @@ export function LoginForm() {
     defaultValues: {
       username: "",
       password: "",
-      confirmPassword: "",
     },
   });
 
@@ -74,12 +70,12 @@ export function LoginForm() {
             name="password"
             render={({ field, fieldState: { error } }) => (
               <div className="space-y-2">
-                <label htmlFor="username" className="text-sm font-medium">
-                  Username
+                <label htmlFor="password" className="text-sm font-medium">
+                  Password
                 </label>
-
-                <Input
+                <TogglePasswordInput
                   id="password"
+                  type="password"
                   placeholder="Enter your password"
                   {...field}
                 />
@@ -92,30 +88,6 @@ export function LoginForm() {
               </div>
             )}
           />
-          <Controller
-            control={control}
-            name="confirmPassword"
-            render={({ field, fieldState: { error } }) => (
-              <div className="space-y-2">
-                <label htmlFor="username" className="text-sm font-medium">
-                  Username
-                </label>
-
-                <Input
-                  id="password"
-                  placeholder="Enter your password"
-                  {...field}
-                />
-
-                {error && (
-                  <p className="text-sm text-destructive">
-                    {error.message}
-                  </p>
-                )}
-              </div>
-            )}
-          />
-
           <Button type="submit" className="w-full">
             Login
           </Button>
