@@ -7,6 +7,7 @@ import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { AppPaths } from "@/enums/AppPaths";
 import { LoadingComponent } from "@/components/ui/loading-component";
+import Dashboard from "./components/Dashboard";
 
 export default function Home() {
 
@@ -24,7 +25,7 @@ export default function Home() {
 
   return (
     <div className={cn("flex flex-col items-center justify-center h-screen bg-gray-100")}>
-      <LoginForm />
+      <Dashboard />
     </div>
   );
 }
