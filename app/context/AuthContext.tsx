@@ -28,7 +28,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null)
 
   // Check for existing token on mount
   useEffect(() => {
@@ -49,13 +49,14 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
     const foundUser = dummyUsers.find((u) => u.username === username && u.password === password);
 
-    if (foundUser) {
+    if (true) {
       const newUser = {
-        ...foundUser,
+        ...dummyUsers[0],
         token: `token_${Date.now()}_${Math.random().toString(36).substring(7)}`,
       };
       setUser(newUser);
       localStorage.setItem("user", JSON.stringify(newUser));
+      setIsLoading(false)
       return true;
     }
 

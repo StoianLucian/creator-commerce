@@ -9,14 +9,9 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { z } from "zod";
 import { TogglePasswordInput } from "@/app/components/InputComponent";
 import useAuth from "../context/AuthContext";
-
-const loginSchema = z.object({
-  username: z
-    .string()
-    .min(3, "Username must be at least 3 characters")
-    .max(30, "Username must be less than 31 characters"),
-  password: z.string().min(8, "Password must be at least 8 characters")
-})
+import { AppPaths } from "@/enums/AppPaths";
+import { redirect } from "next/navigation";
+import { loginSchema } from "@/formValidations/schemas";
 
 type LoginFormData = z.infer<typeof loginSchema>;
 
@@ -35,6 +30,7 @@ export function LoginForm() {
   function onSubmit(data: LoginFormData) {
     const { username, password } = data
     login(username, password)
+    redirect(AppPaths.HOME)
   }
 
   return (

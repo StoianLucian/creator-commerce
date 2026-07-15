@@ -1,4 +1,5 @@
 export const AppPaths = {
     LOGIN: "/login",
-    REGISTER: "/register"
+    REGISTER: "/register",
+    HOME: "/"
 }

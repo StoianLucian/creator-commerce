@@ -36,10 +36,13 @@ import {
   SheetClose,
 } from "@/components/ui/sheet";
 import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import useAuth from "../context/AuthContext";
 
 export const NavBar = () => {
   const [isMobileOpen, setIsMobileOpen] = useState(false);
   const pathname = usePathname();
+  const { logout } = useAuth()
 
   // Mock user - replace with actual authenticated user
   const user = {
@@ -60,17 +63,7 @@ export const NavBar = () => {
 
   return (
     <>
-      {/* Mobile Menu Button */}
-      <button
-        onClick={() => setIsMobileOpen(!isMobileOpen)}
-        className="lg:hidden p-3 rounded-md hover:bg-accent hover:text-accent-foreground mr-2 mt-2"
-      >
-        {isMobileOpen ? (
-          <X className="h-5 w-5" />
-        ) : (
-          <Menu className="h-5 w-5" />
-        )}
-      </button>
+
 
       {/* Sidebar */}
       <Sidebar
@@ -100,21 +93,7 @@ export const NavBar = () => {
                 </DropdownMenuTrigger>
                 <DropdownMenuContent>
                   <DropdownMenuItem>
-                    <Sheet
-                    // onConfirm={() => {
-                    //   localStorage.clear();
-                    //   window.location.href = "/login";
-                    // }}
-                    >
-                      <SheetContent className="w-[300px] sm:w-[400px]">
-                        <SheetHeader>
-                          <SheetTitle>Are you sure?</SheetTitle>
-                        </SheetHeader>
-                        <p className="text-sm text-muted-foreground mt-2">
-                          Log out? This will redirect you to the login page.
-                        </p>
-                      </SheetContent>
-                    </Sheet>
+                    <Button onClick={logout} variant="ghost">Logout</Button>
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>

@@ -9,18 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { z } from "zod";
 import { TogglePasswordInput } from "@/app/components/InputComponent";
 import { usePathname } from "next/dist/client/components/navigation";
-
-const registerSchema = z.object({
-    username: z
-        .string()
-        .min(3, "Username must be at least 3 characters")
-        .max(30, "Username must be less than 31 characters"),
-    password: z.string().min(8, "Password must be at least 8 characters"),
-    confirmPassword: z.string().min(8, "Confirm password must be at least 8 characters"),
-}).refine((data) => data.password === data.confirmPassword, {
-    message: "Passwords do not match",
-    path: ["confirmPassword"],
-});
+import { registerSchema } from "@/formValidations/schemas";
 
 type RegisterFormData = z.infer<typeof registerSchema>;
 
