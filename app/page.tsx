@@ -4,12 +4,15 @@ import { LoginForm } from "./components/LoginForm";
 import { cn } from "@/lib/utils";
 import useAuth from "./context/AuthContext";
 import { useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { redirect, useRouter } from "next/navigation";
 import { AppPaths } from "@/enums/AppPaths";
 import { LoadingComponent } from "@/components/ui/loading-component";
 import Dashboard from "./components/Dashboard";
 
 export default function Home() {
+
+
+  redirect("/dashboard")
 
   const { isAuthenticated, isLoading } = useAuth();
   const router = useRouter();

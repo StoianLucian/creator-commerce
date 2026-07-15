@@ -12,6 +12,7 @@ import useAuth from "../context/AuthContext";
 import { AppPaths } from "@/enums/AppPaths";
 import { redirect } from "next/navigation";
 import { loginSchema } from "@/formValidations/schemas";
+import { authClient } from "@/lib/auth-client";
 
 type LoginFormData = z.infer<typeof loginSchema>;
 
@@ -27,9 +28,14 @@ export function LoginForm() {
     },
   });
 
-  function onSubmit(data: LoginFormData) {
+  async function onSubmit(data: LoginFormData) {
     const { username, password } = data
     login(username, password)
+
+    await authClient.signIn.email({
+      email: username,
+      password,
+    });
     redirect(AppPaths.HOME)
   }
 

@@ -10,6 +10,7 @@ import { z } from "zod";
 import { TogglePasswordInput } from "@/app/components/InputComponent";
 import { usePathname } from "next/dist/client/components/navigation";
 import { registerSchema } from "@/formValidations/schemas";
+import { authClient } from "@/lib/auth-client";
 
 type RegisterFormData = z.infer<typeof registerSchema>;
 
@@ -25,9 +26,18 @@ export function RegisterForm() {
         },
     });
 
-    function onSubmit(data: RegisterFormData) {
-        console.log("Form submitted:", data);
+    async function onSubmit(data: RegisterFormData) {
+        const { username, password } = data
+
+        await authClient.signUp.email({
+            name: username,
+            email: username,
+            password,
+        });
+        alert("User registered successfully");
     }
+
+
 
     return (
         <Card className="w-100">
