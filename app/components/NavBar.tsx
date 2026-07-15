@@ -86,10 +86,10 @@ export const NavBar = () => {
                 </span>
               </div>
               <DropdownMenu>
-                <DropdownMenuTrigger >
-                  <button className="ml-auto p-1 rounded-md hover:bg-accent">
+                <DropdownMenuTrigger>
+                  <span className="ml-auto p-1 rounded-md hover:bg-accent">
                     <LogOut className="h-4 w-4" />
-                  </button>
+                  </span>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent>
                   <DropdownMenuItem>
