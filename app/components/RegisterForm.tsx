@@ -21,20 +21,29 @@ export function RegisterForm() {
         resolver: zodResolver(registerSchema),
         defaultValues: {
             username: "",
+            email: "",
             password: "",
             confirmPassword: "",
         },
     });
 
     async function onSubmit(data: RegisterFormData) {
-        const { username, password } = data
 
-        await authClient.signUp.email({
-            name: username,
-            email: username,
-            password,
-        });
-        alert("User registered successfully");
+        try {
+            const { username, password, email } = data
+
+            const result = await authClient.signUp.email({
+                name: username,
+                email: email,
+                password,
+            });
+
+            console.log(result)
+        } catch (error) {
+            console.log(error)
+        }
+
+
     }
 
 
@@ -61,6 +70,29 @@ export function RegisterForm() {
                                 <Input
                                     id="username"
                                     placeholder="Enter your username"
+                                    {...field}
+                                />
+
+                                {error && (
+                                    <p className="text-sm text-destructive">
+                                        {error.message}
+                                    </p>
+                                )}
+                            </div>
+                        )}
+                    />
+                    <Controller
+                        control={control}
+                        name="email"
+                        render={({ field, fieldState: { error } }) => (
+                            <div className="space-y-2">
+                                <label htmlFor="email" className="text-sm font-medium">
+                                    Email
+                                </label>
+
+                                <Input
+                                    id="email"
+                                    placeholder="Enter your email"
                                     {...field}
                                 />
 
@@ -120,7 +152,7 @@ export function RegisterForm() {
                     />
 
                     <Button type="submit" className="w-full">
-                        Login
+                        Register
                     </Button>
                 </form>
             </CardContent>

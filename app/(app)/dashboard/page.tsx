@@ -11,17 +11,17 @@ import useAuth from "@/app/context/AuthContext";
 
 export default function Home() {
 
-    const { isAuthenticated, isLoading } = useAuth();
-    const router = useRouter();
+    // const { isAuthenticated, isLoading } = useAuth();
+    // const router = useRouter();
 
-    useEffect(() => {
-        if (!isLoading && !isAuthenticated) {
-            router.replace(AppPaths.LOGIN);
-        }
-    }, [isAuthenticated, isLoading, router]);
+    // useEffect(() => {
+    //     if (!isLoading && !isAuthenticated) {
+    //         router.replace(AppPaths.LOGIN);
+    //     }
+    // }, [isAuthenticated, isLoading, router]);
 
-    if (isLoading) return <LoadingComponent />;
-    if (!isAuthenticated) return null;
+    // if (isLoading) return <LoadingComponent />;
+    // if (!isAuthenticated) return null;
 
     return (
         <div className={cn("flex flex-col items-center justify-center h-screen bg-gray-100")}>

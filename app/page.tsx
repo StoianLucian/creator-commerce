@@ -12,19 +12,7 @@ import Dashboard from "./components/Dashboard";
 export default function Home() {
 
 
-  redirect("/dashboard")
-
-  const { isAuthenticated, isLoading } = useAuth();
-  const router = useRouter();
-
-  useEffect(() => {
-    if (!isLoading && !isAuthenticated) {
-      router.replace(AppPaths.LOGIN);
-    }
-  }, [isAuthenticated, isLoading, router]);
-
-  if (isLoading) return <LoadingComponent />;
-  if (!isAuthenticated) return null;
+  redirect(AppPaths.DASHBOARD)
 
   return (
     <div className={cn("flex flex-col items-center justify-center h-screen bg-gray-100")}>

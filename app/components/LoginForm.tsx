@@ -32,10 +32,11 @@ export function LoginForm() {
     const { username, password } = data
     login(username, password)
 
-    await authClient.signIn.email({
+    const response = await authClient.signIn.email({
       email: username,
       password,
     });
+
     redirect(AppPaths.HOME)
   }
 

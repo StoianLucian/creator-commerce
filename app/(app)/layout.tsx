@@ -3,20 +3,19 @@ import { headers } from "next/headers";
 import { auth } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import { AppPaths } from "@/enums/AppPaths";
+import AuthGuard from "@/components/auth-guard/AuthGuard";
 
 export default async function DashboardLayout({
     children,
 }: {
     children: React.ReactNode;
 }) {
-    const session = await auth.api.getSession({
-        headers: await headers(),
-    });
 
-    if (!session) {
-        redirect(AppPaths.LOGIN);
-    }
-
-
-    return <AppLayout>{children}</AppLayout>;
+    return (
+        <AuthGuard>
+            <AppLayout>
+                {children}
+            </AppLayout>
+        </AuthGuard>
+    )
 }

@@ -4,6 +4,8 @@ import "./globals.css";
 import { AuthProvider } from "./context/AuthContext";
 import { SidebarProvider } from "@/components/ui/sidebar";
 
+import Providers from "./providers/Providers";
+
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -24,17 +26,23 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
+
+  // const [queryClient] = useState(() => new QueryClient());
+
+
   return (
     <html
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="min-h-full">
-        <SidebarProvider>
-          <AuthProvider>
-            {children}
-          </AuthProvider>
-        </SidebarProvider>
+        <Providers>
+          <SidebarProvider>
+            <AuthProvider>
+              {children}
+            </AuthProvider>
+          </SidebarProvider>
+        </Providers>
       </body>
     </html>
   );

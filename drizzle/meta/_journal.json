@@ -50,6 +50,20 @@
       "when": 1784136321687,
       "tag": "0006_cloudy_mad_thinker",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1784529350427,
+      "tag": "0007_wise_robbie_robertson",
+      "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1784529585037,
+      "tag": "0008_little_vulture",
+      "breakpoints": true
     }
   ]
 }
