@@ -9,8 +9,6 @@ function Register() {
         <AuthGuard>
             <RegisterForm />
         </AuthGuard>
-
-
     )
 }
 

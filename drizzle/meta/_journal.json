@@ -64,6 +64,20 @@
       "when": 1784529585037,
       "tag": "0008_little_vulture",
       "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1784612683164,
+      "tag": "0009_cuddly_solo",
+      "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1784612768750,
+      "tag": "0010_perfect_william_stryker",
+      "breakpoints": true
     }
   ]
 }

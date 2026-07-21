@@ -22,8 +22,7 @@ export default function AuthForm({ children }: AuthForm) {
     <div className="min-h-screen w-full bg-background">
       <div className="flex min-h-screen w-full">
         {/* Left background panel */}
-        <div className="relative w-1/2 min-h-screen flex flex-col justify-center overflow-hidden">
-          {/* Dynamic gradient background */}
+        <div className="relative flex min-h-screen w-full flex-col justify-center overflow-hidden lg:basis-1/2">
           <div className="absolute inset-0 bg-gradient-to-br from-primary/90 to-accent/90">
             <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1557683316-ae79d053153c?w=2000')] bg-cover bg-center opacity-20" />
           </div>
@@ -134,52 +133,48 @@ export default function AuthForm({ children }: AuthForm) {
         </div>
 
         {/* Right content panel */}
-        <div className="hidden lg:flex w-1/2 min-h-screen items-center justify-center bg-muted/50 p-6 lg:p-12">
-          <div className="max-w-md w-full">
-            {/* Illustration Card */}
-            <Card className="bg-background border border-muted/50 shadow-xl">
-              <div className="p-8">
-                <div className="aspect-square rounded-2xl bg-gradient-to-br from-primary/10 to-accent/10 flex items-center justify-center mb-6">
-                  <div className="w-40 h-40 relative">
-                    <div className="absolute inset-0 bg-gradient-to-br from-primary to-accent rounded-2xl opacity-20 animate-pulse" />
-                    <div className="absolute inset-2 bg-gradient-to-br from-primary to-accent rounded-xl opacity-30" />
-                    <div className="absolute inset-6 bg-gradient-to-br from-primary to-accent rounded-lg opacity-40" />
-                    <div className="absolute inset-0 flex items-center justify-center">
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="40"
-                        height="40"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="1.5"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        className="text-primary"
-                      >
-                        <path d="M15 6v12a3 3 0 1 0 3-3H6a3 3 0 1 0 3-3" />
-                        <path d="M18 9a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z" />
-                        <path d="M12 16v.01" />
-                      </svg>
-                    </div>
+        {/* Right content panel */}
+        <div className="hidden w-1/2 items-center justify-center bg-muted/50 p-6 lg:flex lg:p-12">
+          <div className="w-full max-w-md">
+            <Card className="border border-muted/50 bg-background shadow-xl">
+              <div className="flex flex-col gap-6 p-8">
+                <div className="flex aspect-square items-center justify-center rounded-2xl bg-gradient-to-br from-primary/10 to-accent/10">
+                  <div className="flex h-40 w-40 items-center justify-center rounded-2xl bg-gradient-to-br from-primary/20 to-accent/20">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="40"
+                      height="40"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="1.5"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      className="text-primary"
+                    >
+                      <path d="M15 6v12a3 3 0 1 0 3-3H6a3 3 0 1 0 3-3" />
+                      <path d="M18 9a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z" />
+                      <path d="M12 16v.01" />
+                    </svg>
                   </div>
                 </div>
 
-                <div className="space-y-3">
-                  <div className="p-4 rounded-xl bg-muted/50 border border-muted">
-                    <h3 className="font-semibold text-foreground mb-2">
+                <div className="flex flex-col gap-3">
+                  <div className="rounded-xl border border-muted bg-muted/50 p-4">
+                    <h3 className="mb-2 font-semibold text-foreground">
                       Secure Login
                     </h3>
                     <p className="text-sm text-muted-foreground">
-                      Your account is protected with industry-standard encryption
+                      Your account is protected with industry-standard encryption.
                     </p>
                   </div>
-                  <div className="p-4 rounded-xl bg-muted/50 border border-muted">
-                    <h3 className="font-semibold text-foreground mb-2">
+
+                  <div className="rounded-xl border border-muted bg-muted/50 p-4">
+                    <h3 className="mb-2 font-semibold text-foreground">
                       Fast Access
                     </h3>
                     <p className="text-sm text-muted-foreground">
-                      Sign in quickly and securely with your credentials
+                      Sign in quickly and securely with your credentials.
                     </p>
                   </div>
                 </div>

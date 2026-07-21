@@ -11,6 +11,8 @@ import { TogglePasswordInput } from "@/app/components/InputComponent";
 import { usePathname } from "next/dist/client/components/navigation";
 import { registerSchema } from "@/formValidations/schemas";
 import { authClient } from "@/lib/auth-client";
+import { redirect } from "next/navigation";
+import { AppPaths } from "@/enums/AppPaths";
 
 type RegisterFormData = z.infer<typeof registerSchema>;
 
@@ -38,7 +40,9 @@ export function RegisterForm() {
                 password,
             });
 
-            console.log(result)
+            if (result) {
+                redirect(AppPaths.LOGIN);
+            }
         } catch (error) {
             console.log(error)
         }

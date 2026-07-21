@@ -7,31 +7,15 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { Button } from "@/components/ui/button"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Separator } from "@/components/ui/separator"
-import {
-  NavigationMenu,
-  NavigationMenuItem,
-  NavigationMenuLink,
-  NavigationMenuList,
-  NavigationMenuTrigger,
-} from "@/components/ui/navigation-menu"
 import { Input } from "@/components/ui/input"
 import {
   BellIcon,
   SearchIcon,
   UserIcon,
   SettingsIcon,
-  LogOutIcon,
-  HelpCircleIcon,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
-
-const NAVIGATION_ITEMS = [
-  { title: "Dashboard", description: "Overview of your activity", href: "/dashboard" },
-  { title: "Projects", description: "Manage your projects", href: "/projects" },
-  { title: "Team", description: "Collaborate with your team", href: "/team" },
-  { title: "Analytics", description: "View your metrics", href: "/analytics" },
-]
+import { LogoutButton } from "../logount-button/LogoutButton"
 
 interface TopBarProps {
   className?: string
@@ -44,7 +28,11 @@ interface TopBarProps {
   }[]
 }
 
-export function TopBar({ className = "", onNotificationClick, rightMenuItems }: TopBarProps) {
+export function TopBar({
+  className = "",
+  onNotificationClick,
+  rightMenuItems,
+}: TopBarProps) {
   return (
     <header
       className={cn(
@@ -52,39 +40,21 @@ export function TopBar({ className = "", onNotificationClick, rightMenuItems }: 
         className
       )}
     >
-      <div className="container mx-auto flex h-16 items-center justify-between px-4">
-        {/* Left: Logo & Navigation */}
-        <div className="flex items-center gap-4">
-          <div className="flex h-9 items-center gap-2 rounded-lg border bg-background px-3 text-sm font-medium shadow-sm">
+      <div className="container mx-auto flex h-16 items-center px-4">
+        {/* Left */}
+        <div className="flex flex-1 items-center">
+          <div className="flex h-9 items-center rounded-lg border bg-background px-3 text-sm font-medium shadow-sm">
             <span className="text-lg font-bold">Brand</span>
           </div>
-
-          {/* <NavigationMenu>
-            <NavigationMenuList>
-              {NAVIGATION_ITEMS.map((item) => (
-                <NavigationMenuItem key={item.href}>
-                  <NavigationMenuTrigger>
-                    <span
-                      // variant="ghost"
-                      className={cn("gap-1.5 font-normal", item.href === "/dashboard" && "text-foreground")}
-                    >
-                      {item.title}
-                    </span>
-                  </NavigationMenuTrigger>
-                </NavigationMenuItem>
-              ))}
-            </NavigationMenuList>
-          </NavigationMenu> */}
         </div>
 
-        {/* Center: Search */}
-
-        <div className=" hidden lg:block">
-          <div className={cn("flex")}>
+        {/* Center */}
+        <div className="hidden flex-1 justify-center lg:flex">
+          <div className="flex items-center">
             <Input
               type="search"
               placeholder="Search..."
-              className="w-64 max-w-60 lg:w-96 h-9"
+              className="h-9 w-96 max-w-full"
             />
             <Button variant="ghost" size="icon">
               <SearchIcon className="h-4 w-4" />
@@ -93,47 +63,63 @@ export function TopBar({ className = "", onNotificationClick, rightMenuItems }: 
           </div>
         </div>
 
-
-
-        <div>
-          <Button variant="ghost" size="icon">
+        {/* Right */}
+        <div className="flex flex-1 items-center justify-end gap-2">
+          <Button
+            variant="ghost"
+            onClick={onNotificationClick}
+            className="flex h-9 items-center gap-2 px-2"
+          >
             <BellIcon className="h-4 w-4" />
-            <span className="relative top-1 right-1 h-2 w-2 rounded-full bg-primary" />
+            <span className="h-2 w-2 rounded-full bg-primary" />
             <span className="sr-only">Notifications</span>
           </Button>
+
           <DropdownMenu>
             <DropdownMenuTrigger >
-              <span className="relative h-9 w-9 rounded-full">
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-9 w-9 rounded-full p-0"
+              >
                 <Avatar className="h-8 w-8">
-                  <AvatarImage src="/avatars/user.jpg" alt="User" />
+                  <AvatarImage
+                    src="/avatars/user.jpg"
+                    alt="User"
+                  />
                   <AvatarFallback>
                     <UserIcon className="h-4 w-4" />
                   </AvatarFallback>
                 </Avatar>
-              </span>
+              </Button>
             </DropdownMenuTrigger>
+
             <DropdownMenuContent align="end" className="w-56">
               <DropdownMenuItem>
                 <UserIcon className="mr-2 h-4 w-4" />
                 <div className="flex flex-col">
-                  <span className="text-sm font-medium">John Doe</span>
-                  <span className="text-xs text-muted-foreground">john@example.com</span>
+                  <span className="text-sm font-medium">
+                    John Doe
+                  </span>
+                  <span className="text-xs text-muted-foreground">
+                    john@example.com
+                  </span>
                 </div>
               </DropdownMenuItem>
+
               <DropdownMenuItem>
                 <SettingsIcon className="mr-2 h-4 w-4" />
                 Settings
               </DropdownMenuItem>
+
               <DropdownMenuSeparator />
+
               <DropdownMenuItem>
-                <LogOutIcon className="mr-2 h-4 w-4" />
-                Log out
+                <LogoutButton />
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
-        </div>
-        {/* Right: Actions & User */}
-        <div className="flex items-center gap-2">
+
           {rightMenuItems?.map((item) => (
             <DropdownMenu key={item.key} modal>
               <DropdownMenuTrigger>
@@ -142,9 +128,11 @@ export function TopBar({ className = "", onNotificationClick, rightMenuItems }: 
                   <span className="sr-only">{item.label}</span>
                 </Button>
               </DropdownMenuTrigger>
+
               <DropdownMenuContent align="end" className="w-56">
                 <DropdownMenuItem onClick={item.action}>
-                  <span className="font-medium">{item.label}</span>
+                  {item.icon}
+                  <span>{item.label}</span>
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>

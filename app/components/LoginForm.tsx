@@ -31,11 +31,18 @@ export function LoginForm() {
   async function onSubmit(data: LoginFormData) {
     const { username, password } = data
     login(username, password)
+    try {
+      const response = await authClient.signIn.email({
+        email: username,
+        password,
+      });
 
-    const response = await authClient.signIn.email({
-      email: username,
-      password,
-    });
+      redirect(AppPaths.DASHBOARD)
+    } catch (error) {
+
+    }
+
+
 
     redirect(AppPaths.HOME)
   }
