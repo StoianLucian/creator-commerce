@@ -1,3 +1,4 @@
+"use client";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -76,22 +77,16 @@ export function TopBar({
           </Button>
 
           <DropdownMenu>
-            <DropdownMenuTrigger >
-              <Button
-                variant="ghost"
-                size="icon"
-                className="h-9 w-9 rounded-full p-0"
-              >
-                <Avatar className="h-8 w-8">
-                  <AvatarImage
-                    src="/avatars/user.jpg"
-                    alt="User"
-                  />
-                  <AvatarFallback>
-                    <UserIcon className="h-4 w-4" />
-                  </AvatarFallback>
-                </Avatar>
-              </Button>
+            <DropdownMenuTrigger>
+              <Avatar className="h-8 w-8">
+                <AvatarImage
+                  src="/avatars/user.jpg"
+                  alt="User"
+                />
+                <AvatarFallback>
+                  <UserIcon className="h-4 w-4" />
+                </AvatarFallback>
+              </Avatar>
             </DropdownMenuTrigger>
 
             <DropdownMenuContent align="end" className="w-56">
@@ -123,10 +118,11 @@ export function TopBar({
           {rightMenuItems?.map((item) => (
             <DropdownMenu key={item.key} modal>
               <DropdownMenuTrigger>
-                <Button variant="ghost" size="icon">
-                  {item.icon}
-                  <span className="sr-only">{item.label}</span>
-                </Button>
+                {item.icon}
+                <span className="sr-only">{item.label}</span>
+                <DropdownMenuItem>
+
+                </DropdownMenuItem>
               </DropdownMenuTrigger>
 
               <DropdownMenuContent align="end" className="w-56">

@@ -5,10 +5,7 @@ import { usePathname } from "next/navigation";
 import {
   LayoutDashboard,
   Package,
-  Settings,
-  LogOut,
-  Menu,
-  X
+  Settings
 } from "lucide-react";
 import {
   Sidebar,
@@ -19,30 +16,17 @@ import {
   SidebarHeader,
   SidebarMenu,
   SidebarMenuItem,
-  SidebarMenuButton,
-  Sheet,
-  SheetHeader,
-  SheetContent,
-  SheetTitle
+  SidebarMenuButton
 } from "@/components/ui/sidebar";
-import {
-  DropdownMenu,
-  DropdownMenuTrigger,
-  DropdownMenuContent,
-  DropdownMenuItem
-} from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import {
-  SheetClose,
-} from "@/components/ui/sheet";
+
 import { useState } from "react";
-import { Button } from "@/components/ui/button";
 import useAuth from "../context/AuthContext";
+import { AppPaths } from "@/enums/AppPaths";
 
 export const NavBar = () => {
   const [isMobileOpen, setIsMobileOpen] = useState(false);
   const pathname = usePathname();
-  const { logout } = useAuth()
 
   // Mock user - replace with actual authenticated user
   const user = {
@@ -52,8 +36,8 @@ export const NavBar = () => {
   };
 
   const navigation = [
-    { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
-    { name: "Products", href: "/products", icon: Package },
+    { name: "Dashboard", href: AppPaths.DASHBOARD, icon: LayoutDashboard },
+    { name: "Products", href: AppPaths.PRODUCTS, icon: Package },
     { name: "Settings", href: "/settings", icon: Settings },
   ];
 
@@ -85,18 +69,6 @@ export const NavBar = () => {
                   {user.email}
                 </span>
               </div>
-              <DropdownMenu>
-                <DropdownMenuTrigger>
-                  <span className="ml-auto p-1 rounded-md hover:bg-accent">
-                    <LogOut className="h-4 w-4" />
-                  </span>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent>
-                  <DropdownMenuItem>
-                    <Button onClick={logout} variant="ghost">Logout</Button>
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
             </div>
           </SidebarGroup>
         </SidebarHeader>
