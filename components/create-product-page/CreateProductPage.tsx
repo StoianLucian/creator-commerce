@@ -18,12 +18,49 @@ import {
 } from "@/components/ui/select"
 import { Switch } from "@/components/ui/switch"
 import { Separator } from "@/components/ui/separator"
+import { Controller, useForm } from "react-hook-form"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { CreateProductInput, createProductSchema } from "@/form-validations/products"
+import { useCreateProduct } from "@/hooks/useCreateProduct"
+import { useCategories } from "@/hooks/useCategories"
 
 export default function CreateProductPage() {
     const [featured, setFeatured] = useState(false)
 
+    const form = useForm<CreateProductInput>({
+        resolver: zodResolver(createProductSchema),
+        defaultValues: {
+            name: "",
+            description: "",
+            categoryId: 0,
+            status: "draft",
+            price: 0,
+        },
+    });
+
+    const {
+        handleSubmit,
+        control,
+        formState: { errors, isSubmitting },
+    } = form;
+
+    console.log(errors)
+
+    const { data: categories = [] } = useCategories()
+
+
+    const { mutateAsync: createProduct, isPending } = useCreateProduct()
+
+    async function submitHandler(data: CreateProductInput) {
+
+        // console.log(data)
+        await createProduct(data)
+    }
+
+
+
     return (
-        <div className="container mx-auto max-w-5xl space-y-6 py-8">
+        <form onSubmit={handleSubmit(submitHandler)} className="container mx-auto max-w-5xl space-y-6 py-8">
             <div className="flex items-center justify-between">
                 <div>
                     <h1 className="text-3xl font-bold">Create Product</h1>
@@ -32,7 +69,8 @@ export default function CreateProductPage() {
                     </p>
                 </div>
 
-                <Button>
+                <Button type="submit">
+                    {isPending ? "loading" : "nmot"}
                     <Save className="mr-2 h-4 w-4" />
                     Save Product
                 </Button>
@@ -50,53 +88,90 @@ export default function CreateProductPage() {
                         </CardHeader>
 
                         <CardContent className="space-y-5">
-                            <div className="space-y-2">
-                                <Label htmlFor="name">Product Name</Label>
-                                <Input
-                                    id="name"
-                                    placeholder="Wireless Mechanical Keyboard"
-                                />
-                            </div>
+                            <Controller
+                                control={control}
+                                name="name"
+                                render={({ field, fieldState }) => (
+                                    <div className="space-y-2">
+                                        <Label htmlFor="name">Product Name</Label>
+
+                                        <Input
+                                            id="name"
+                                            placeholder="Wireless Mechanical Keyboard"
+                                            {...field}
+                                        />
+
+                                        {fieldState.error && (
+                                            <p className="text-sm text-destructive">
+                                                {fieldState.error.message}
+                                            </p>
+                                        )}
+                                    </div>
+                                )}
+                            />
 
                             <div className="space-y-2">
-                                <Label htmlFor="description">Description</Label>
-                                <Textarea
-                                    id="description"
-                                    rows={6}
-                                    placeholder="Describe your product..."
+                                <Controller
+                                    control={control}
+                                    name="description"
+                                    render={({ field, fieldState }) => (
+                                        <div className="space-y-2">
+                                            <Label htmlFor="description">Description</Label>
+
+                                            <Textarea
+                                                id="description"
+                                                rows={6}
+                                                placeholder="Describe your product..."
+                                                {...field}
+                                            />
+
+                                            {fieldState.error && (
+                                                <p className="text-sm text-destructive">
+                                                    {fieldState.error.message}
+                                                </p>
+                                            )}
+                                        </div>
+                                    )}
                                 />
                             </div>
 
                             <div className="grid gap-4 md:grid-cols-2">
-                                <div className="space-y-2">
-                                    <Label>Category</Label>
 
-                                    <Select>
-                                        <SelectTrigger>
-                                            <SelectValue placeholder="Select category" />
-                                        </SelectTrigger>
+                                <Controller
+                                    control={control}
+                                    name="categoryId"
+                                    render={({ field, fieldState: { error } }) => (
+                                        <div className="space-y-2">
+                                            <Select
+                                                value={categories[field.value].name}
+                                                onValueChange={(value) => field.onChange(Number(value))}
+                                            >
+                                                <SelectTrigger>
+                                                    <SelectValue placeholder="Select category" />
+                                                </SelectTrigger>
 
-                                        <SelectContent>
-                                            <SelectItem value="electronics">
-                                                Electronics
-                                            </SelectItem>
-
-                                            <SelectItem value="accessories">
-                                                Accessories
-                                            </SelectItem>
-
-                                            <SelectItem value="software">
-                                                Software
-                                            </SelectItem>
-                                        </SelectContent>
-                                    </Select>
-                                </div>
-
-                                <div className="space-y-2">
-                                    <Label>Brand</Label>
-                                    <Input placeholder="Logitech" />
-                                </div>
+                                                <SelectContent>
+                                                    {categories.map((category) => (
+                                                        <SelectItem
+                                                            key={category.id}
+                                                            value={String(category.id)}
+                                                        >
+                                                            {category.name}
+                                                        </SelectItem>
+                                                    ))}
+                                                </SelectContent>
+                                            </Select>
+                                            {error && (
+                                                <p className="text-sm text-destructive">
+                                                    {error.message}
+                                                </p>
+                                            )}
+                                        </div>
+                                    )}
+                                />
                             </div>
+
+
                         </CardContent>
                     </Card>
 
@@ -111,10 +186,27 @@ export default function CreateProductPage() {
                         <CardContent className="space-y-5">
                             <div className="grid gap-4 md:grid-cols-3">
                                 <div className="space-y-2">
-                                    <Label>Price</Label>
-                                    <Input
-                                        type="number"
-                                        placeholder="99.99"
+                                    <Controller
+                                        control={control}
+                                        name="price"
+                                        render={({ field, fieldState: { error } }) => (
+                                            <div className="space-y-2">
+                                                <Label>Price</Label>
+                                                <Input
+                                                    type="number"
+                                                    min="0"
+                                                    placeholder="99"
+                                                    value={field.value ?? ""}
+                                                    onChange={(e) => field.onChange(Number(e.target.value))}
+                                                />
+
+                                                {error && (
+                                                    <p className="text-sm text-destructive">
+                                                        {error.message}
+                                                    </p>
+                                                )}
+                                            </div>
+                                        )}
                                     />
                                 </div>
 
@@ -133,11 +225,6 @@ export default function CreateProductPage() {
                                         placeholder="150"
                                     />
                                 </div>
-                            </div>
-
-                            <div className="space-y-2">
-                                <Label>SKU</Label>
-                                <Input placeholder="KB-001" />
                             </div>
                         </CardContent>
                     </Card>
@@ -248,16 +335,11 @@ export default function CreateProductPage() {
 
                                 <span>-</span>
                             </div>
-
-                            <Button className="mt-4 w-full">
-                                <Package className="mr-2 h-4 w-4" />
-                                Create Product
-                            </Button>
                         </CardContent>
                     </Card>
                 </div>
             </div>
-        </div>
+        </form >
     )
 }
 

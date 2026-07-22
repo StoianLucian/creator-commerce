@@ -9,7 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { z } from "zod";
 import { TogglePasswordInput } from "@/app/components/InputComponent";
 import { usePathname } from "next/dist/client/components/navigation";
-import { registerSchema } from "@/formValidations/schemas";
+import { registerSchema } from "@/form-validations/auth";
 import { authClient } from "@/lib/auth-client";
 import { redirect } from "next/navigation";
 import { AppPaths } from "@/enums/AppPaths";

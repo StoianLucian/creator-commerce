@@ -11,7 +11,7 @@ import { TogglePasswordInput } from "@/app/components/InputComponent";
 import useAuth from "../context/AuthContext";
 import { AppPaths } from "@/enums/AppPaths";
 import { redirect } from "next/navigation";
-import { loginSchema } from "@/formValidations/schemas";
+import { loginSchema } from "@/form-validations/auth";
 import { authClient } from "@/lib/auth-client";
 
 type LoginFormData = z.infer<typeof loginSchema>;
