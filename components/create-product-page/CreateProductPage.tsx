@@ -2,7 +2,7 @@
 "use client"
 
 import { useState } from "react"
-import { Save, Package, Upload, Loader2 } from "lucide-react"
+import { Save, Loader2 } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
@@ -20,9 +20,15 @@ import { Switch } from "@/components/ui/switch"
 import { Separator } from "@/components/ui/separator"
 import { Controller, useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { CreateProductInput, createProductSchema } from "@/form-validations/products"
+import {
+    CreateProductInput,
+    createProductSchema,
+    MAX_PRODUCT_IMAGES,
+} from "@/form-validations/products"
 import { useCreateProduct } from "@/hooks/useCreateProduct"
 import { useCategories } from "@/hooks/useCategories"
+import { UploadThingDropzone } from "../upload-button/UploadThingDropzone"
+import { UploadedImagesCarousel } from "../upload-button/UploadedImagesCarousel"
 
 export default function CreateProductPage() {
     const [featured, setFeatured] = useState(false)
@@ -35,12 +41,13 @@ export default function CreateProductPage() {
             categoryId: 0,
             status: "draft",
             price: 0,
+            images: [],
         },
     });
 
     const {
         handleSubmit,
-        control
+        control,
     } = form;
 
     const { data: categories = [] } = useCategories()
@@ -60,7 +67,6 @@ export default function CreateProductPage() {
                         Add a new product to your catalog.
                     </p>
                 </div>
-
                 <Button type="submit" disabled={isPending}>
                     {isPending ? (
                         <>
@@ -238,20 +244,43 @@ export default function CreateProductPage() {
                         </CardHeader>
 
                         <CardContent>
-                            <button
-                                type="button"
-                                className="flex h-56 w-full flex-col items-center justify-center rounded-lg border border-dashed transition-colors hover:bg-muted"
-                            >
-                                <Upload className="mb-3 h-8 w-8 text-muted-foreground" />
+                            <Controller
+                                control={control}
+                                name="images"
+                                render={({ field, fieldState: { error } }) => {
+                                    const images = field.value ?? []
+                                    const remaining = MAX_PRODUCT_IMAGES - images.length
 
-                                <p className="font-medium">
-                                    Upload Product Image
-                                </p>
+                                    return (
+                                        <div className="space-y-3">
+                                            <UploadedImagesCarousel
+                                                images={images}
+                                                onRemove={(key) =>
+                                                    field.onChange(
+                                                        images.filter((image) => image.key !== key),
+                                                    )
+                                                }
+                                            />
 
-                                <p className="text-sm text-muted-foreground">
-                                    PNG, JPG up to 5MB
-                                </p>
-                            </button>
+                                            {remaining > 0 && (
+                                                <UploadThingDropzone
+                                                    remaining={remaining}
+                                                    compact={images.length > 0}
+                                                    onUploaded={(uploaded) =>
+                                                        field.onChange([...images, ...uploaded])
+                                                    }
+                                                />
+                                            )}
+
+                                            {error && (
+                                                <p className="text-sm text-destructive">
+                                                    {error.message ?? error.root?.message}
+                                                </p>
+                                            )}
+                                        </div>
+                                    )
+                                }}
+                            />
                         </CardContent>
                     </Card>
 
