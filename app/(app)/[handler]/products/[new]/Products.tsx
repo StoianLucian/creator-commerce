@@ -1,38 +1,19 @@
 "use client";
 
-import Link from "next/link";
-import { Package, Plus } from "lucide-react";
+import { Search } from "lucide-react";
 
 import { ProductCard } from "@/components/products-page/ProductCard";
-import { buttonVariants } from "@/components/ui/button";
-import {
-    Empty,
-    EmptyContent,
-    EmptyDescription,
-    EmptyHeader,
-    EmptyMedia,
-    EmptyTitle,
-} from "@/components/ui/empty";
+
 import { Skeleton } from "@/components/ui/skeleton";
-import { CreatorPaths } from "@/enums/AppPaths";
-import { useHandle } from "@/hooks/useHandle";
 import { useProducts } from "@/hooks/useProducts";
+import { useState } from "react";
+import { cn } from "@/lib/utils";
+import { useDebounce } from "@/hooks/useDebounce";
 
 function Products() {
-    const { username } = useHandle();
-    const { data: products, isPending, isError, error } = useProducts();
-
-    console.log(products)
-
-    if (isPending) {
-        return (
-            <>
-                {Array.from({ length: 6 }).map((_, index) => (
-                    <Skeleton key={index} className="h-48 rounded-xl" />
-                ))}
-            </>
-        );
-    }
+    const [search, setSearch] = useState("");
+    const searchDebounce = useDebounce(search, 300);
+    const { data: products = [], isPending, isError, error } = useProducts(searchDebounce);
 
     if (isError) {
         return (
@@ -45,40 +26,26 @@ function Products() {
         );
     }
 
-    if (products.length === 0) {
-        return (
-            <Empty className="col-span-full">
-                <EmptyHeader>
-                    <EmptyMedia variant="icon">
-                        <Package />
-                    </EmptyMedia>
-
-                    <EmptyTitle>No products yet</EmptyTitle>
-
-                    <EmptyDescription>
-                        Create your first product to start selling.
-                    </EmptyDescription>
-                </EmptyHeader>
-
-                <EmptyContent>
-                    <Link
-                        href={CreatorPaths.productsNew(username)}
-                        className={buttonVariants()}
-                    >
-                        <Plus className="h-4 w-4" />
-                        New Product
-                    </Link>
-                </EmptyContent>
-            </Empty>
-        );
-    }
-
     return (
-        <>
-            {products.map((product) => (
-                <ProductCard key={product.id} product={product} />
-            ))}
-        </>
+        <div className={cn("flex flex-col gap-4", products.length === 0 && "col-span-full")}>
+            <div>
+                <Search className="relative left-3 top-7 h-4 w-4 text-muted-foreground" />
+                <input
+                    type="text"
+                    placeholder="Search products..."
+                    className="w-full rounded-lg border bg-background py-2 pl-10 pr-4 outline-none focus:ring-2 focus:ring-primary"
+                    value={search}
+                    onChange={(e) => setSearch(e.target.value)}
+                />
+            </div>
+            <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+                {isPending ? <>{Array.from({ length: 6 }).map((_, index) => (
+                    <Skeleton key={index} className="h-48 rounded-xl" />
+                ))}</> : <> {products.map((product) => (
+                    <ProductCard key={product.id} product={product} />
+                ))}</>}
+            </div>
+        </div>
     );
 }
 

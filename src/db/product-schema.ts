@@ -39,5 +39,4 @@ export const productRelations = relations(product, ({ one, many }) => ({
     images: many(productImages),
 }));
 
-export type Product = typeof product.$inferSelect;
 export type NewProduct = typeof product.$inferInsert;

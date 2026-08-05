@@ -2,7 +2,7 @@
 import { db } from "@/src/db";
 import { product } from "@/src/db/product-schema";
 import { productImages } from "@/src/db/product-images-schema";
-import { eq, desc, and } from "drizzle-orm";
+import { eq, desc, and, like, ilike } from "drizzle-orm";
 
 import { revalidatePath } from "next/cache";
 import { CreateProductInput, createProductSchema } from "@/form-validations/products";
@@ -94,7 +94,7 @@ export async function getProduct(id: number) {
     return found ?? null;
 }
 
-export async function getProducts() {
+export async function getProducts(q: string) {
 
     try {
         const session = await getSession();
@@ -103,7 +103,7 @@ export async function getProducts() {
             throw new Error("Unauthorized");
         }
         const products = await db.query.product.findMany({
-            where: eq(product.ownerId, session.user.id),
+            where: and(eq(product.ownerId, session.user.id), ilike(product.name, `%${q}%`)),
             orderBy: desc(product.created_at),
             with: {
                 images: true,
