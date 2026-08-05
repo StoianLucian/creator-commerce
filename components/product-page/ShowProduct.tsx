@@ -63,12 +63,15 @@ export function ShowProduct({ product, username }: ShowProductProps) {
                 </p>
             </div>
 
-            <ProductGallery
-                images={product.images}
-                productName={product.name}
-            />
+            <div className="flex flex-col gap-6 lg:flex-row">
+                <ProductGallery
+                    className="w-screen max-w-lg flex-1 lg:max-w-none"
+                    images={product.images}
+                    productName={product.name}
+                />
 
-            <ProductInfo product={product} />
+                <ProductInfo product={product} />
+            </div>
         </div>
     );
 }
