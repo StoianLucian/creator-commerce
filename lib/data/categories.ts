@@ -1,3 +1,4 @@
+"use server"
 import { db } from "@/src/db";
 import { category } from "@/src/db/category-schema";
 import { desc, eq } from "drizzle-orm";

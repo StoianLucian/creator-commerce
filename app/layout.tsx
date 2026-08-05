@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { AuthProvider } from "./context/AuthContext";
 import { SidebarProvider } from "@/components/ui/sidebar";
+import { Toaster } from "@/components/ui/sonner";
 
 import Providers from "./providers/Providers";
 
@@ -27,8 +28,6 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
 
-  // const [queryClient] = useState(() => new QueryClient());
-
 
   return (
     <html
@@ -40,6 +39,7 @@ export default function RootLayout({
           <SidebarProvider>
             <AuthProvider>
               {children}
+              <Toaster />
             </AuthProvider>
           </SidebarProvider>
         </Providers>

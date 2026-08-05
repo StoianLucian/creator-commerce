@@ -1,6 +1,6 @@
 // lib/data/products.ts
 
-
+import "server-only";
 
 import { db } from "@/src/db";
 import { product } from "@/src/db/product-schema";

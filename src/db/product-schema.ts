@@ -24,3 +24,6 @@ export const product = pgTable(
         index("products_owner_id_idx").on(table.ownerId),
     ]
 );
+
+export type Product = typeof product.$inferSelect;
+export type NewProduct = typeof product.$inferInsert;

@@ -2,7 +2,7 @@
 "use client"
 
 import { useState } from "react"
-import { Save, Package, Upload } from "lucide-react"
+import { Save, Package, Upload, Loader2 } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
@@ -40,24 +40,16 @@ export default function CreateProductPage() {
 
     const {
         handleSubmit,
-        control,
-        formState: { errors, isSubmitting },
+        control
     } = form;
 
-    console.log(errors)
-
     const { data: categories = [] } = useCategories()
-
 
     const { mutateAsync: createProduct, isPending } = useCreateProduct()
 
     async function submitHandler(data: CreateProductInput) {
-
-        // console.log(data)
         await createProduct(data)
     }
-
-
 
     return (
         <form onSubmit={handleSubmit(submitHandler)} className="container mx-auto max-w-5xl space-y-6 py-8">
@@ -69,10 +61,18 @@ export default function CreateProductPage() {
                     </p>
                 </div>
 
-                <Button type="submit">
-                    {isPending ? "loading" : "nmot"}
-                    <Save className="mr-2 h-4 w-4" />
-                    Save Product
+                <Button type="submit" disabled={isPending}>
+                    {isPending ? (
+                        <>
+                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                            Saving...
+                        </>
+                    ) : (
+                        <>
+                            <Save className="mr-2 h-4 w-4" />
+                            Save Product
+                        </>
+                    )}
                 </Button>
             </div>
 
@@ -143,7 +143,7 @@ export default function CreateProductPage() {
                                     render={({ field, fieldState: { error } }) => (
                                         <div className="space-y-2">
                                             <Select
-                                                value={categories[field.value].name}
+                                                value={categories?.find((cat) => cat.id === field.value)?.name ?? ""}
                                                 onValueChange={(value) => field.onChange(Number(value))}
                                             >
                                                 <SelectTrigger>
@@ -306,37 +306,6 @@ export default function CreateProductPage() {
                         </CardContent>
                     </Card>
 
-                    <Card>
-                        <CardHeader>
-                            <CardTitle>Summary</CardTitle>
-                        </CardHeader>
-
-                        <CardContent className="space-y-3 text-sm">
-                            <div className="flex justify-between">
-                                <span className="text-muted-foreground">
-                                    Category
-                                </span>
-
-                                <span>-</span>
-                            </div>
-
-                            <div className="flex justify-between">
-                                <span className="text-muted-foreground">
-                                    Price
-                                </span>
-
-                                <span>-</span>
-                            </div>
-
-                            <div className="flex justify-between">
-                                <span className="text-muted-foreground">
-                                    Stock
-                                </span>
-
-                                <span>-</span>
-                            </div>
-                        </CardContent>
-                    </Card>
                 </div>
             </div>
         </form >

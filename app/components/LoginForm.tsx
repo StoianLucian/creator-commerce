@@ -13,12 +13,14 @@ import { AppPaths } from "@/enums/AppPaths";
 import { redirect } from "next/navigation";
 import { loginSchema } from "@/form-validations/auth";
 import { authClient } from "@/lib/auth-client";
+import { useState } from "react";
 
 type LoginFormData = z.infer<typeof loginSchema>;
 
 export function LoginForm() {
 
   const { login } = useAuth()
+  const [loading, setLoading] = useState(false)
 
   const { control, handleSubmit } = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
@@ -29,6 +31,7 @@ export function LoginForm() {
   });
 
   async function onSubmit(data: LoginFormData) {
+    setLoading(true)
     const { username, password } = data
     login(username, password)
     try {
@@ -42,7 +45,7 @@ export function LoginForm() {
 
     }
 
-
+    setLoading(false)
 
     redirect(AppPaths.HOME)
   }
@@ -103,7 +106,7 @@ export function LoginForm() {
               </div>
             )}
           />
-          <Button type="submit" className="w-full">
+          <Button type="submit" className="w-full" disabled={loading}>
             Login
           </Button>
         </form>
