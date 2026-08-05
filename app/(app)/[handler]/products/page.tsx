@@ -1,11 +1,19 @@
-// app/products/page.tsx
+// app/(app)/[handler]/products/page.tsx
 
 import Link from "next/link";
 import { Plus, Search } from "lucide-react";
 import Products from "./[new]/Products";
+import { CreatorPaths } from "@/enums/AppPaths";
+import { parseHandle } from "@/lib/handle";
 
 
-export default function ProductsPage() {
+export default async function ProductsPage({
+    params,
+}: PageProps<"/[handler]/products">) {
+    const { handler } = await params;
+    // The [handler] layout already validated this segment.
+    const username = parseHandle(handler)!;
+
     return (
         <div className="space-y-6 p-6">
             {/* Header */}
@@ -18,7 +26,7 @@ export default function ProductsPage() {
                 </div>
 
                 <Link
-                    href="/products/new"
+                    href={CreatorPaths.productsNew(username)}
                     className="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-primary-foreground hover:opacity-90"
                 >
                     <Plus className="h-4 w-4" />

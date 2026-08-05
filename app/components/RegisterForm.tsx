@@ -36,6 +36,7 @@ export function RegisterForm() {
 
             const result = await authClient.signUp.email({
                 name: username,
+                username,
                 email: email,
                 password,
             });

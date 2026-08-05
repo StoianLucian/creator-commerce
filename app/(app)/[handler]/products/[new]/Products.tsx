@@ -4,7 +4,7 @@ import Link from "next/link";
 import { Package, Plus } from "lucide-react";
 
 import { ProductCard } from "@/components/products-page/ProductCard";
-import { Button } from "@/components/ui/button";
+import { buttonVariants } from "@/components/ui/button";
 import {
     Empty,
     EmptyContent,
@@ -14,11 +14,15 @@ import {
     EmptyTitle,
 } from "@/components/ui/empty";
 import { Skeleton } from "@/components/ui/skeleton";
-import { AppPaths } from "@/enums/AppPaths";
+import { CreatorPaths } from "@/enums/AppPaths";
+import { useHandle } from "@/hooks/useHandle";
 import { useProducts } from "@/hooks/useProducts";
 
 function Products() {
+    const { username } = useHandle();
     const { data: products, isPending, isError, error } = useProducts();
+
+    console.log(products)
 
     if (isPending) {
         return (
@@ -57,10 +61,13 @@ function Products() {
                 </EmptyHeader>
 
                 <EmptyContent>
-                    <Button render={<Link href={AppPaths.PRODUCTS_NEW} />}>
+                    <Link
+                        href={CreatorPaths.productsNew(username)}
+                        className={buttonVariants()}
+                    >
                         <Plus className="h-4 w-4" />
                         New Product
-                    </Button>
+                    </Link>
                 </EmptyContent>
             </Empty>
         );

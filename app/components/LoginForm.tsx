@@ -8,9 +8,8 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { z } from "zod";
 import { TogglePasswordInput } from "@/app/components/InputComponent";
-import useAuth from "../context/AuthContext";
 import { AppPaths } from "@/enums/AppPaths";
-import { redirect } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { loginSchema } from "@/form-validations/auth";
 import { authClient } from "@/lib/auth-client";
 import { useState } from "react";
@@ -19,8 +18,9 @@ type LoginFormData = z.infer<typeof loginSchema>;
 
 export function LoginForm() {
 
-  const { login } = useAuth()
+  const router = useRouter()
   const [loading, setLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
 
   const { control, handleSubmit } = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
@@ -33,21 +33,20 @@ export function LoginForm() {
   async function onSubmit(data: LoginFormData) {
     setLoading(true)
     const { username, password } = data
-    login(username, password)
-    try {
-      const response = await authClient.signIn.email({
-        email: username,
-        password,
-      });
 
-      redirect(AppPaths.DASHBOARD)
-    } catch (error) {
-
-    }
+    const result = await authClient.signIn.username({
+      username,
+      password,
+    });
 
     setLoading(false)
 
-    redirect(AppPaths.HOME)
+    if (result.error) {
+      setError(result.error.message ?? "Invalid username or password")
+      return
+    }
+
+    router.push(AppPaths.DASHBOARD)
   }
 
   return (
@@ -106,6 +105,10 @@ export function LoginForm() {
               </div>
             )}
           />
+          {error && (
+            <p className="text-sm text-destructive">{error}</p>
+          )}
+
           <Button type="submit" className="w-full" disabled={loading}>
             Login
           </Button>

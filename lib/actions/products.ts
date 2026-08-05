@@ -1,23 +1,22 @@
 "use server";
 import { db } from "@/src/db";
-import { Product, product } from "@/src/db/product-schema";
+import { product } from "@/src/db/product-schema";
 import { productImages } from "@/src/db/product-images-schema";
-import { eq, desc } from "drizzle-orm";
+import { eq, desc, and } from "drizzle-orm";
 
 import { revalidatePath } from "next/cache";
-import { auth } from "../auth";
-import { headers } from "next/headers";
 import { CreateProductInput, createProductSchema } from "@/form-validations/products";
 import slugify from "slugify";
 import { redirect } from "next/navigation";
-import { AppPaths } from "@/enums/AppPaths";
+import { CreatorPaths } from "@/enums/AppPaths";
+import { getSession } from "../session";
 
 export async function createProduct(data: CreateProductInput) {
 
+    let productsPath: string;
+
     try {
-        const session = await auth.api.getSession({
-            headers: await headers(),
-        });
+        const session = await getSession();
 
         if (!session?.user?.id) {
             throw new Error("Unauthorized");
@@ -53,34 +52,63 @@ export async function createProduct(data: CreateProductInput) {
             }))
         );
 
-        revalidatePath("/products");
-        redirect(AppPaths.PRODUCTS)
-
-
-        // return { success: true, id: newProduct.id };
+        productsPath = CreatorPaths.products(session.user.username!);
+        revalidatePath(productsPath);
     } catch (error) {
         console.error(error);
         return { success: false, errors: { formErrors: ["Something went wrong"] } };
     }
 
+    // redirect throws, so it has to sit outside the try block.
+    redirect(productsPath);
 }
 
-export async function getProducts(): Promise<Product[]> {
+export type ProductWithRelations = Awaited<ReturnType<typeof getProducts>>[number];
+
+export type ProductDetail = NonNullable<Awaited<ReturnType<typeof getProduct>>>;
+
+/**
+ * Loads one of the signed-in user's products with its category and images.
+ * Returns null when the id doesn't exist or belongs to someone else, so the
+ * caller can 404.
+ */
+export async function getProduct(id: number) {
+    const session = await getSession();
+
+    if (!session?.user?.id) {
+        throw new Error("Unauthorized");
+    }
+
+    if (!Number.isInteger(id)) {
+        return null;
+    }
+
+    const found = await db.query.product.findFirst({
+        where: and(eq(product.id, id), eq(product.ownerId, session.user.id)),
+        with: {
+            category: true,
+            images: true,
+        },
+    });
+
+    return found ?? null;
+}
+
+export async function getProducts() {
 
     try {
-        const session = await auth.api.getSession({
-            headers: await headers(),
-        });
+        const session = await getSession();
 
         if (!session?.user?.id) {
             throw new Error("Unauthorized");
         }
-        const products = await db
-            .select()
-            .from(product)
-            .where(eq(product.ownerId, session.user.id))
-            .orderBy(desc(product.created_at));
-
+        const products = await db.query.product.findMany({
+            where: eq(product.ownerId, session.user.id),
+            orderBy: desc(product.created_at),
+            with: {
+                images: true,
+            },
+        });
 
         return products;
     } catch (error) {

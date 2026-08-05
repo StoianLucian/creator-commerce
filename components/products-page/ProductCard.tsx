@@ -3,7 +3,8 @@ import { Package } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import type { Product } from "@/src/db/product-schema";
+import { useHandle } from "@/hooks/useHandle";
+import type { ProductWithRelations } from "@/lib/actions/products";
 
 const statusVariant = {
     draft: "outline",
@@ -18,16 +19,20 @@ const priceFormatter = new Intl.NumberFormat("en-US", {
 });
 
 interface ProductCardProps {
-    product: Product;
+    product: ProductWithRelations;
 }
 
 export function ProductCard({ product }: ProductCardProps) {
+    const { handle } = useHandle();
+
     const variant =
         statusVariant[product.status as keyof typeof statusVariant] ?? "outline";
 
+    const coverImage = product.images[0];
+
     return (
         <Link
-            href={`/products/${product.id}/${product.slug}`}
+            href={`/${handle}/products/${product.id}/${product.slug}`}
             className="group block rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
         >
             <Card className="h-full transition group-hover:ring-primary group-hover:shadow-md">
@@ -50,6 +55,18 @@ export function ProductCard({ product }: ProductCardProps) {
                 </CardHeader>
 
                 <CardContent className="space-y-6">
+                    {coverImage ? (
+                        <img
+                            src={coverImage.imageUrl}
+                            alt={product.name}
+                            className="aspect-video w-full rounded-lg object-cover"
+                        />
+                    ) : (
+                        <div className="flex aspect-video w-full items-center justify-center rounded-lg bg-muted">
+                            <Package className="h-6 w-6 text-muted-foreground" />
+                        </div>
+                    )}
+
                     {product.description ? (
                         <p className="line-clamp-2 text-sm text-muted-foreground">
                             {product.description}

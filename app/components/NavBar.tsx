@@ -21,29 +21,30 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 import { useState } from "react";
-import useAuth from "../context/AuthContext";
-import { AppPaths } from "@/enums/AppPaths";
+import { AppPaths, CreatorPaths } from "@/enums/AppPaths";
+import { toHandle } from "@/lib/handle";
 
-export const NavBar = () => {
+interface NavBarProps {
+  user: {
+    name: string;
+    email: string;
+    username: string | null;
+    image: string | null;
+  };
+}
+
+export const NavBar = ({ user }: NavBarProps) => {
   const [isMobileOpen, setIsMobileOpen] = useState(false);
   const pathname = usePathname();
 
-  // Mock user - replace with actual authenticated user
-  const user = {
-    name: "User",
-    email: "user@example.com",
-    avatar: "https://github.com/shadcn.png"
-  };
-
   const navigation = [
     { name: "Dashboard", href: AppPaths.DASHBOARD, icon: LayoutDashboard },
-    { name: "Products", href: AppPaths.PRODUCTS, icon: Package },
+    // Products live under the creator's own handle: /@handle/products
+    ...(user.username
+      ? [{ name: "Products", href: CreatorPaths.products(user.username), icon: Package }]
+      : []),
     { name: "Settings", href: "/settings", icon: Settings },
   ];
-
-  const handleNavigation = (href: string) => {
-    setIsMobileOpen(false);
-  };
 
   return (
     <>
@@ -60,13 +61,15 @@ export const NavBar = () => {
             <SidebarGroupLabel>NEXT APP</SidebarGroupLabel>
             <div className="flex items-center gap-2 p-1">
               <Avatar className="h-8 w-8">
-                <AvatarImage src={user.avatar} />
-                <AvatarFallback>U</AvatarFallback>
+                {user.image && <AvatarImage src={user.image} />}
+                <AvatarFallback>
+                  {user.name.charAt(0).toUpperCase()}
+                </AvatarFallback>
               </Avatar>
               <div className="flex flex-col">
                 <span className="text-sm font-medium">{user.name}</span>
                 <span className="text-xs text-muted-foreground">
-                  {user.email}
+                  {user.username ? toHandle(user.username) : user.email}
                 </span>
               </div>
             </div>
@@ -83,7 +86,7 @@ export const NavBar = () => {
                     <SidebarMenuButton
                       isActive={pathname === item.href}
                     >
-                      <Link href={item.href} onClick={() => handleNavigation(item.href)}>
+                      <Link href={item.href} className="flex items-center gap-2">
                         <item.icon className="h-4 w-4" />
                         <span>{item.name}</span>
                       </Link>
