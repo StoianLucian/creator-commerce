@@ -6,9 +6,7 @@ import AuthGuard from "@/components/auth-guard/AuthGuard"
 
 function Register() {
     return (
-        <AuthGuard>
             <RegisterForm />
-        </AuthGuard>
     )
 }
 

@@ -1,4 +1,3 @@
-import { getProduct, getProducts } from '@/lib/actions/products'
 import { NavBar } from './NavBar'
 import { useProducts } from '@/hooks/useProducts'
 import { useUrlSearch } from '@/hooks/use-url-search';
@@ -11,7 +10,7 @@ import { cn } from '@/lib/utils';
 function Dashboard() {
     const { filters, setFilters, searchDebounce } = useUrlSearch();
     const { search } = filters
-    const { data: products = [], isPending, isError, error } = useProducts({ q: searchDebounce, allProducts: true });
+    const { data: products = [], isPending, isError, error } = useProducts({ q: searchDebounce });
     return (
         <div className="mx-auto max-w-6xl space-y-6 p-6">
             <div className={cn("flex flex-col gap-4", products.length === 0 && "col-span-full")}>

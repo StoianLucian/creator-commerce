@@ -13,14 +13,13 @@ import {
   SearchIcon,
   UserIcon,
   SettingsIcon,
-  ShoppingCart,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { LogoutButton } from "../logount-button/LogoutButton"
+import { CartSheet } from "../cart/CartSheet"
 
 interface TopBarProps {
   className?: string
-  onNotificationClick?: () => void
   rightMenuItems?: {
     key: string
     icon: React.ReactNode
@@ -31,7 +30,6 @@ interface TopBarProps {
 
 export function TopBar({
   className = "",
-  onNotificationClick,
   rightMenuItems,
 }: TopBarProps) {
   return (
@@ -66,15 +64,7 @@ export function TopBar({
 
         {/* Right */}
         <div className="flex flex-1 items-center justify-end gap-2">
-          <Button
-            variant="ghost"
-            onClick={onNotificationClick}
-            className="flex h-9 items-center gap-2 px-2"
-          >
-            <ShoppingCart className="h-4 w-4" />
-            <span className="h-2 w-2 rounded-full bg-primary" />
-            <span className="sr-only">Shopping Cart</span>
-          </Button>
+          <CartSheet />
 
           <DropdownMenu>
             <DropdownMenuTrigger>

@@ -2,29 +2,33 @@ import Link from "next/link";
 import { ArrowLeft, Pencil } from "lucide-react";
 
 import { buttonVariants } from "@/components/ui/button";
-import { CreatorPaths } from "@/enums/AppPaths";
+import { AddToCartButton } from "@/components/cart/AddToCartButton";
+import { AppPaths, CreatorPaths } from "@/enums/AppPaths";
 import type { ProductDetail } from "@/lib/actions/products";
+import { priceFormatter } from "@/lib/format";
 import { ProductGallery } from "./ProductGallery";
 import { ProductInfo } from "./ProductInfo";
-
-
-const priceFormatter = new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: "USD",
-    maximumFractionDigits: 0,
-});
 
 interface ShowProductProps {
     product: ProductDetail;
     /** Handle owner, used to build the back and edit links. */
     username: string;
+    /** Whether the viewer owns this handle; gates the edit link. */
+    isOwner?: boolean;
 }
 
 /**
  * Full read-only product detail view: header actions, image gallery and
  * the product's information panels.
+ *
+ * Renders for signed-out visitors too, so anything owner-only sits behind
+ * `isOwner`.
  */
-export function ShowProduct({ product, username }: ShowProductProps) {
+export function ShowProduct({
+    product,
+    username,
+    isOwner = false,
+}: ShowProductProps) {
     const productsPath = CreatorPaths.products(username);
 
     return (
@@ -32,25 +36,29 @@ export function ShowProduct({ product, username }: ShowProductProps) {
             {/* Header */}
             <div className="flex items-center justify-between gap-4">
                 <Link
-                    href={productsPath}
+                    href={isOwner ? productsPath : AppPaths.DASHBOARD}
                     className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground"
                 >
                     <ArrowLeft className="h-4 w-4" />
-                    Back to Products
+                    {isOwner ? "Back to Products" : "Back to Explore"}
                 </Link>
 
-                {/*
-                  * Styled as a button but rendered as a real <a>: this
-                  * navigates, so Base UI's <Button> would warn about losing
-                  * native button semantics.
-                  */}
-                <Link
-                    href={`${productsPath}/${product.id}/edit`}
-                    className={buttonVariants()}
-                >
-                    <Pencil className="h-4 w-4" />
-                    Edit Product
-                </Link>
+                <div className="flex items-center gap-2">
+                    <AddToCartButton
+                        productId={product.id}
+                        productName={product.name}
+                    />
+
+                    {isOwner && (
+                        <Link
+                            href={`${productsPath}/${product.id}/edit`}
+                            className={buttonVariants({ variant: "outline" })}
+                        >
+                            <Pencil className="h-4 w-4" />
+                            Edit Product
+                        </Link>
+                    )}
+                </div>
             </div>
 
             {/* Title */}

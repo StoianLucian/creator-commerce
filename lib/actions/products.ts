@@ -2,7 +2,8 @@
 import { db } from "@/src/db";
 import { product } from "@/src/db/product-schema";
 import { productImages } from "@/src/db/product-images-schema";
-import { eq, desc, and, like, ilike } from "drizzle-orm";
+import { user } from "@/src/db/auth-schema";
+import { eq, desc, and, like, ilike, inArray } from "drizzle-orm";
 
 import { revalidatePath } from "next/cache";
 import { CreateProductInput, createProductSchema } from "@/form-validations/products";
@@ -66,26 +67,36 @@ export async function createProduct(data: CreateProductInput) {
 
 export type ProductWithRelations = Awaited<ReturnType<typeof getProducts>>[number];
 
-export type ProductDetail = NonNullable<Awaited<ReturnType<typeof getProduct>>>;
+export type ProductDetail = NonNullable<
+    Awaited<ReturnType<typeof getProductByHandle>>
+>;
 
 /**
- * Loads one of the signed-in user's products with its category and images.
- * Returns null when the id doesn't exist or belongs to someone else, so the
- * caller can 404.
+ * Loads a product by id, scoped to the creator whose `@handle` is in the URL.
+ *
+ * Public: no session required, so guests following a link from Explore can
+ * read `/@lucians/products/9/product-2`. Returns null when the id doesn't
+ * exist or isn't that creator's, so the caller can 404 — this is what stops
+ * `/@someone-else/products/9/...` from resolving another creator's product.
  */
-export async function getProduct(id: number) {
-    const session = await getSession();
-
-    if (!session?.user?.id) {
-        throw new Error("Unauthorized");
-    }
-
+export async function getProductByHandle(username: string, id: number) {
     if (!Number.isInteger(id)) {
         return null;
     }
 
     const found = await db.query.product.findFirst({
-        where: and(eq(product.id, id), eq(product.ownerId, session.user.id)),
+        where: and(
+            eq(product.id, id),
+            // Match on the owner's username rather than an id, so the handle
+            // in the URL is what authorizes the read.
+            inArray(
+                product.ownerId,
+                db
+                    .select({ id: user.id })
+                    .from(user)
+                    .where(eq(user.username, username))
+            )
+        ),
         with: {
             category: true,
             images: true,

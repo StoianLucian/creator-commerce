@@ -1,0 +1,8 @@
+// lib/format.ts
+
+/** Prices are stored as whole dollars, so no fractional digits are shown. */
+export const priceFormatter = new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "USD",
+    maximumFractionDigits: 0,
+});

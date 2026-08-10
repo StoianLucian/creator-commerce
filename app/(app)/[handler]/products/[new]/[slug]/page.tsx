@@ -4,20 +4,35 @@ import { notFound } from "next/navigation";
 
 import { ShowProduct } from "@/components/products-page/ShowProduct";
 import { parseHandle } from "@/lib/handle";
-import { getProduct } from "@/lib/actions/products";
+import { getProductByHandle } from "@/lib/actions/products";
+import { isHandleOwner } from "@/lib/data/creators";
 
+/**
+ * Public product detail page: readable by anyone with the link, including
+ * signed-out visitors coming from Explore.
+ */
 export default async function Product({
     params,
 }: PageProps<"/[handler]/products/[new]/[slug]">) {
-    // `[new]` is the product id segment; `[handler]` was validated by the layout.
+    // `[new]` is the product id segment; the layout validated `[handler]`'s shape.
     const { handler, new: id } = await params;
     const username = parseHandle(handler)!;
 
-    const product = await getProduct(Number(id));
+    const product = await getProductByHandle(username, Number(id));
 
     if (!product) {
         notFound();
     }
 
-    return <ShowProduct product={product} username={username} />;
+    // Owner-only affordances (the edit link) are gated on this, not on the
+    // page being reachable.
+    const isOwner = await isHandleOwner(username);
+
+    return (
+        <ShowProduct
+            product={product}
+            username={username}
+            isOwner={isOwner}
+        />
+    );
 }

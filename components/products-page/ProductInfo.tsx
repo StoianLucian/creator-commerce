@@ -3,18 +3,13 @@ import { Package } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import type { ProductDetail } from "@/lib/actions/products";
+import { priceFormatter } from "@/lib/format";
 
 const statusVariant = {
     draft: "outline",
     active: "default",
     sold: "secondary",
 } as const;
-
-const priceFormatter = new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: "USD",
-    maximumFractionDigits: 0,
-});
 
 // Fixed timezone so the server-rendered date matches the client.
 const dateFormatter = new Intl.DateTimeFormat("en-US", {

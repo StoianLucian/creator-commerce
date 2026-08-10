@@ -1,18 +1,26 @@
 // app/(app)/[handler]/products/page.tsx
 
 import Link from "next/link";
+import { notFound } from "next/navigation";
 import { Plus, Search } from "lucide-react";
 import Products from "./[new]/Products";
 import { CreatorPaths } from "@/enums/AppPaths";
 import { parseHandle } from "@/lib/handle";
+import { isHandleOwner } from "@/lib/data/creators";
 
 
 export default async function ProductsPage({
     params,
 }: PageProps<"/[handler]/products">) {
     const { handler } = await params;
-    // The [handler] layout already validated this segment.
+    // The [handler] layout validated the segment's shape.
     const username = parseHandle(handler)!;
+
+    // This is the catalog manager, so it stays owner-only — the layout only
+    // checks the handle is well-formed now that product pages are public.
+    if (!(await isHandleOwner(username))) {
+        notFound();
+    }
 
     return (
         <div className="space-y-6 p-6">

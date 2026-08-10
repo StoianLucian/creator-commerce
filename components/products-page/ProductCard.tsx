@@ -3,8 +3,10 @@ import { Package } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { useHandle } from "@/hooks/useHandle";
+import { AddToCartButton } from "@/components/cart/AddToCartButton";
+import { CreatorPaths } from "@/enums/AppPaths";
 import type { ProductWithRelations } from "@/lib/actions/products";
+import { priceFormatter } from "@/lib/format";
 
 const statusVariant = {
     draft: "outline",
@@ -12,18 +14,11 @@ const statusVariant = {
     sold: "secondary",
 } as const;
 
-const priceFormatter = new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: "USD",
-    maximumFractionDigits: 0,
-});
-
 interface ProductCardProps {
     product: ProductWithRelations;
 }
 
 export function ProductCard({ product }: ProductCardProps) {
-    // const { handle } = useHandle()
     const variant =
         statusVariant[product.status as keyof typeof statusVariant] ?? "outline";
 
@@ -31,7 +26,11 @@ export function ProductCard({ product }: ProductCardProps) {
 
     return (
         <Link
-            href={`/dashboard/${product.owner.username}/${product.id}/${product.slug}`}
+            href={CreatorPaths.product(
+                product.owner.username ?? "",
+                product.id,
+                product.slug,
+            )}
             className="group block rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
         >
             <Card className="h-full transition group-hover:ring-primary group-hover:shadow-md m-5">
@@ -77,9 +76,29 @@ export function ProductCard({ product }: ProductCardProps) {
                         </p>
                     )}
 
-                    <span className="block text-2xl font-bold">
-                        {priceFormatter.format(product.price)}
-                    </span>
+                    <div className="flex items-center justify-between gap-3">
+                        <span className="text-2xl font-bold">
+                            {priceFormatter.format(product.price)}
+                        </span>
+
+                        {/*
+                          * The whole card is a link, so keep the button's
+                          * click from bubbling up into a navigation.
+                          */}
+                        <div
+                            onClick={(event) => {
+                                event.preventDefault();
+                                event.stopPropagation();
+                            }}
+                        >
+                            <AddToCartButton
+                                productId={product.id}
+                                productName={product.name}
+                                size="sm"
+                                variant="outline"
+                            />
+                        </div>
+                    </div>
                 </CardContent>
             </Card>
         </Link>
