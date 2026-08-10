@@ -10,10 +10,10 @@ import { Button } from "@/components/ui/button"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Input } from "@/components/ui/input"
 import {
-  BellIcon,
   SearchIcon,
   UserIcon,
   SettingsIcon,
+  ShoppingCart,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { LogoutButton } from "../logount-button/LogoutButton"
@@ -37,7 +37,7 @@ export function TopBar({
   return (
     <header
       className={cn(
-        "w-full border-b border-border/50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60",
+        "w-full border-b border-border/50 bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/60",
         className
       )}
     >
@@ -71,9 +71,9 @@ export function TopBar({
             onClick={onNotificationClick}
             className="flex h-9 items-center gap-2 px-2"
           >
-            <BellIcon className="h-4 w-4" />
+            <ShoppingCart className="h-4 w-4" />
             <span className="h-2 w-2 rounded-full bg-primary" />
-            <span className="sr-only">Notifications</span>
+            <span className="sr-only">Shopping Cart</span>
           </Button>
 
           <DropdownMenu>

@@ -1,5 +1,5 @@
-import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { getProducts, ProductWithRelations } from "@/lib/actions/products";
+import { useQuery } from "@tanstack/react-query";
+import { getOwnnProducts, ProductWithRelations } from "@/lib/actions/products";
 
 export type Product = {
     id: number;
@@ -25,9 +25,9 @@ export type useProductsProps = {
     q: string,
 }
 
-export function useProducts({ q }: useProductsProps) {
+export function useOwnProducts({ q }: useProductsProps) {
     return useQuery<ProductWithRelations[], Error>({
-        queryKey: ["products", q],
-        queryFn: async (): Promise<ProductWithRelations[]> => await getProducts({ q })
+        queryKey: ["products-own", q],
+        queryFn: async (): Promise<ProductWithRelations[]> => await getOwnnProducts({ q })
     });
 }

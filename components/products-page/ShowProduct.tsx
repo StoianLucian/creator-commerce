@@ -4,9 +4,9 @@ import { ArrowLeft, Pencil } from "lucide-react";
 import { buttonVariants } from "@/components/ui/button";
 import { CreatorPaths } from "@/enums/AppPaths";
 import type { ProductDetail } from "@/lib/actions/products";
-
 import { ProductGallery } from "./ProductGallery";
 import { ProductInfo } from "./ProductInfo";
+
 
 const priceFormatter = new Intl.NumberFormat("en-US", {
     style: "currency",

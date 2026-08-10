@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 
 import { getSession } from "@/lib/session";
 import { parseHandle } from "@/lib/handle";
+import AuthGuard from "@/components/auth-guard/AuthGuard";
 
 export default async function HandlerLayout({
     children,
@@ -16,5 +17,5 @@ export default async function HandlerLayout({
         notFound();
     }
 
-    return <>{children}</>;
+    return <AuthGuard>{children}</AuthGuard>;
 }

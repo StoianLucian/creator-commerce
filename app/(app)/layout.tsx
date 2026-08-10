@@ -8,10 +8,8 @@ export default async function DashboardLayout({
 }) {
 
     return (
-        <AuthGuard>
-            <AppLayout>
-                {children}
-            </AppLayout>
-        </AuthGuard>
+        <AppLayout>
+            {children}
+        </AppLayout>
     )
 }

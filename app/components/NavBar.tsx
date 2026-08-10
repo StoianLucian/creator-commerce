@@ -34,17 +34,18 @@ interface NavBarProps {
 }
 
 export const NavBar = ({ user }: NavBarProps) => {
-  const [isMobileOpen, setIsMobileOpen] = useState(false);
   const pathname = usePathname();
 
-  const navigation = [
-    { name: "Dashboard", href: AppPaths.DASHBOARD, icon: LayoutDashboard },
+  const loggedInItems = [
     // Products live under the creator's own handle: /@handle/products
     ...(user.username
       ? [{ name: "Products", href: CreatorPaths.products(user.username), icon: Package }]
       : []),
-    { name: "Settings", href: "/settings", icon: Settings },
   ];
+
+  const guestItems = [
+    { name: "Explore", href: AppPaths.DASHBOARD, icon: LayoutDashboard },
+  ]
 
   return (
     <>
@@ -78,10 +79,25 @@ export const NavBar = ({ user }: NavBarProps) => {
 
         <SidebarContent>
           <SidebarGroup>
-            <SidebarGroupLabel>Main</SidebarGroupLabel>
+            <SidebarGroupLabel>My section</SidebarGroupLabel>
             <SidebarGroupContent>
               <SidebarMenu>
-                {navigation.map((item) => (
+                {loggedInItems.map((item) => (
+                  <SidebarMenuItem key={item.name}>
+                    <SidebarMenuButton
+                      isActive={pathname === item.href}
+                    >
+                      <Link href={item.href} className="flex items-center gap-2">
+                        <item.icon className="h-4 w-4" />
+                        <span>{item.name}</span>
+                      </Link>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                ))}
+              </SidebarMenu>
+              <SidebarGroupLabel>Explore</SidebarGroupLabel>
+              <SidebarMenu>
+                {guestItems.map((item) => (
                   <SidebarMenuItem key={item.name}>
                     <SidebarMenuButton
                       isActive={pathname === item.href}

@@ -2,7 +2,7 @@
 
 import { notFound } from "next/navigation";
 
-import { ShowProduct } from "@/components/product-page/ShowProduct";
+import { ShowProduct } from "@/components/products-page/ShowProduct";
 import { parseHandle } from "@/lib/handle";
 import { getProduct } from "@/lib/actions/products";
 

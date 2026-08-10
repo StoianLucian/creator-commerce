@@ -10,6 +10,7 @@ import slugify from "slugify";
 import { redirect } from "next/navigation";
 import { CreatorPaths } from "@/enums/AppPaths";
 import { getSession } from "../session";
+import { useProductsProps } from "@/hooks/useProducts";
 
 export async function createProduct(data: CreateProductInput) {
 
@@ -88,13 +89,42 @@ export async function getProduct(id: number) {
         with: {
             category: true,
             images: true,
+            owner: {
+                columns: { username: true },
+            },
         },
     });
 
     return found ?? null;
 }
 
-export async function getProducts(q: string) {
+export async function getProducts({ q }: useProductsProps) {
+
+    try {
+        const conditions = [
+            ilike(product.name, `%${q}%`),
+        ];
+
+        const products = await db.query.product.findMany({
+            where: and(...conditions),
+            orderBy: desc(product.created_at),
+            with: {
+                images: true,
+
+                owner: {
+                    columns: { username: true },
+                },
+            },
+        });
+
+        return products;
+    } catch (error) {
+        throw new Error("Error fetching products");
+    }
+
+}
+
+export async function getOwnnProducts({ q }: useProductsProps) {
 
     try {
         const session = await getSession();
@@ -102,11 +132,20 @@ export async function getProducts(q: string) {
         if (!session?.user?.id) {
             throw new Error("Unauthorized");
         }
+
+        const conditions = [
+            ilike(product.name, `%${q}%`),
+        ];
+
         const products = await db.query.product.findMany({
-            where: and(eq(product.ownerId, session.user.id), ilike(product.name, `%${q}%`)),
+            where: and(...conditions),
             orderBy: desc(product.created_at),
             with: {
                 images: true,
+
+                owner: {
+                    columns: { username: true },
+                },
             },
         });
 

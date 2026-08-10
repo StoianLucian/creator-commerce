@@ -1,4 +1,4 @@
-import { user } from "@/auth-schema";
+import { user } from "./auth-schema";
 import { pgTable, text, timestamp, index, serial, integer } from "drizzle-orm/pg-core";
 import { relations } from "drizzle-orm";
 import { category } from "./category-schema";
@@ -37,6 +37,10 @@ export const productRelations = relations(product, ({ one, many }) => ({
         references: [category.id],
     }),
     images: many(productImages),
+    owner: one(user, {
+        fields: [product.ownerId],
+        references: [user.id],
+    }),
 }));
 
 export type NewProduct = typeof product.$inferInsert;

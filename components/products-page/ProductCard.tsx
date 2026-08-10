@@ -23,8 +23,7 @@ interface ProductCardProps {
 }
 
 export function ProductCard({ product }: ProductCardProps) {
-    const { handle } = useHandle();
-
+    // const { handle } = useHandle()
     const variant =
         statusVariant[product.status as keyof typeof statusVariant] ?? "outline";
 
@@ -32,10 +31,10 @@ export function ProductCard({ product }: ProductCardProps) {
 
     return (
         <Link
-            href={`/${handle}/products/${product.id}/${product.slug}`}
+            href={`/dashboard/${product.owner.username}/${product.id}/${product.slug}`}
             className="group block rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
         >
-            <Card className="h-full transition group-hover:ring-primary group-hover:shadow-md">
+            <Card className="h-full transition group-hover:ring-primary group-hover:shadow-md m-5">
                 <CardHeader>
                     <div className="flex items-start justify-between gap-3">
                         <div className="min-w-0 space-y-1">
