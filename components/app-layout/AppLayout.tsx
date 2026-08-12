@@ -19,7 +19,7 @@ async function AppLayout({ children }: { children: ReactNode }) {
     return (
         <div className={cn("flex flex-1")}>
             <div>
-                <NavBar user={user} />
+                <NavBar user={user} isSignedIn={!!session} />
             </div>
             <div className={cn("flex-col flex-1")}>
                 <TopBar />

@@ -83,25 +83,6 @@ export function ProductInfo({ product }: ProductInfoProps) {
                         </Badge>
                     </CardContent>
                 </Card>
-
-                <Card>
-                    <CardHeader>
-                        <CardTitle className="text-lg">Metadata</CardTitle>
-                    </CardHeader>
-
-                    <CardContent className="space-y-3">
-                        <Info label="Product ID" value={`${product.id}`} />
-                        <Info label="Slug" value={product.slug} />
-                        <Info
-                            label="Created"
-                            value={
-                                product.created_at
-                                    ? dateFormatter.format(product.created_at)
-                                    : "—"
-                            }
-                        />
-                    </CardContent>
-                </Card>
             </div>
         </div>
     );

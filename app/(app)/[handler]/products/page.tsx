@@ -13,18 +13,14 @@ export default async function ProductsPage({
     params,
 }: PageProps<"/[handler]/products">) {
     const { handler } = await params;
-    // The [handler] layout validated the segment's shape.
     const username = parseHandle(handler)!;
 
-    // This is the catalog manager, so it stays owner-only — the layout only
-    // checks the handle is well-formed now that product pages are public.
     if (!(await isHandleOwner(username))) {
         notFound();
     }
 
     return (
         <div className="space-y-6 p-6">
-            {/* Header */}
             <div className="flex items-center justify-between">
                 <div>
                     <h1 className="text-3xl font-bold">Products</h1>
@@ -41,14 +37,7 @@ export default async function ProductsPage({
                     New Product
                 </Link>
             </div>
-
-            {/* Search */}
-          
-
-            {/* Products */}
-            
-                <Products />
-            {/* </div> */}
+            <Products />
         </div>
     );
 }

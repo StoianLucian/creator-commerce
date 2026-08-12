@@ -5,6 +5,7 @@ export const AppPaths = {
     REGISTER: "/register",
     HOME: "/",
     DASHBOARD: "/dashboard",
+    ORDERS: "/orders",
 }
 
 /** Paths under `/[handler]`, scoped to a creator's username. */

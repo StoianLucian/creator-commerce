@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { ShoppingCart } from "lucide-react";
+import { Loader2, ShoppingCart } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -16,6 +16,7 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useCart, useClearCart } from "@/hooks/useCart";
+import { useCheckout } from "@/hooks/useCheckout";
 import { priceFormatter } from "@/lib/format";
 import { CartLineItem } from "./CartLineItem";
 
@@ -30,6 +31,7 @@ export function CartSheet() {
 
     const { data: cart, isPending, isError, error } = useCart();
     const clear = useClearCart();
+    const checkout = useCheckout();
 
     const items = cart?.items ?? [];
     const itemCount = cart?.itemCount ?? 0;
@@ -118,8 +120,17 @@ export function CartSheet() {
                             </span>
                         </div>
 
-                        <Button size="lg" className="w-full justify-center">
-                            Checkout
+                        <Button
+                            size="lg"
+                            className="w-full justify-center"
+                            disabled={checkout.isPending}
+                            onClick={() => checkout.mutate()}
+                        >
+                            {checkout.isPending ? (
+                                <Loader2 className="h-4 w-4 animate-spin" />
+                            ) : (
+                                "Checkout"
+                            )}
                         </Button>
 
                         <Button

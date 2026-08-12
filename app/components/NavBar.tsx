@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import {
   LayoutDashboard,
   Package,
+  Receipt,
   Settings
 } from "lucide-react";
 import {
@@ -31,17 +32,22 @@ interface NavBarProps {
     username: string | null;
     image: string | null;
   };
+  /** The sidebar also renders for guests, who get the Explore group only. */
+  isSignedIn: boolean;
 }
 
-export const NavBar = ({ user }: NavBarProps) => {
+export const NavBar = ({ user, isSignedIn }: NavBarProps) => {
   const pathname = usePathname();
 
-  const loggedInItems = [
-    // Products live under the creator's own handle: /@handle/products
-    ...(user.username
-      ? [{ name: "Products", href: CreatorPaths.products(user.username), icon: Package }]
-      : []),
-  ];
+  const loggedInItems = isSignedIn
+    ? [
+      // Products live under the creator's own handle: /@handle/products
+      ...(user.username
+        ? [{ name: "Products", href: CreatorPaths.products(user.username), icon: Package }]
+        : []),
+      { name: "Orders", href: AppPaths.ORDERS, icon: Receipt },
+    ]
+    : [];
 
   const guestItems = [
     { name: "Explore", href: AppPaths.DASHBOARD, icon: LayoutDashboard },
@@ -61,12 +67,6 @@ export const NavBar = ({ user }: NavBarProps) => {
           <SidebarGroup>
             <SidebarGroupLabel>NEXT APP</SidebarGroupLabel>
             <div className="flex items-center gap-2 p-1">
-              <Avatar className="h-8 w-8">
-                {user.image && <AvatarImage src={user.image} />}
-                <AvatarFallback>
-                  {user.name.charAt(0).toUpperCase()}
-                </AvatarFallback>
-              </Avatar>
               <div className="flex flex-col">
                 <span className="text-sm font-medium">{user.name}</span>
                 <span className="text-xs text-muted-foreground">
@@ -79,22 +79,26 @@ export const NavBar = ({ user }: NavBarProps) => {
 
         <SidebarContent>
           <SidebarGroup>
-            <SidebarGroupLabel>My section</SidebarGroupLabel>
             <SidebarGroupContent>
-              <SidebarMenu>
-                {loggedInItems.map((item) => (
-                  <SidebarMenuItem key={item.name}>
-                    <SidebarMenuButton
-                      isActive={pathname === item.href}
-                    >
-                      <Link href={item.href} className="flex items-center gap-2">
-                        <item.icon className="h-4 w-4" />
-                        <span>{item.name}</span>
-                      </Link>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                ))}
-              </SidebarMenu>
+              {loggedInItems.length > 0 && (
+                <>
+                  <SidebarGroupLabel>My section</SidebarGroupLabel>
+                  <SidebarMenu>
+                    {loggedInItems.map((item) => (
+                      <SidebarMenuItem key={item.name}>
+                        <SidebarMenuButton
+                          isActive={pathname === item.href}
+                        >
+                          <Link href={item.href} className="flex items-center gap-2">
+                            <item.icon className="h-4 w-4" />
+                            <span>{item.name}</span>
+                          </Link>
+                        </SidebarMenuButton>
+                      </SidebarMenuItem>
+                    ))}
+                  </SidebarMenu>
+                </>
+              )}
               <SidebarGroupLabel>Explore</SidebarGroupLabel>
               <SidebarMenu>
                 {guestItems.map((item) => (
