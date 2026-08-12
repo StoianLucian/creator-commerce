@@ -3,15 +3,18 @@
 import "server-only";
 
 import {
+    and,
     desc,
     eq,
+    inArray,
     type BuildQueryResult,
     type ExtractTablesWithRelations,
 } from "drizzle-orm";
 
 import { db } from "@/src/db";
 import * as schema from "@/src/db/exports";
-import { order, type OrderStatus } from "@/src/db/order-schema";
+import { order, orderItem, type OrderStatus } from "@/src/db/order-schema";
+import { product } from "@/src/db/product-schema";
 import { CreatorPaths } from "@/enums/AppPaths";
 import { getSession } from "@/lib/session";
 
@@ -40,18 +43,38 @@ export type OrderHistoryEntry = {
 };
 
 /**
+ * A sale as the selling creator sees it: one order, narrowed to the lines
+ * for their own products. See `getMySales`.
+ */
+export type SaleEntry = {
+    id: number;
+    status: OrderStatus;
+    createdAt: Date;
+    /** Null until Stripe reports it back on the checkout webhook. */
+    buyerEmail: string | null;
+    /** Cents. This creator's share of the order, not `order.subtotal`. */
+    total: number;
+    /** Units sold by this creator on the order. */
+    itemCount: number;
+    lines: OrderHistoryLine[];
+};
+
+/**
  * The relation tree every order read needs. `as const` keeps the column
  * selection literal so the row type stays narrow.
  *
  * The line itself renders off the snapshot columns on `order_items`; the
  * product join only supplies the thumbnail and a link back to the live
  * listing, both of which are allowed to be missing.
+ *
+ * `ownerId` is here for `getMySales`, which uses it to keep a creator to
+ * their own lines of a shared order.
  */
 const withLines = {
     items: {
         with: {
             product: {
-                columns: { id: true, slug: true },
+                columns: { id: true, slug: true, ownerId: true },
                 with: {
                     images: { limit: 1 },
                     owner: { columns: { username: true } },
@@ -69,6 +92,30 @@ type OrderWithLines = BuildQueryResult<
     { with: typeof withLines }
 >;
 
+type OrderItemWithProduct = OrderWithLines["items"][number];
+
+/** One `order_items` row → the shape the line components render. */
+function toOrderHistoryLine(item: OrderItemWithProduct): OrderHistoryLine {
+    const username = item.product?.owner?.username;
+
+    return {
+        id: item.id,
+        name: item.productName,
+        quantity: item.quantity,
+        unitPrice: item.unitPrice,
+        lineTotal: item.lineTotal,
+        imageUrl: item.product?.images[0]?.imageUrl ?? null,
+        href:
+            item.product && username
+                ? CreatorPaths.product(
+                    username,
+                    item.product.id,
+                    item.product.slug
+                )
+                : null,
+    };
+}
+
 /** Row (from either query below) → the shape the order components render. */
 function toOrderHistoryEntry(row: OrderWithLines): OrderHistoryEntry {
     return {
@@ -77,26 +124,7 @@ function toOrderHistoryEntry(row: OrderWithLines): OrderHistoryEntry {
         subtotal: row.subtotal,
         createdAt: row.createdAt,
         itemCount: row.items.reduce((total, item) => total + item.quantity, 0),
-        lines: row.items.map((item) => {
-            const username = item.product?.owner?.username;
-
-            return {
-                id: item.id,
-                name: item.productName,
-                quantity: item.quantity,
-                unitPrice: item.unitPrice,
-                lineTotal: item.lineTotal,
-                imageUrl: item.product?.images[0]?.imageUrl ?? null,
-                href:
-                    item.product && username
-                        ? CreatorPaths.product(
-                              username,
-                              item.product.id,
-                              item.product.slug
-                          )
-                        : null,
-            };
-        }),
+        lines: row.items.map(toOrderHistoryLine),
     };
 }
 
@@ -139,4 +167,84 @@ export async function getOrderByCheckoutSessionId(
     });
 
     return row ? toOrderHistoryEntry(row) : null;
+}
+
+/**
+ * The other side of an order: what the signed-in creator has *sold*.
+ *
+ * One entry per paid order that contains at least one of their products,
+ * newest first. Only `pending`/`failed` orders are left out — an order row
+ * exists before Stripe confirms payment, so counting those would inflate
+ * the revenue total.
+ *
+ * Lines are narrowed to the creator's own products, so an order spanning
+ * two creators shows each of them only their half — including `total`,
+ * which is this creator's share and not `order.subtotal`.
+ */
+export async function getMySales(): Promise<SaleEntry[]> {
+
+
+    try {
+        const session = await getSession();
+
+        if (!session) return []
+        const ownerId = session.user.id;
+
+        // Two steps because the relational query below filters orders, not the
+        // lines inside them: this picks the orders, `withLines` then loads each
+        // one whole and the map drops the lines belonging to other creators.
+        const myProducts = db
+            .select({ id: product.id })
+            .from(product)
+            .where(eq(product.ownerId, ownerId));
+
+        const matches = await db
+            .selectDistinct({ orderId: orderItem.orderId })
+            .from(orderItem)
+            .innerJoin(order, eq(orderItem.orderId, order.id))
+            .where(
+                and(
+                    eq(order.status, "paid"),
+                    inArray(orderItem.productId, myProducts)
+                )
+            );
+
+        if (matches.length === 0) return [];
+
+        const rows = await db.query.order.findMany({
+            where: inArray(
+                order.id,
+                matches.map((match) => match.orderId)
+            ),
+            orderBy: desc(order.createdAt),
+            with: withLines,
+        });
+
+        const transformed = rows
+            .map((row) => {
+                // A line whose product was deleted has no `productId` left to
+                // attribute, so it can't be claimed here.
+                const lines = row.items
+                    .filter((item) => item.product?.ownerId === ownerId)
+                    .map(toOrderHistoryLine);
+
+                return {
+                    id: row.id,
+                    status: row.status as OrderStatus,
+                    createdAt: row.createdAt,
+                    buyerEmail: row.buyerEmail,
+                    total: lines.reduce((sum, line) => sum + line.lineTotal, 0),
+                    itemCount: lines.reduce((sum, line) => sum + line.quantity, 0),
+                    lines,
+                };
+            })
+            .filter((sale) => sale.lines.length > 0);
+
+
+        return transformed
+    } catch (error) {
+        throw error
+    }
+
+
 }

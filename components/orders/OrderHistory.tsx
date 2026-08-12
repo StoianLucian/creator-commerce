@@ -33,7 +33,6 @@ export async function OrderHistory() {
                     </EmptyDescription>
                 </EmptyHeader>
 
-                {/* `nativeButton={false}`: the rendered element is an <a>, not a <button>. */}
                 <Button
                     nativeButton={false}
                     render={<Link href={AppPaths.DASHBOARD} />}

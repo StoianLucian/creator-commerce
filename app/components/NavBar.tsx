@@ -6,7 +6,8 @@ import {
   LayoutDashboard,
   Package,
   Receipt,
-  Settings
+  TrendingUp
+
 } from "lucide-react";
 import {
   Sidebar,
@@ -19,9 +20,6 @@ import {
   SidebarMenuItem,
   SidebarMenuButton
 } from "@/components/ui/sidebar";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-
-import { useState } from "react";
 import { AppPaths, CreatorPaths } from "@/enums/AppPaths";
 import { toHandle } from "@/lib/handle";
 
@@ -46,6 +44,7 @@ export const NavBar = ({ user, isSignedIn }: NavBarProps) => {
         ? [{ name: "Products", href: CreatorPaths.products(user.username), icon: Package }]
         : []),
       { name: "Orders", href: AppPaths.ORDERS, icon: Receipt },
+      { name: "Sales", href: AppPaths.SALES, icon: TrendingUp },
     ]
     : [];
 
@@ -55,12 +54,7 @@ export const NavBar = ({ user, isSignedIn }: NavBarProps) => {
 
   return (
     <>
-
-
-      {/* Sidebar */}
       <Sidebar
-        // open={isMobileOpen}
-        // onOpenChange={setIsMobileOpen}
         collapsible="none"
       >
         <SidebarHeader>
