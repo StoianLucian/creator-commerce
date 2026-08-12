@@ -16,7 +16,7 @@ export default function OrdersPage() {
             <div>
                 <h1 className="text-3xl font-bold">Orders</h1>
                 <p className="text-muted-foreground">
-                    Everything you&apos;ve bought, newest first.
+                    Everything you have bought, newest first.
                 </p>
             </div>
 

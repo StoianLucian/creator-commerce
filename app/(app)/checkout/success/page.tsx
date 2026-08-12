@@ -1,15 +1,13 @@
 // app/(app)/checkout/success/page.tsx
 
 import Link from "next/link";
-import { eq } from "drizzle-orm";
 import { CheckCircle2 } from "lucide-react";
 import { notFound } from "next/navigation";
 
-import { db } from "@/src/db";
-import { order } from "@/src/db/order-schema";
 import { Button } from "@/components/ui/button";
 import { AppPaths } from "@/enums/AppPaths";
-import { priceFormatter } from "@/lib/format";
+import { getOrderByCheckoutSessionId } from "@/lib/data/orders";
+import { OrderCard } from "@/components/orders/OrderCard";
 
 export default async function CheckoutSuccessPage(
     props: PageProps<"/checkout/success">
@@ -18,19 +16,11 @@ export default async function CheckoutSuccessPage(
 
     if (!session_id || Array.isArray(session_id)) notFound();
 
+    const entry = await getOrderByCheckoutSessionId(session_id);
 
-    const found = await db.query.order.findFirst({
-        where: eq(order.stripeCheckoutSessionId, session_id),
-        with: { items: true },
-    });
+    if (!entry) notFound();
 
-    console.log(found)
-
-    if (!found) {
-        notFound();
-    }
-
-    const isPaid = found.status === "paid";
+    const isPaid = entry.status === "paid";
 
     return (
         <div className="mx-auto max-w-xl space-y-6 p-6 text-center">
@@ -42,33 +32,16 @@ export default async function CheckoutSuccessPage(
                 </h1>
                 <p className="text-muted-foreground">
                     {isPaid
-                        ? `Order #${found.id} is confirmed.`
+                        ? `Order #${entry.id} is confirmed.`
                         : "We're still confirming your payment with Stripe — this will update shortly."}
                 </p>
             </div>
 
-            <ul className="divide-y rounded-lg border text-left">
-                {found.items.map((item) => (
-                    <li
-                        key={item.id}
-                        className="flex items-center justify-between p-4"
-                    >
-                        <span>
-                            {item.productName} × {item.quantity}
-                        </span>
-                        <span className="font-medium">
-                            {priceFormatter.format(item.lineTotal / 100)}
-                        </span>
-                    </li>
-                ))}
+            {/* `OrderCard` renders its own <li>, hence the wrapping list —
+                it already covers the status, item count and total. */}
+            <ul className="text-left">
+                <OrderCard entry={entry} />
             </ul>
-
-            <div className="flex items-center justify-between px-1 text-sm">
-                <span className="text-muted-foreground">Total</span>
-                <span className="font-semibold">
-                    {priceFormatter.format(found.subtotal / 100)}
-                </span>
-            </div>
 
             <div className="flex items-center justify-center gap-2">
                 {/* `nativeButton={false}`: the rendered element is an <a>, not a <button>. */}
