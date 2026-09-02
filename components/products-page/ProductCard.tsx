@@ -1,7 +1,11 @@
+"use client";
+
 import Link from "next/link";
-import { Package } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { Package, Pencil } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { AddToCartButton } from "@/components/cart/AddToCartButton";
 import { CreatorPaths } from "@/enums/AppPaths";
@@ -16,9 +20,12 @@ const statusVariant = {
 
 interface ProductCardProps {
     product: ProductWithRelations;
+    editable?: boolean;
 }
 
-export function ProductCard({ product }: ProductCardProps) {
+export function ProductCard({ product, editable }: ProductCardProps) {
+    const router = useRouter();
+
     const variant =
         statusVariant[product.status as keyof typeof statusVariant] ?? "outline";
 
@@ -86,11 +93,30 @@ export function ProductCard({ product }: ProductCardProps) {
                           * click from bubbling up into a navigation.
                           */}
                         <div
+                            className="flex items-center gap-2"
                             onClick={(event) => {
                                 event.preventDefault();
                                 event.stopPropagation();
                             }}
                         >
+                            {editable && (
+                                <Button
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={() =>
+                                        router.push(
+                                            CreatorPaths.productEdit(
+                                                product.owner.username ?? "",
+                                                product.id,
+                                            ),
+                                        )
+                                    }
+                                >
+                                    <Pencil className="h-4 w-4" />
+                                    Edit
+                                </Button>
+                            )}
+
                             <AddToCartButton
                                 productId={product.id}
                                 productName={product.name}

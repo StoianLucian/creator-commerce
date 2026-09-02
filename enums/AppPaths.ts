@@ -15,4 +15,6 @@ export const CreatorPaths = {
     productsNew: (username: string) => `/${toHandle(username)}/products/new`,
     product: (username: string, id: number | string, slug: string) =>
         `/${toHandle(username)}/products/${id}/${slug}`,
+    productEdit: (username: string, id: number | string) =>
+        `/${toHandle(username)}/products/${id}/edit`,
 }

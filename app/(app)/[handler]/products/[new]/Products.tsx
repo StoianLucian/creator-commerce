@@ -37,7 +37,7 @@ function Products() {
                 searchPlaceholder="Search your products..."
             />
             <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-                <ProductCardWrapper products={products} isPending={isPending} />
+                <ProductCardWrapper products={products} isPending={isPending} editable />
             </div>
         </div>
     );

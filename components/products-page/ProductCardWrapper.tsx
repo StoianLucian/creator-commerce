@@ -2,7 +2,7 @@ import { ProductCard } from './ProductCard'
 import { ProductWithRelations } from '@/lib/actions/products'
 import { Skeleton } from '../ui/skeleton'
 
-function ProductCardWrapper({ products, isPending }: { products: ProductWithRelations[], isPending: boolean }) {
+function ProductCardWrapper({ products, isPending, editable }: { products: ProductWithRelations[], isPending: boolean, editable?: boolean }) {
   if (isPending) {
     return (
       <>
@@ -16,7 +16,7 @@ function ProductCardWrapper({ products, isPending }: { products: ProductWithRela
   return (
     <>
       {products.map((product) => (
-        <ProductCard key={product.id} product={product} />
+        <ProductCard key={product.id} product={product} editable={editable} />
       ))}
     </>
   )
