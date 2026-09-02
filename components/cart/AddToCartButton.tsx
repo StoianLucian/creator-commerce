@@ -29,7 +29,7 @@ export function AddToCartButton({
         <Button
             size={size}
             variant={variant}
-            className={cn("justify-center", className)}
+            className={cn("justify-center gap-2 transition-colors", className)}
             disabled={addToCart.isPending}
             onClick={() => addToCart.mutate({ productId, quantity })}
             aria-label={`Add ${productName} to cart`}

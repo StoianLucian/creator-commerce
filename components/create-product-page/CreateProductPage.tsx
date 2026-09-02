@@ -1,7 +1,5 @@
-
 "use client"
 
-import { useState } from "react"
 import { Save, Loader2 } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
@@ -16,8 +14,6 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select"
-import { Switch } from "@/components/ui/switch"
-import { Separator } from "@/components/ui/separator"
 import { Controller, useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import {
@@ -26,23 +22,34 @@ import {
     MAX_PRODUCT_IMAGES,
 } from "@/form-validations/products"
 import { useCreateProduct } from "@/hooks/useCreateProduct"
+import { useUpdateProduct } from "@/hooks/useUpdateProduct"
 import { useCategories } from "@/hooks/useCategories"
 import { UploadThingDropzone } from "../upload-button/UploadThingDropzone"
 import { UploadedImagesCarousel } from "../upload-button/UploadedImagesCarousel"
 
-export default function CreateProductPage() {
-    const [featured, setFeatured] = useState(false)
+interface CreateProductPageProps {
+    productId?: number
+    initialValues?: CreateProductInput
+}
+
+const emptyProduct: CreateProductInput = {
+    name: "",
+    description: "",
+    categoryId: 0,
+    status: "draft",
+    price: 0,
+    images: [],
+}
+
+export default function CreateProductPage({
+    productId,
+    initialValues,
+}: CreateProductPageProps) {
+    const isEdit = productId != null
 
     const form = useForm<CreateProductInput>({
         resolver: zodResolver(createProductSchema),
-        defaultValues: {
-            name: "",
-            description: "",
-            categoryId: 0,
-            status: "draft",
-            price: 0,
-            images: [],
-        },
+        defaultValues: initialValues ?? emptyProduct,
     });
 
     const {
@@ -52,19 +59,29 @@ export default function CreateProductPage() {
 
     const { data: categories = [] } = useCategories()
 
-    const { mutateAsync: createProduct, isPending } = useCreateProduct()
+    const create = useCreateProduct()
+    const update = useUpdateProduct(productId ?? 0)
+    const isPending = isEdit ? update.isPending : create.isPending
 
-    async function submitHandler(data: CreateProductInput) {
-        await createProduct(data)
+    function submitHandler(data: CreateProductInput) {
+        if (isEdit) {
+            update.mutate(data)
+        } else {
+            create.mutate(data)
+        }
     }
 
     return (
         <form onSubmit={handleSubmit(submitHandler)} className="container mx-auto max-w-5xl space-y-6 py-8">
-            <div className="flex items-center justify-between">
-                <div>
-                    <h1 className="text-3xl font-bold">Create Product</h1>
-                    <p className="text-muted-foreground">
-                        Add a new product to your catalog.
+            <div className="flex items-center justify-between gap-4">
+                <div className="space-y-1">
+                    <h1 className="text-3xl font-semibold tracking-tight">
+                        {isEdit ? "Edit Product" : "Create Product"}
+                    </h1>
+                    <p className="text-sm text-muted-foreground">
+                        {isEdit
+                            ? "Update your product details and status."
+                            : "Add a new product to your catalog."}
                     </p>
                 </div>
                 <Button type="submit" disabled={isPending}>
@@ -76,7 +93,7 @@ export default function CreateProductPage() {
                     ) : (
                         <>
                             <Save className="mr-2 h-4 w-4" />
-                            Save Product
+                            {isEdit ? "Save Changes" : "Save Product"}
                         </>
                     )}
                 </Button>
@@ -148,11 +165,16 @@ export default function CreateProductPage() {
                                     name="categoryId"
                                     render={({ field, fieldState: { error } }) => (
                                         <div className="space-y-2">
+                                            <Label>Category</Label>
                                             <Select
-                                                value={categories?.find((cat) => cat.id === field.value)?.name ?? ""}
+                                                items={categories.map((category) => ({
+                                                    value: String(category.id),
+                                                    label: category.name,
+                                                }))}
+                                                value={field.value ? String(field.value) : ""}
                                                 onValueChange={(value) => field.onChange(Number(value))}
                                             >
-                                                <SelectTrigger>
+                                                <SelectTrigger className="w-full">
                                                     <SelectValue placeholder="Select category" />
                                                 </SelectTrigger>
 
@@ -190,48 +212,32 @@ export default function CreateProductPage() {
                         </CardHeader>
 
                         <CardContent className="space-y-5">
-                            <div className="grid gap-4 md:grid-cols-3">
-                                <div className="space-y-2">
-                                    <Controller
-                                        control={control}
-                                        name="price"
-                                        render={({ field, fieldState: { error } }) => (
-                                            <div className="space-y-2">
-                                                <Label>Price</Label>
-                                                <Input
-                                                    type="number"
-                                                    min="0"
-                                                    placeholder="99"
-                                                    value={field.value ?? ""}
-                                                    onChange={(e) => field.onChange(Number(e.target.value))}
-                                                />
+                            <Controller
+                                control={control}
+                                name="price"
+                                render={({ field, fieldState: { error } }) => (
+                                    <div className="space-y-2">
+                                        <Label htmlFor="price">Price</Label>
+                                        <Input
+                                            id="price"
+                                            type="number"
+                                            min="0"
+                                            placeholder="99"
+                                            value={field.value ? field.value : ""}
+                                            onChange={(e) => {
+                                                const value = e.target.value;
+                                                field.onChange(value === "" ? 0 : Number(value));
+                                            }}
+                                        />
 
-                                                {error && (
-                                                    <p className="text-sm text-destructive">
-                                                        {error.message}
-                                                    </p>
-                                                )}
-                                            </div>
+                                        {error && (
+                                            <p className="text-sm text-destructive">
+                                                {error.message}
+                                            </p>
                                         )}
-                                    />
-                                </div>
-
-                                <div className="space-y-2">
-                                    <Label>Compare At</Label>
-                                    <Input
-                                        type="number"
-                                        placeholder="129.99"
-                                    />
-                                </div>
-
-                                <div className="space-y-2">
-                                    <Label>Stock</Label>
-                                    <Input
-                                        type="number"
-                                        placeholder="150"
-                                    />
-                                </div>
-                            </div>
+                                    </div>
+                                )}
+                            />
                         </CardContent>
                     </Card>
                 </div>
@@ -290,54 +296,55 @@ export default function CreateProductPage() {
                         </CardHeader>
 
                         <CardContent className="space-y-4">
-                            <div className="flex items-center justify-between">
-                                <div>
-                                    <p className="font-medium">
-                                        Featured Product
-                                    </p>
+                            <Controller
+                                control={control}
+                                name="status"
+                                render={({ field, fieldState: { error } }) => (
+                                    <div className="space-y-2">
+                                        <Label>Status</Label>
 
-                                    <p className="text-sm text-muted-foreground">
-                                        Display on homepage
-                                    </p>
-                                </div>
+                                        <Select
+                                            items={[
+                                                { value: "draft", label: "Draft" },
+                                                { value: "active", label: "Active" },
+                                                { value: "sold", label: "Sold" },
+                                            ]}
+                                            value={field.value}
+                                            onValueChange={field.onChange}
+                                        >
+                                            <SelectTrigger className="w-full">
+                                                <SelectValue placeholder="Draft" />
+                                            </SelectTrigger>
 
-                                <Switch
-                                    checked={featured}
-                                    onCheckedChange={setFeatured}
-                                />
-                            </div>
+                                            <SelectContent>
+                                                <SelectItem value="draft">
+                                                    Draft
+                                                </SelectItem>
 
-                            <Separator />
+                                                <SelectItem value="active">
+                                                    Active
+                                                </SelectItem>
 
-                            <div className="space-y-2">
-                                <Label>Status</Label>
+                                                <SelectItem value="sold">
+                                                    Sold
+                                                </SelectItem>
+                                            </SelectContent>
+                                        </Select>
 
-                                <Select>
-                                    <SelectTrigger>
-                                        <SelectValue placeholder="Draft" />
-                                    </SelectTrigger>
-
-                                    <SelectContent>
-                                        <SelectItem value="draft">
-                                            Draft
-                                        </SelectItem>
-
-                                        <SelectItem value="published">
-                                            Published
-                                        </SelectItem>
-
-                                        <SelectItem value="archived">
-                                            Archived
-                                        </SelectItem>
-                                    </SelectContent>
-                                </Select>
-                            </div>
+                                        {error && (
+                                            <p className="text-sm text-destructive">
+                                                {error.message}
+                                            </p>
+                                        )}
+                                    </div>
+                                )}
+                            />
                         </CardContent>
                     </Card>
 
                 </div>
             </div>
-        </form >
+        </form>
     )
 }
 

@@ -1,5 +1,7 @@
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { getProducts, ProductWithRelations } from "@/lib/actions/products";
+
+export type ProductSort = "newest" | "price-asc" | "price-desc" | "most-sold";
 
 export type Product = {
     id: number;
@@ -23,11 +25,15 @@ export type Product = {
 
 export type useProductsProps = {
     q: string,
+    sort?: ProductSort,
+    minPrice?: number,
+    maxPrice?: number,
 }
 
-export function useProducts({ q }: useProductsProps) {
+export function useProducts({ q, sort = "newest", minPrice, maxPrice }: useProductsProps) {
     return useQuery<ProductWithRelations[], Error>({
-        queryKey: ["products", q],
-        queryFn: async (): Promise<ProductWithRelations[]> => await getProducts({ q })
+        queryKey: ["products", q, sort, minPrice, maxPrice],
+        queryFn: async (): Promise<ProductWithRelations[]> =>
+            await getProducts({ q, sort, minPrice, maxPrice })
     });
 }

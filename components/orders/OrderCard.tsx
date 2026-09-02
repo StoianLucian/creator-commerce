@@ -11,11 +11,11 @@ const fromCents = (cents: number) => priceFormatter.format(cents / 100);
 
 export function OrderCard({ entry }: { entry: OrderHistoryEntry }) {
     return (
-        <li className="rounded-lg border">
-            <div className="flex flex-wrap items-center justify-between gap-3 p-4">
-                <div>
+        <li className="rounded-xl border bg-card text-card-foreground shadow-sm transition hover:border-foreground/20 hover:shadow-md">
+            <div className="flex flex-wrap items-center justify-between gap-3 p-4 sm:p-6">
+                <div className="space-y-1">
                     <div className="flex items-center gap-2">
-                        <h2 className="font-medium">Order #{entry.id}</h2>
+                        <h2 className="font-semibold">Order #{entry.id}</h2>
                         <OrderStatusBadge status={entry.status} />
                     </div>
 
@@ -28,14 +28,19 @@ export function OrderCard({ entry }: { entry: OrderHistoryEntry }) {
                     </p>
                 </div>
 
-                <span className="font-semibold">{fromCents(entry.subtotal)}</span>
+                <span className="font-semibold tabular-nums">
+                    {fromCents(entry.subtotal)}
+                </span>
             </div>
 
             <Separator />
 
             <ul className="divide-y">
                 {entry.lines.map((line) => (
-                    <li key={line.id} className="flex items-center gap-3 p-4">
+                    <li
+                        key={line.id}
+                        className="flex items-center gap-4 p-4 sm:px-6"
+                    >
                         {line.imageUrl ? (
                             <img
                                 src={line.imageUrl}
@@ -52,7 +57,7 @@ export function OrderCard({ entry }: { entry: OrderHistoryEntry }) {
                             {line.href ? (
                                 <Link
                                     href={line.href}
-                                    className="block truncate font-medium hover:underline"
+                                    className="block truncate rounded-sm font-medium transition-colors hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                                 >
                                     {line.name}
                                 </Link>
@@ -60,12 +65,12 @@ export function OrderCard({ entry }: { entry: OrderHistoryEntry }) {
                                 <p className="truncate font-medium">{line.name}</p>
                             )}
 
-                            <p className="text-sm text-muted-foreground">
+                            <p className="text-sm text-muted-foreground tabular-nums">
                                 {fromCents(line.unitPrice)} × {line.quantity}
                             </p>
                         </div>
 
-                        <span className="shrink-0 font-medium">
+                        <span className="shrink-0 font-medium tabular-nums">
                             {fromCents(line.lineTotal)}
                         </span>
                     </li>

@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { Plus, Search } from "lucide-react";
+import { Plus } from "lucide-react";
 import Products from "./[new]/Products";
 import { CreatorPaths } from "@/enums/AppPaths";
 import { parseHandle } from "@/lib/handle";
@@ -20,7 +20,7 @@ export default async function ProductsPage({
     }
 
     return (
-        <div className="space-y-6 p-6">
+        <div className="space-y-6 px-12 py-8">
             <div className="flex items-center justify-between">
                 <div>
                     <h1 className="text-3xl font-bold">Products</h1>

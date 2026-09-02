@@ -103,10 +103,10 @@ export function ProductGallery({
                             aria-label={`Show image ${index + 1}`}
                             aria-current={index === current}
                             className={cn(
-                                "relative h-16 w-16 overflow-hidden rounded-lg border transition-all",
+                                "relative h-16 w-16 overflow-hidden rounded-lg border transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
                                 index === current
                                     ? "ring-2 ring-primary ring-offset-2 ring-offset-background"
-                                    : "opacity-70 hover:opacity-100",
+                                    : "opacity-70 hover:opacity-100 hover:border-primary/40",
                             )}
                         >
                             <Image

@@ -9,7 +9,7 @@ export const metadata = {
 
 export default function SalesPage() {
     return (
-        <div className="space-y-6 p-6">
+        <div className="space-y-6 px-12 py-8">
             <div>
                 <h1 className="text-3xl font-bold">Sales</h1>
                 <p className="text-muted-foreground">

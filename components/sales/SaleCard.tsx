@@ -12,11 +12,11 @@ const fromCents = (cents: number) => priceFormatter.format(cents / 100);
 /** The seller's view of one order — only their own lines. See `getMySales`. */
 export function SaleCard({ sale }: { sale: SaleEntry }) {
     return (
-        <li className="rounded-lg border">
+        <li className="rounded-xl border bg-card text-card-foreground shadow-sm transition hover:border-foreground/20 hover:shadow-md">
             <div className="flex flex-wrap items-center justify-between gap-3 p-4">
-                <div>
+                <div className="space-y-1">
                     <div className="flex items-center gap-2">
-                        <h2 className="font-medium">Order #{sale.id}</h2>
+                        <h2 className="font-semibold">Order #{sale.id}</h2>
                         <OrderStatusBadge status={sale.status} />
                     </div>
 
@@ -30,7 +30,7 @@ export function SaleCard({ sale }: { sale: SaleEntry }) {
                     </p>
                 </div>
 
-                <span className="font-semibold">{fromCents(sale.total)}</span>
+                <span className="font-semibold tabular-nums">{fromCents(sale.total)}</span>
             </div>
 
             <Separator />
@@ -62,12 +62,12 @@ export function SaleCard({ sale }: { sale: SaleEntry }) {
                                 <p className="truncate font-medium">{line.name}</p>
                             )}
 
-                            <p className="text-sm text-muted-foreground">
+                            <p className="text-sm text-muted-foreground tabular-nums">
                                 {fromCents(line.unitPrice)} × {line.quantity}
                             </p>
                         </div>
 
-                        <span className="shrink-0 font-medium">
+                        <span className="shrink-0 font-medium tabular-nums">
                             {fromCents(line.lineTotal)}
                         </span>
                     </li>

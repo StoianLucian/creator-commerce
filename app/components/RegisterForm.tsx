@@ -8,159 +8,169 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { z } from "zod";
 import { TogglePasswordInput } from "@/app/components/InputComponent";
-import { usePathname } from "next/dist/client/components/navigation";
 import { registerSchema } from "@/form-validations/auth";
 import { authClient } from "@/lib/auth-client";
-import { redirect } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { AppPaths } from "@/enums/AppPaths";
+import { useState } from "react";
 
 type RegisterFormData = z.infer<typeof registerSchema>;
 
 export function RegisterForm() {
+  const router = useRouter();
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
+  const { control, handleSubmit } = useForm<RegisterFormData>({
+    resolver: zodResolver(registerSchema),
+    defaultValues: {
+      username: "",
+      email: "",
+      password: "",
+      confirmPassword: "",
+    },
+  });
 
-    const { control, handleSubmit } = useForm<RegisterFormData>({
-        resolver: zodResolver(registerSchema),
-        defaultValues: {
-            username: "",
-            email: "",
-            password: "",
-            confirmPassword: "",
-        },
+  async function onSubmit(data: RegisterFormData) {
+    setLoading(true);
+    setError(null);
+
+    const { username, password, email } = data;
+
+    const result = await authClient.signUp.email({
+      name: username,
+      username,
+      email,
+      password,
     });
 
-    async function onSubmit(data: RegisterFormData) {
+    setLoading(false);
 
-        try {
-            const { username, password, email } = data
-
-            const result = await authClient.signUp.email({
-                name: username,
-                username,
-                email: email,
-                password,
-            });
-
-            if (result) {
-                redirect(AppPaths.LOGIN);
-            }
-        } catch (error) {
-            console.log(error)
-        }
-
-
+    if (result.error) {
+      setError(result.error.message ?? "Could not create your account");
+      return;
     }
 
+    router.push(AppPaths.LOGIN);
+  }
 
+  return (
+    <Card className="w-full shadow-sm">
+      <CardHeader className="gap-1.5">
+        <CardTitle className="text-xl">Create your account</CardTitle>
+        <p className="text-sm text-muted-foreground">
+          Please enter your details to get started
+        </p>
+      </CardHeader>
+      <CardContent>
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
+          <Controller
+            control={control}
+            name="username"
+            render={({ field, fieldState: { error } }) => (
+              <div className="space-y-2">
+                <label htmlFor="username" className="text-sm font-medium leading-none">
+                  Username
+                </label>
 
-    return (
-        <Card className="w-100">
-            <CardHeader>
-                <CardTitle>Welcome Back</CardTitle>
-                <p className="text-sm text-muted-foreground">
-                    Please enter your credentials to continue
-                </p>
-            </CardHeader>
-            <CardContent>
-                <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-                    <Controller
-                        control={control}
-                        name="username"
-                        render={({ field, fieldState: { error } }) => (
-                            <div className="space-y-2">
-                                <label htmlFor="username" className="text-sm font-medium">
-                                    Username
-                                </label>
+                <Input
+                  id="username"
+                  placeholder="Enter your username"
+                  {...field}
+                />
 
-                                <Input
-                                    id="username"
-                                    placeholder="Enter your username"
-                                    {...field}
-                                />
+                {error && (
+                  <p className="text-sm text-destructive">
+                    {error.message}
+                  </p>
+                )}
+              </div>
+            )}
+          />
+          <Controller
+            control={control}
+            name="email"
+            render={({ field, fieldState: { error } }) => (
+              <div className="space-y-2">
+                <label htmlFor="email" className="text-sm font-medium leading-none">
+                  Email
+                </label>
 
-                                {error && (
-                                    <p className="text-sm text-destructive">
-                                        {error.message}
-                                    </p>
-                                )}
-                            </div>
-                        )}
-                    />
-                    <Controller
-                        control={control}
-                        name="email"
-                        render={({ field, fieldState: { error } }) => (
-                            <div className="space-y-2">
-                                <label htmlFor="email" className="text-sm font-medium">
-                                    Email
-                                </label>
+                <Input
+                  id="email"
+                  placeholder="Enter your email"
+                  {...field}
+                />
 
-                                <Input
-                                    id="email"
-                                    placeholder="Enter your email"
-                                    {...field}
-                                />
+                {error && (
+                  <p className="text-sm text-destructive">
+                    {error.message}
+                  </p>
+                )}
+              </div>
+            )}
+          />
+          <Controller
+            control={control}
+            name="password"
+            render={({ field, fieldState: { error } }) => (
+              <div className="space-y-2">
+                <label htmlFor="password" className="text-sm font-medium leading-none">
+                  Password
+                </label>
+                <TogglePasswordInput
+                  id="password"
+                  type="password"
+                  placeholder="Enter your password"
+                  {...field}
+                />
 
-                                {error && (
-                                    <p className="text-sm text-destructive">
-                                        {error.message}
-                                    </p>
-                                )}
-                            </div>
-                        )}
-                    />
-                    <Controller
-                        control={control}
-                        name="password"
-                        render={({ field, fieldState: { error } }) => (
-                            <div className="space-y-2">
-                                <label htmlFor="password" className="text-sm font-medium">
-                                    Password
-                                </label>
-                                <TogglePasswordInput
-                                    id="password"
-                                    type="password"
-                                    placeholder="Enter your password"
-                                    {...field}
-                                />
+                {error && (
+                  <p className="text-sm text-destructive">
+                    {error.message}
+                  </p>
+                )}
+              </div>
+            )}
+          />
+          <Controller
+            control={control}
+            name="confirmPassword"
+            render={({ field, fieldState: { error } }) => (
+              <div className="space-y-2">
+                <label htmlFor="confirmPassword" className="text-sm font-medium leading-none">
+                  Confirm Password
+                </label>
+                <TogglePasswordInput
+                  id="confirmPassword"
+                  type="password"
+                  placeholder="Confirm your password"
+                  {...field}
+                />
 
-                                {error && (
-                                    <p className="text-sm text-destructive">
-                                        {error.message}
-                                    </p>
-                                )}
-                            </div>
-                        )}
-                    />
-                    <Controller
-                        control={control}
-                        name="confirmPassword"
-                        render={({ field, fieldState: { error } }) => (
-                            <div className="space-y-2">
-                                <label htmlFor="confirmPassword" className="text-sm font-medium">
-                                    Confirm Password
-                                </label>
-                                <TogglePasswordInput
-                                    type="password"
-                                    id="password"
-                                    placeholder="Confirm your password"
-                                    {...field}
-                                />
+                {error && (
+                  <p className="text-sm text-destructive">
+                    {error.message}
+                  </p>
+                )}
+              </div>
+            )}
+          />
 
-                                {error && (
-                                    <p className="text-sm text-destructive">
-                                        {error.message}
-                                    </p>
-                                )}
-                            </div>
-                        )}
-                    />
+          {error && (
+            <p
+              role="alert"
+              className="rounded-lg border border-destructive/40 bg-destructive/10 px-3 py-2 text-sm text-destructive"
+            >
+              {error}
+            </p>
+          )}
 
-                    <Button type="submit" className="w-full">
-                        Register
-                    </Button>
-                </form>
-            </CardContent>
-        </Card>
-    );
+          <Button type="submit" size="lg" className="w-full" disabled={loading}>
+            Register
+          </Button>
+        </form>
+      </CardContent>
+    </Card>
+  );
 }

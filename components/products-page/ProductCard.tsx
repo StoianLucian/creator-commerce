@@ -31,9 +31,9 @@ export function ProductCard({ product }: ProductCardProps) {
                 product.id,
                 product.slug,
             )}
-            className="group block rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+            className="group block rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
         >
-            <Card className="h-full transition group-hover:ring-primary group-hover:shadow-md m-5">
+            <Card className="h-full shadow-sm transition-all group-hover:border-primary/40 group-hover:shadow-md">
                 <CardHeader>
                     <div className="flex items-start justify-between gap-3">
                         <div className="min-w-0 space-y-1">
@@ -57,10 +57,10 @@ export function ProductCard({ product }: ProductCardProps) {
                         <img
                             src={coverImage.imageUrl}
                             alt={product.name}
-                            className="aspect-video w-full rounded-lg object-cover"
+                            className="aspect-video w-full rounded-lg border object-cover"
                         />
                     ) : (
-                        <div className="flex aspect-video w-full items-center justify-center rounded-lg bg-muted">
+                        <div className="flex aspect-video w-full items-center justify-center rounded-lg border bg-muted">
                             <Package className="h-6 w-6 text-muted-foreground" />
                         </div>
                     )}
@@ -77,7 +77,7 @@ export function ProductCard({ product }: ProductCardProps) {
                     )}
 
                     <div className="flex items-center justify-between gap-3">
-                        <span className="text-2xl font-bold">
+                        <span className="text-2xl font-semibold tabular-nums">
                             {priceFormatter.format(product.price)}
                         </span>
 

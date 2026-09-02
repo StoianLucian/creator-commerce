@@ -115,7 +115,7 @@ export function CartSheet() {
                             <span className="text-sm text-muted-foreground">
                                 Subtotal
                             </span>
-                            <span className="text-lg font-bold">
+                            <span className="text-lg font-semibold tabular-nums">
                                 {priceFormatter.format(cart?.subtotal ?? 0)}
                             </span>
                         </div>

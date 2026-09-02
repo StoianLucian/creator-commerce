@@ -1,4 +1,3 @@
-// components/logout-button.tsx
 "use client";
 
 import { Button } from "@/components/ui/button";
@@ -12,26 +11,23 @@ export function LogoutButton() {
     const router = useRouter()
 
     async function handleLogout() {
-        console.log("click")
         try {
-            const logout = await authClient.signOut({
+            await authClient.signOut({
                 fetchOptions: {
                     onSuccess: () => {
-                        console.log("success")
                         router.replace(AppPaths.LOGIN);
                     },
                 },
             });
         } catch (error) {
-
+            console.error("Failed to sign out", error)
         }
     }
+
     return (
         <Button
             variant="ghost"
-            onClick={() => {
-                handleLogout()
-            }}
+            onClick={() => handleLogout()}
         >
             <LogOutIcon className="mr-2 h-4 w-4" />
             Log out

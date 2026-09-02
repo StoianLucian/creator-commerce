@@ -3,7 +3,7 @@ import { db } from "@/src/db";
 import { product } from "@/src/db/product-schema";
 import { productImages } from "@/src/db/product-images-schema";
 import { user } from "@/src/db/auth-schema";
-import { eq, desc, and, like, ilike, inArray } from "drizzle-orm";
+import { eq, asc, desc, and, ilike, inArray, gte, lte } from "drizzle-orm";
 
 import { revalidatePath } from "next/cache";
 import { CreateProductInput, createProductSchema } from "@/form-validations/products";
@@ -11,7 +11,20 @@ import slugify from "slugify";
 import { redirect } from "next/navigation";
 import { CreatorPaths } from "@/enums/AppPaths";
 import { getSession } from "../session";
-import { useProductsProps } from "@/hooks/useProducts";
+import { useProductsProps, ProductSort } from "@/hooks/useProducts";
+
+function productOrderBy(sort: ProductSort = "newest") {
+    switch (sort) {
+        case "price-asc":
+            return asc(product.price);
+        case "price-desc":
+            return desc(product.price);
+        case "most-sold":
+            return desc(product.sold);
+        default:
+            return desc(product.created_at);
+    }
+}
 
 export async function createProduct(data: CreateProductInput) {
 
@@ -65,6 +78,60 @@ export async function createProduct(data: CreateProductInput) {
     redirect(productsPath);
 }
 
+export async function updateProduct(id: number, data: CreateProductInput) {
+
+    let productsPath: string;
+
+    try {
+        const session = await getSession();
+
+        if (!session?.user?.id) {
+            throw new Error("Unauthorized");
+        }
+
+        const validated = createProductSchema.safeParse(data);
+
+        if (!validated.success) {
+            return {
+                success: false,
+                errors: validated.error.flatten().fieldErrors,
+            };
+        }
+
+        const { images, ...productData } = validated.data;
+
+        const [updated] = await db
+            .update(product)
+            .set({
+                ...productData,
+                slug: slugify(validated.data.name),
+            })
+            .where(and(eq(product.id, id), eq(product.ownerId, session.user.id)))
+            .returning();
+
+        if (!updated) {
+            return { success: false, errors: { formErrors: ["Product not found"] } };
+        }
+
+        await db.delete(productImages).where(eq(productImages.productId, id));
+        await db.insert(productImages).values(
+            images.map((image) => ({
+                productId: id,
+                imageUrl: image.url,
+                imageKey: image.key,
+            }))
+        );
+
+        productsPath = CreatorPaths.products(session.user.username!);
+        revalidatePath(productsPath);
+    } catch (error) {
+        console.error(error);
+        return { success: false, errors: { formErrors: ["Something went wrong"] } };
+    }
+
+    redirect(productsPath);
+}
+
 export type ProductWithRelations = Awaited<ReturnType<typeof getProducts>>[number];
 
 export type ProductDetail = NonNullable<
@@ -109,16 +176,24 @@ export async function getProductByHandle(username: string, id: number) {
     return found ?? null;
 }
 
-export async function getProducts({ q }: useProductsProps) {
+export async function getProducts({ q, sort, minPrice, maxPrice }: useProductsProps) {
 
     try {
         const conditions = [
+            eq(product.status, "active"),
             ilike(product.name, `%${q}%`),
         ];
 
+        if (minPrice != null) {
+            conditions.push(gte(product.price, minPrice));
+        }
+        if (maxPrice != null) {
+            conditions.push(lte(product.price, maxPrice));
+        }
+
         const products = await db.query.product.findMany({
             where: and(...conditions),
-            orderBy: desc(product.created_at),
+            orderBy: productOrderBy(sort),
             with: {
                 images: true,
 
@@ -129,13 +204,13 @@ export async function getProducts({ q }: useProductsProps) {
         });
 
         return products;
-    } catch (error) {
+    } catch {
         throw new Error("Error fetching products");
     }
 
 }
 
-export async function getOwnnProducts({ q }: useProductsProps) {
+export async function getOwnnProducts({ q, sort, minPrice, maxPrice }: useProductsProps) {
 
     try {
         const session = await getSession();
@@ -145,12 +220,20 @@ export async function getOwnnProducts({ q }: useProductsProps) {
         }
 
         const conditions = [
+            eq(product.ownerId, session.user.id),
             ilike(product.name, `%${q}%`),
         ];
 
+        if (minPrice != null) {
+            conditions.push(gte(product.price, minPrice));
+        }
+        if (maxPrice != null) {
+            conditions.push(lte(product.price, maxPrice));
+        }
+
         const products = await db.query.product.findMany({
             where: and(...conditions),
-            orderBy: desc(product.created_at),
+            orderBy: productOrderBy(sort),
             with: {
                 images: true,
 
@@ -161,7 +244,7 @@ export async function getOwnnProducts({ q }: useProductsProps) {
         });
 
         return products;
-    } catch (error) {
+    } catch {
         throw new Error("Error fetching products");
     }
 

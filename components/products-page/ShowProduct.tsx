@@ -37,7 +37,7 @@ export function ShowProduct({
             <div className="flex items-center justify-between gap-4">
                 <Link
                     href={isOwner ? productsPath : AppPaths.DASHBOARD}
-                    className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground"
+                    className="inline-flex items-center gap-2 rounded-lg text-sm text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                 >
                     <ArrowLeft className="h-4 w-4" />
                     {isOwner ? "Back to Products" : "Back to Explore"}
@@ -63,11 +63,15 @@ export function ShowProduct({
 
             {/* Title */}
             <div className="space-y-1">
-                <h1 className="text-3xl font-bold">{product.name}</h1>
+                <h1 className="text-3xl font-semibold tracking-tight">
+                    {product.name}
+                </h1>
 
-                <p className="text-muted-foreground">
+                <p className="text-sm text-muted-foreground">
                     {product.category?.name ?? "Uncategorized"} ·{" "}
-                    {priceFormatter.format(product.price)}
+                    <span className="tabular-nums">
+                        {priceFormatter.format(product.price)}
+                    </span>
                 </p>
             </div>
 

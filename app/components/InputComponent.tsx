@@ -2,6 +2,7 @@ import * as React from "react";
 import { Input } from "@/components/ui/input";
 import { Eye, EyeOff } from "lucide-react";
 import { useState } from "react";
+import { cn } from "@/lib/utils";
 
 interface TogglePasswordInputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   isPassword?: boolean;
@@ -18,7 +19,7 @@ export const TogglePasswordInput: React.FC<TogglePasswordInputProps> = ({
   className,
   ...props
 }: TogglePasswordInputProps) => {
-  const [showPassword, setShowPassword] = useState(true);
+  const [showPassword, setShowPassword] = useState(false);
 
   const isPasswordType = type === inputTypes.PASSWORD;
 
@@ -31,13 +32,15 @@ export const TogglePasswordInput: React.FC<TogglePasswordInputProps> = ({
       <Input
         {...props}
         type={showPassword ? "text" : "password"}
-        className={isPasswordType ? "pr-10" : ""}
+        className={cn(isPasswordType && "pr-10", className)}
       />
 
       {isPasswordType && <button
         type="button"
         onClick={togglePassword}
-        className="absolute right-3 top-1/2 -translate-y-1/2 p-2 hover:text-foreground"
+        aria-label={showPassword ? "Hide password" : "Show password"}
+        aria-pressed={showPassword}
+        className="absolute right-2 top-1/2 inline-flex -translate-y-1/2 items-center justify-center rounded-md p-1 text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
       >
         {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
       </button>}

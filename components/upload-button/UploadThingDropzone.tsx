@@ -37,10 +37,11 @@ export function UploadThingDropzone({
         <UploadDropzone
             endpoint="productImage"
             disabled={disabled}
+            config={{ mode: "auto" }}
             className={cn(
-                "mt-0 w-full cursor-pointer rounded-lg border border-dashed bg-transparent p-4 transition-colors",
+                "mt-0 w-full cursor-pointer rounded-xl border-2 border-dashed border-border bg-muted/50 p-4 transition-colors",
                 compact ? "h-auto gap-2 py-4" : "h-56",
-                "hover:bg-muted ut-uploading:cursor-not-allowed",
+                "hover:border-primary hover:bg-accent ut-uploading:cursor-not-allowed",
                 "ut-label:text-base ut-label:font-medium ut-label:text-foreground ut-label:hover:text-foreground",
                 "ut-upload-icon:hidden",
                 "ut-allowed-content:text-sm ut-allowed-content:text-muted-foreground",

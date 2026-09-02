@@ -50,7 +50,7 @@ export function CartLineItem({ item, onNavigate }: CartLineItemProps) {
                             <Link
                                 href={productHref}
                                 onClick={onNavigate}
-                                className="block truncate font-medium hover:underline"
+                                className="block truncate rounded-sm font-medium transition-colors hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                             >
                                 {item.name}
                             </Link>
@@ -58,12 +58,12 @@ export function CartLineItem({ item, onNavigate }: CartLineItemProps) {
                             <p className="truncate font-medium">{item.name}</p>
                         )}
 
-                        <p className="text-sm text-muted-foreground">
+                        <p className="text-sm text-muted-foreground tabular-nums">
                             {priceFormatter.format(item.price)} each
                         </p>
                     </div>
 
-                    <span className="shrink-0 font-medium">
+                    <span className="shrink-0 font-medium tabular-nums">
                         {priceFormatter.format(item.lineTotal)}
                     </span>
                 </div>

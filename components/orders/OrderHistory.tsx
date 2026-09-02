@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/empty";
 import { AppPaths } from "@/enums/AppPaths";
 import { getMyOrders } from "@/lib/data/orders";
-import { OrderCard } from "./OrderCard";
+import { OrderList } from "./OrderList";
 
 /**
  * The signed-in buyer's order list. Rendered inside `AuthGuard`, so there
@@ -43,11 +43,5 @@ export async function OrderHistory() {
         );
     }
 
-    return (
-        <ul className="space-y-4">
-            {orders.map((entry) => (
-                <OrderCard key={entry.id} entry={entry} />
-            ))}
-        </ul>
-    );
+    return <OrderList orders={orders} />;
 }

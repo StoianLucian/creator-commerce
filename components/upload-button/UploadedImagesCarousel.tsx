@@ -60,7 +60,7 @@ export function UploadedImagesCarousel({
                 <CarouselContent>
                     {images.map((image, index) => (
                         <CarouselItem key={image.key} className="group relative">
-                            <div className="relative h-56 w-full overflow-hidden rounded-lg border">
+                            <div className="relative h-56 w-full overflow-hidden rounded-xl border bg-muted shadow-sm">
                                 <Image
                                     src={image.url}
                                     alt={`Product image ${index + 1}`}
@@ -74,13 +74,13 @@ export function UploadedImagesCarousel({
                                         type="button"
                                         onClick={() => onRemove(image.key)}
                                         aria-label={`Remove image ${index + 1}`}
-                                        className="absolute right-2 top-2 rounded-md bg-background/80 p-1.5 text-foreground opacity-0 transition-opacity hover:bg-background focus-visible:opacity-100 group-hover:opacity-100"
+                                        className="absolute right-2 top-2 rounded-lg border bg-background/80 p-1.5 text-foreground opacity-0 backdrop-blur-sm transition hover:bg-accent hover:text-accent-foreground focus-visible:opacity-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring group-hover:opacity-100"
                                     >
                                         <X className="h-4 w-4" />
                                     </button>
                                 )}
 
-                                <span className="absolute bottom-2 left-2 rounded-md bg-background/80 px-2 py-0.5 text-xs text-muted-foreground">
+                                <span className="absolute bottom-2 left-2 rounded-lg border bg-background/80 px-2 py-0.5 text-xs font-medium text-muted-foreground backdrop-blur-sm tabular-nums">
                                     {index === 0 ? "Cover" : `${index + 1} / ${images.length}`}
                                 </span>
                             </div>

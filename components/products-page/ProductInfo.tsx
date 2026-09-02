@@ -11,12 +11,6 @@ const statusVariant = {
     sold: "secondary",
 } as const;
 
-// Fixed timezone so the server-rendered date matches the client.
-const dateFormatter = new Intl.DateTimeFormat("en-US", {
-    dateStyle: "medium",
-    timeZone: "UTC",
-});
-
 interface ProductInfoProps {
     product: ProductDetail;
 }
@@ -90,9 +84,11 @@ export function ProductInfo({ product }: ProductInfoProps) {
 
 function Info({ label, value }: { label: string; value: string }) {
     return (
-        <div>
-            <p className="text-sm text-muted-foreground">{label}</p>
-            <p className="font-medium wrap-break-word">{value}</p>
+        <div className="space-y-1">
+            <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                {label}
+            </p>
+            <p className="font-medium tabular-nums wrap-break-word">{value}</p>
         </div>
     );
 }

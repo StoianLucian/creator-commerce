@@ -1,192 +1,97 @@
 "use client";
 
-import { Card } from "@/components/ui/card";
-import { Separator } from "@/components/ui/separator";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Loader2 } from "lucide-react";
+import Link from "next/link";
 import { ReactNode } from "react";
 import { usePathname } from "next/navigation";
+import { ShoppingBag, ShieldCheck, Truck, Sparkles, Store } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import { AppPaths } from "@/enums/AppPaths";
 
-interface AuthForm {
-  children: ReactNode
+interface AuthFormProps {
+  children: ReactNode;
 }
 
-export default function AuthForm({ children }: AuthForm) {
+const trustItems = [
+  { icon: ShieldCheck, label: "Secure checkout" },
+  { icon: Truck, label: "Order tracking" },
+  { icon: Sparkles, label: "Curated by creators" },
+];
 
+export default function AuthForm({ children }: AuthFormProps) {
   const pathname = usePathname();
 
-  const isLogin = pathname.includes(AppPaths.LOGIN)
+  const isLogin = pathname.includes(AppPaths.LOGIN);
 
   return (
-    <div className="min-h-screen w-full bg-background">
-      <div className="flex min-h-screen w-full">
-        {/* Left background panel */}
-        <div className="relative flex min-h-screen w-full flex-col justify-center overflow-hidden lg:basis-1/2">
-          <div className="absolute inset-0 bg-gradient-to-br from-primary/90 to-accent/90">
-            <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1557683316-ae79d053153c?w=2000')] bg-cover bg-center opacity-20" />
-          </div>
-
-          {/* Animated patterns */}
-          <div className="absolute inset-0">
-            <div className="absolute -top-40 -right-40 w-80 h-80 bg-white/10 rounded-full blur-3xl" />
-            <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-white/10 rounded-full blur-3xl" />
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-white/5 rounded-full blur-3xl" />
-          </div>
-
-          {/* Content overlay */}
-          <div className="relative z-10 p-8 md:p-12">
-            <div className="max-w-md mx-auto w-full">
-              {/* Logo/Header */}
-              <div className="text-center mb-8">
-                <div className="inline-flex items-center justify-center w-16 h-16 mb-4 bg-white/20 backdrop-blur-sm rounded-2xl">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="24"
-                    height="24"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  >
-                    <path d="M15 6v12a3 3 0 1 0 3-3H6a3 3 0 1 0 3-3" />
-                    <path d="M18 9a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z" />
-                    <path d="M12 16v.01" />
-                  </svg>
-                </div>
-                <h1 className="text-3xl font-bold text-white mb-2">
-                  Welcome Back
-                </h1>
-                <p className="text-white/70">
-                  Sign in to continue to your account
-                </p>
-              </div>
-
-              {/* Login Form */}
-              <div className="mb-6">
-                {children}
-              </div>
-
-              <Separator className="bg-white/20" />
-
-              {/* Additional options */}
-              <div className="flex items-center justify-between text-white/80 text-sm">
-                <label className="flex items-center gap-2 cursor-pointer">
-                  <input type="checkbox" className="rounded border-white/30 bg-white/20 text-white/90 focus-visible:border-white/50 focus-visible:ring-1 focus-visible:ring-white/50" />
-                  <span>Remember me</span>
-                </label>
-                <a
-                  href="/forgot-password"
-                  className="font-medium hover:text-white transition-colors"
-                >
-                  Forgot password?
-                </a>
-              </div>
-
-              <Separator className="bg-white/20 my-6" />
-
-              {isLogin ? <Alert className="bg-white/10 border-white/20 text-white/80">
-                <AlertDescription className="text-white/90">
-                  Don't have an account?
-                  <a
-                    href={`${AppPaths.REGISTER}`}
-                    className="font-medium underline underline-offset-4 hover:text-white"
-                  >
-                    Create one now
-                  </a>
-                </AlertDescription>
-              </Alert> : <Alert className="bg-white/10 border-white/20 text-white/80">
-                <AlertDescription className="text-white/90">
-                  Already have an account?
-                  <a
-                    href={`${AppPaths.LOGIN}`}
-                    className="font-medium underline underline-offset-4 hover:text-white"
-                  >
-                    Click here to login
-                  </a>
-                </AlertDescription>
-              </Alert>
-              }
-              {/* Footer */}
-              <div className="mt-6 text-center text-white/50 text-xs">
-                <p>
-                  By continuing, you agree to our{" "}
-                  <a
-                    href="/terms"
-                    className="underline hover:text-white/70"
-                  >
-                    Terms of Service
-                  </a>{" "}
-                  and{" "}
-                  <a
-                    href="/privacy"
-                    className="underline hover:text-white/70"
-                  >
-                    Privacy Policy
-                  </a>
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Right content panel */}
-        {/* Right content panel */}
-        <div className="hidden w-1/2 items-center justify-center bg-muted/50 p-6 lg:flex lg:p-12">
-          <div className="w-full max-w-md">
-            <Card className="border border-muted/50 bg-background shadow-xl">
-              <div className="flex flex-col gap-6 p-8">
-                <div className="flex aspect-square items-center justify-center rounded-2xl bg-gradient-to-br from-primary/10 to-accent/10">
-                  <div className="flex h-40 w-40 items-center justify-center rounded-2xl bg-gradient-to-br from-primary/20 to-accent/20">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="40"
-                      height="40"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="1.5"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      className="text-primary"
-                    >
-                      <path d="M15 6v12a3 3 0 1 0 3-3H6a3 3 0 1 0 3-3" />
-                      <path d="M18 9a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z" />
-                      <path d="M12 16v.01" />
-                    </svg>
-                  </div>
-                </div>
-
-                <div className="flex flex-col gap-3">
-                  <div className="rounded-xl border border-muted bg-muted/50 p-4">
-                    <h3 className="mb-2 font-semibold text-foreground">
-                      Secure Login
-                    </h3>
-                    <p className="text-sm text-muted-foreground">
-                      Your account is protected with industry-standard encryption.
-                    </p>
-                  </div>
-
-                  <div className="rounded-xl border border-muted bg-muted/50 p-4">
-                    <h3 className="mb-2 font-semibold text-foreground">
-                      Fast Access
-                    </h3>
-                    <p className="text-sm text-muted-foreground">
-                      Sign in quickly and securely with your credentials.
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </Card>
-          </div>
-        </div>
+    <div className="relative flex min-h-screen w-full items-center justify-center overflow-hidden bg-muted/30 p-4">
+      <div className="pointer-events-none absolute inset-0 -z-10">
+        <div className="absolute -left-32 -top-32 h-96 w-96 rounded-full bg-primary/10 blur-3xl" />
+        <div className="absolute -bottom-32 -right-32 h-96 w-96 rounded-full bg-primary/10 blur-3xl" />
       </div>
 
-      {/* Mobile loader */}
-      <div className="lg:hidden fixed bottom-4 left-1/2 -translate-x-1/2">
-        <Loader2 className="w-6 h-6 animate-spin" />
+      <div className="w-full max-w-md space-y-6">
+        <div className="flex flex-col items-center gap-3 text-center">
+          <span className="flex h-14 w-14 items-center justify-center rounded-2xl bg-primary text-primary-foreground shadow-sm">
+            <ShoppingBag className="h-7 w-7" />
+          </span>
+          <div className="space-y-1">
+            <h1 className="text-2xl font-bold tracking-tight">Creator Commerce</h1>
+            <p className="text-sm text-muted-foreground">
+              {isLogin
+                ? "Sign in to pick up where you left off"
+                : "Create an account and start shopping"}
+            </p>
+          </div>
+        </div>
+
+        {children}
+
+        <Button
+          variant="outline"
+          className="w-full"
+          nativeButton={false}
+          render={<Link href={AppPaths.DASHBOARD} />}
+        >
+          <Store className="mr-2 h-4 w-4" />
+          Continue browsing as guest
+        </Button>
+
+        <p className="text-center text-sm text-muted-foreground">
+          {isLogin ? "New to Creator Commerce? " : "Already have an account? "}
+          <Link
+            href={isLogin ? AppPaths.REGISTER : AppPaths.LOGIN}
+            className="font-medium text-foreground underline underline-offset-4 transition-colors hover:text-primary"
+          >
+            {isLogin ? "Create an account" : "Sign in"}
+          </Link>
+        </p>
+
+        <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2 text-xs text-muted-foreground">
+          {trustItems.map((item) => (
+            <span key={item.label} className="flex items-center gap-1.5">
+              <item.icon className="h-3.5 w-3.5" />
+              {item.label}
+            </span>
+          ))}
+        </div>
+
+        <p className="text-center text-xs text-muted-foreground">
+          By continuing, you agree to our{" "}
+          <Link
+            href="/terms"
+            className="underline underline-offset-4 hover:text-foreground"
+          >
+            Terms
+          </Link>{" "}
+          and{" "}
+          <Link
+            href="/privacy"
+            className="underline underline-offset-4 hover:text-foreground"
+          >
+            Privacy Policy
+          </Link>
+          .
+        </p>
       </div>
     </div>
   );

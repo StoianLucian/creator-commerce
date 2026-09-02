@@ -1,31 +1,26 @@
 import { NavBar } from '@/app/components/NavBar'
-import { cn } from '@/lib/utils'
-import React, { ReactNode } from 'react'
+import { ReactNode } from 'react'
 import TopBar from '../ui/top-bar'
 import { getSession } from '@/lib/session'
-import { email } from 'zod'
 
 async function AppLayout({ children }: { children: ReactNode }) {
-    // AuthGuard above guarantees a session here.
     const session = await getSession()
+    const isSignedIn = !!session
 
     const user = !session ? { name: "", email: "", username: null, image: null } : {
-        name: session!.user.displayUsername ?? session!.user.name,
-        email: session!.user.email,
-        username: session!.user.username ?? null,
-        image: session!.user.image ?? null,
+        name: session.user.displayUsername ?? session.user.name,
+        email: session.user.email,
+        username: session.user.username ?? null,
+        image: session.user.image ?? null,
     }
 
     return (
-        <div className={cn("flex flex-1")}>
-            <div>
-                <NavBar user={user} isSignedIn={!!session} />
-            </div>
-            <div className={cn("flex-col flex-1")}>
-                <TopBar />
-                <main>
-                    {children}
-                </main>
+        <div className="flex min-h-svh w-full bg-background">
+            <NavBar user={user} isSignedIn={isSignedIn} />
+
+            <div className="flex min-w-0 flex-1 flex-col">
+                <TopBar user={user} isSignedIn={isSignedIn} />
+                <main className="flex-1">{children}</main>
             </div>
         </div>
     )

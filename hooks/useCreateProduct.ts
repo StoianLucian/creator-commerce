@@ -11,16 +11,12 @@ export function useCreateProduct() {
     const queryClient = useQueryClient();
 
     return useMutation({
-        mutationFn: async (data: CreateProductInput) => {
-            const result = await createProduct(data);
+        mutationFn: (data: CreateProductInput) => createProduct(data),
 
-            return result;
-        },
-
-        onError: (error) => {
+        onError: () => {
             toast.error("Error creating the product!");
         },
-        onSuccess: (success) => {
+        onSuccess: () => {
             toast.success("Product created successfully!");
             queryClient.invalidateQueries({
                 queryKey: ["products"],
