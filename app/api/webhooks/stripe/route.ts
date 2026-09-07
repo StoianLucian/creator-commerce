@@ -1,6 +1,6 @@
 // app/api/webhooks/stripe/route.ts
 
-import { and, eq, sql } from "drizzle-orm";
+import { and, eq, inArray, sql } from "drizzle-orm";
 import { NextRequest, NextResponse } from "next/server";
 import type Stripe from "stripe";
 
@@ -8,6 +8,7 @@ import { db } from "@/src/db";
 import { order, orderItem } from "@/src/db/order-schema";
 import { product } from "@/src/db/product-schema";
 import { stripe } from "@/lib/stripe";
+import { sendOrderConfirmation, sendSellerSaleNotification } from "@/lib/email";
 
 const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
 
@@ -99,6 +100,77 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
             .update(product)
             .set({ sold: sql`${product.sold} + ${item.quantity}` })
             .where(eq(product.id, item.productId));
+    }
+
+    // Fire-and-forget transactional email, kept after the paid/sold updates
+    // above so an email hiccup can never undo the money-critical work.
+    await sendOrderEmails(updated, items);
+}
+
+/**
+ * Buyer receipt + one grouped notification per seller whose product sold.
+ * Nothing here throws: the email helpers swallow their own errors, and the
+ * seller lookup is wrapped defensively.
+ */
+async function sendOrderEmails(
+    ord: typeof order.$inferSelect,
+    items: (typeof orderItem.$inferSelect)[]
+) {
+    if (ord.buyerEmail) {
+        await sendOrderConfirmation({
+            to: ord.buyerEmail,
+            orderId: ord.id,
+            items,
+            subtotal: ord.subtotal,
+            currency: ord.currency,
+        });
+    }
+
+    try {
+        const productIds = items
+            .map((item) => item.productId)
+            .filter((id): id is number => id !== null);
+
+        if (productIds.length === 0) return;
+
+        const products = await db.query.product.findMany({
+            where: inArray(product.id, productIds),
+            with: {
+                owner: { columns: { id: true, name: true, email: true } },
+            },
+        });
+
+        const ownerByProduct = new Map(products.map((p) => [p.id, p.owner]));
+
+        // Group the order's items by the seller who owns each product.
+        const bySeller = new Map<
+            string,
+            { name: string; email: string; items: typeof items }
+        >();
+
+        for (const item of items) {
+            if (item.productId === null) continue;
+            const owner = ownerByProduct.get(item.productId);
+            if (!owner) continue;
+
+            const bucket =
+                bySeller.get(owner.id) ??
+                { name: owner.name, email: owner.email, items: [] };
+            bucket.items.push(item);
+            bySeller.set(owner.id, bucket);
+        }
+
+        for (const seller of bySeller.values()) {
+            await sendSellerSaleNotification({
+                to: seller.email,
+                sellerName: seller.name,
+                orderId: ord.id,
+                items: seller.items,
+                currency: ord.currency,
+            });
+        }
+    } catch (error) {
+        console.error("Failed to send seller notifications", error);
     }
 }
 
