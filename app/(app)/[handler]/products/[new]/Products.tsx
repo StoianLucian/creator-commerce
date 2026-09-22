@@ -9,12 +9,13 @@ import { useOwnProducts } from "@/hooks/useOwnProducts";
 function Products() {
     const { filters, setFilters, searchDebounce, resetFilters } = useUrlSearch();
 
-    const { sort, minPrice, maxPrice } = filters;
+    const { sort, minPrice, maxPrice, status } = filters;
     const { data: products = [], isPending, isError, error } = useOwnProducts({
         q: searchDebounce,
         sort,
         minPrice,
         maxPrice,
+        status,
     });
 
     if (isError) {
@@ -35,6 +36,7 @@ function Products() {
                 setFilters={setFilters}
                 resetFilters={resetFilters}
                 searchPlaceholder="Search your products..."
+                showStatus
             />
             <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
                 <ProductCardWrapper products={products} isPending={isPending} editable />

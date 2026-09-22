@@ -1,6 +1,6 @@
 "use server";
 
-import { eq } from "drizzle-orm";
+import { and, eq, isNull } from "drizzle-orm";
 import { z } from "zod";
 
 import { db } from "@/src/db";
@@ -51,7 +51,7 @@ export async function addToCart(input: {
         // Confirm the product exists before it lands in the cookie, so the
         // cart can't accumulate ids that will never resolve.
         const found = await db.query.product.findFirst({
-            where: eq(product.id, productId),
+            where: and(eq(product.id, productId), isNull(product.deleted_at)),
             columns: { id: true },
         });
 

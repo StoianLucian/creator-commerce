@@ -3,6 +3,7 @@ import { ArrowLeft, Pencil } from "lucide-react";
 
 import { buttonVariants } from "@/components/ui/button";
 import { AddToCartButton } from "@/components/cart/AddToCartButton";
+import { DeleteProductButton } from "@/components/products-page/DeleteProductButton";
 import { AppPaths, CreatorPaths } from "@/enums/AppPaths";
 import type { ProductDetail } from "@/lib/actions/products";
 import { priceFormatter } from "@/lib/format";
@@ -50,13 +51,22 @@ export function ShowProduct({
                     />
 
                     {isOwner && (
-                        <Link
-                            href={`${productsPath}/${product.id}/edit`}
-                            className={buttonVariants({ variant: "outline" })}
-                        >
-                            <Pencil className="h-4 w-4" />
-                            Edit Product
-                        </Link>
+                        <>
+                            <Link
+                                href={`${productsPath}/${product.id}/edit`}
+                                className={buttonVariants({ variant: "outline" })}
+                            >
+                                <Pencil className="h-4 w-4" />
+                                Edit Product
+                            </Link>
+
+                            <DeleteProductButton
+                                productId={product.id}
+                                productName={product.name}
+                                label="Delete Product"
+                                redirectTo={productsPath}
+                            />
+                        </>
                     )}
                 </div>
             </div>

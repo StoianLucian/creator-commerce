@@ -25,6 +25,9 @@ export const product = pgTable(
         price: integer().notNull(),
 
         created_at: timestamp().defaultNow(),
+        // Soft delete: non-null once the owner deletes the product. Kept so
+        // order history keeps resolving the product it was sold as.
+        deleted_at: timestamp(),
     },
     (table) => [
         index("products_owner_id_idx").on(table.ownerId),

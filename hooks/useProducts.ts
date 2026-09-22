@@ -3,6 +3,8 @@ import { getProducts, ProductWithRelations } from "@/lib/actions/products";
 
 export type ProductSort = "newest" | "price-asc" | "price-desc" | "most-sold";
 
+export type ProductStatusFilter = "all" | "active" | "draft" | "sold" | "deleted";
+
 export type Product = {
     id: number;
     name: string;
@@ -28,6 +30,7 @@ export type useProductsProps = {
     sort?: ProductSort,
     minPrice?: number,
     maxPrice?: number,
+    status?: ProductStatusFilter,
 }
 
 export function useProducts({ q, sort = "newest", minPrice, maxPrice }: useProductsProps) {

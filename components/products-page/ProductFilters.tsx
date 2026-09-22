@@ -15,13 +15,21 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import type { SearchFilters } from "@/hooks/use-url-search";
-import type { ProductSort } from "@/hooks/useProducts";
+import type { ProductSort, ProductStatusFilter } from "@/hooks/useProducts";
 
 const sortOptions: { value: ProductSort; label: string }[] = [
   { value: "newest", label: "Newest" },
   { value: "price-asc", label: "Price: Low to High" },
   { value: "price-desc", label: "Price: High to Low" },
   { value: "most-sold", label: "Most sold" },
+];
+
+const statusOptions: { value: ProductStatusFilter; label: string }[] = [
+  { value: "all", label: "All statuses" },
+  { value: "active", label: "Active" },
+  { value: "draft", label: "Draft" },
+  { value: "sold", label: "Sold" },
+  { value: "deleted", label: "Deleted" },
 ];
 
 interface PriceRange {
@@ -132,6 +140,7 @@ interface ProductFiltersProps {
   setFilters: Dispatch<SetStateAction<SearchFilters>>;
   resetFilters: () => void;
   searchPlaceholder?: string;
+  showStatus?: boolean;
 }
 
 export function ProductFilters({
@@ -139,11 +148,16 @@ export function ProductFilters({
   setFilters,
   resetFilters,
   searchPlaceholder = "Search products...",
+  showStatus = false,
 }: ProductFiltersProps) {
-  const { search, sort, minPrice, maxPrice } = filters;
+  const { search, sort, minPrice, maxPrice, status } = filters;
 
   const hasActiveFilters =
-    search !== "" || sort !== "newest" || minPrice != null || maxPrice != null;
+    search !== "" ||
+    sort !== "newest" ||
+    minPrice != null ||
+    maxPrice != null ||
+    (showStatus && status !== "all");
 
   return (
     <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
@@ -164,6 +178,28 @@ export function ProductFilters({
         maxPrice={maxPrice}
         onApply={(range) => setFilters((prev) => ({ ...prev, ...range }))}
       />
+
+      {showStatus && (
+        <Select
+          items={statusOptions}
+          value={status}
+          onValueChange={(value) =>
+            setFilters((prev) => ({ ...prev, status: value as ProductStatusFilter }))
+          }
+        >
+          <SelectTrigger className="h-10 w-full sm:w-44" aria-label="Filter by status">
+            <SelectValue placeholder="Status" />
+          </SelectTrigger>
+
+          <SelectContent>
+            {statusOptions.map((option) => (
+              <SelectItem key={option.value} value={option.value}>
+                {option.label}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      )}
 
       <Select
         items={sortOptions}

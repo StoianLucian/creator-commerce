@@ -3,7 +3,7 @@ import { db } from "@/src/db";
 import { product } from "@/src/db/product-schema";
 import { productImages } from "@/src/db/product-images-schema";
 import { user } from "@/src/db/auth-schema";
-import { eq, asc, desc, and, ilike, inArray, gte, lte } from "drizzle-orm";
+import { eq, asc, desc, and, ilike, inArray, gte, lte, isNull, isNotNull } from "drizzle-orm";
 
 import { revalidatePath } from "next/cache";
 import { CreateProductInput, createProductSchema } from "@/form-validations/products";
@@ -132,6 +132,43 @@ export async function updateProduct(id: number, data: CreateProductInput) {
     redirect(productsPath);
 }
 
+/**
+ * Soft-deletes a product by stamping `deleted_at`, scoped to the owner. The
+ * row stays in the table so past orders keep resolving it; every catalog
+ * query filters on `deleted_at IS NULL` to hide it going forward.
+ */
+export async function deleteProduct(id: number) {
+    try {
+        const session = await getSession();
+
+        if (!session?.user?.id) {
+            return { success: false, error: "Unauthorized" };
+        }
+
+        const [deleted] = await db
+            .update(product)
+            .set({ deleted_at: new Date() })
+            .where(
+                and(
+                    eq(product.id, id),
+                    eq(product.ownerId, session.user.id),
+                    isNull(product.deleted_at),
+                ),
+            )
+            .returning({ id: product.id });
+
+        if (!deleted) {
+            return { success: false, error: "Product not found" };
+        }
+
+        revalidatePath(CreatorPaths.products(session.user.username!));
+        return { success: true };
+    } catch (error) {
+        console.error(error);
+        return { success: false, error: "Something went wrong" };
+    }
+}
+
 export type ProductWithRelations = Awaited<ReturnType<typeof getProducts>>[number];
 
 export type ProductDetail = NonNullable<
@@ -154,6 +191,7 @@ export async function getProductByHandle(username: string, id: number) {
     const found = await db.query.product.findFirst({
         where: and(
             eq(product.id, id),
+            isNull(product.deleted_at),
             // Match on the owner's username rather than an id, so the handle
             // in the URL is what authorizes the read.
             inArray(
@@ -181,6 +219,7 @@ export async function getProducts({ q, sort, minPrice, maxPrice }: useProductsPr
     try {
         const conditions = [
             eq(product.status, "active"),
+            isNull(product.deleted_at),
             ilike(product.name, `%${q}%`),
         ];
 
@@ -210,7 +249,7 @@ export async function getProducts({ q, sort, minPrice, maxPrice }: useProductsPr
 
 }
 
-export async function getOwnnProducts({ q, sort, minPrice, maxPrice }: useProductsProps) {
+export async function getOwnnProducts({ q, sort, minPrice, maxPrice, status = "all" }: useProductsProps) {
 
     try {
         const session = await getSession();
@@ -219,10 +258,21 @@ export async function getOwnnProducts({ q, sort, minPrice, maxPrice }: useProduc
             throw new Error("Unauthorized");
         }
 
+        // Deleted products stay visible in the owner's own list (marked as
+        // deleted in the UI); only the public catalog filters them out.
         const conditions = [
             eq(product.ownerId, session.user.id),
             ilike(product.name, `%${q}%`),
         ];
+
+        // "deleted" is soft-delete state, not a status column value; the live
+        // statuses (active/draft/sold) implicitly exclude deleted rows.
+        if (status === "deleted") {
+            conditions.push(isNotNull(product.deleted_at));
+        } else if (status !== "all") {
+            conditions.push(eq(product.status, status));
+            conditions.push(isNull(product.deleted_at));
+        }
 
         if (minPrice != null) {
             conditions.push(gte(product.price, minPrice));
