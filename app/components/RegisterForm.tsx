@@ -32,7 +32,6 @@ export function RegisterForm() {
   });
 
   async function onSubmit(data: RegisterFormData) {
-    console.log("test");
     setLoading(true);
     setError(null);
 
@@ -46,7 +45,7 @@ export function RegisterForm() {
     });
 
     setLoading(false);
-    console.log(result);
+
     if (result.error) {
       setError(result.error.message ?? "Could not create your account");
       return;
