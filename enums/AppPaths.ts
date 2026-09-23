@@ -6,11 +6,12 @@ export const AppPaths = {
     HOME: "/",
     DASHBOARD: "/dashboard",
     ORDERS: "/orders",
-    SALES: "/sales"
+    SALES: "/sales",
+    TEST: "/test"
 }
 
 /** Paths under `/[handler]`, scoped to a creator's username. */
-export const CreatorPaths = {
+export const CreatorPaths = { 
     products: (username: string) => `/${toHandle(username)}/products`,
     productsNew: (username: string) => `/${toHandle(username)}/products/new`,
     product: (username: string, id: number | string, slug: string) =>
