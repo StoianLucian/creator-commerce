@@ -20,8 +20,15 @@ import {
   SidebarMenuItem,
   SidebarMenuButton
 } from "@/components/ui/sidebar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { AppPaths, CreatorPaths } from "@/enums/AppPaths";
 import { toHandle } from "@/lib/handle";
+
+function initialsOf(name: string) {
+  const parts = name.trim().split(/\s+/).filter(Boolean);
+  if (parts.length === 0) return "";
+  return parts.slice(0, 2).map((part) => part[0]).join("").toUpperCase();
+}
 
 interface NavBarProps {
   user: {
@@ -61,9 +68,13 @@ export const NavBar = ({ user, isSignedIn }: NavBarProps) => {
           <SidebarGroup>
             <SidebarGroupLabel>NEXT APP</SidebarGroupLabel>
             <div className="flex items-center gap-2 p-1">
-              <div className="flex flex-col">
-                <span className="text-sm font-medium">{user.name}</span>
-                <span className="text-xs text-muted-foreground">
+              <Avatar className="h-8 w-8">
+                <AvatarImage src={user.image ?? undefined} alt={user.name} />
+                <AvatarFallback>{initialsOf(user.name) || "U"}</AvatarFallback>
+              </Avatar>
+              <div className="flex min-w-0 flex-col">
+                <span className="truncate text-sm font-medium">{user.name}</span>
+                <span className="truncate text-xs text-muted-foreground">
                   {user.username ? toHandle(user.username) : user.email}
                 </span>
               </div>

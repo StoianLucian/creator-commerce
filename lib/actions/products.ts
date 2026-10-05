@@ -214,7 +214,7 @@ export async function getProductByHandle(username: string, id: number) {
     return found ?? null;
 }
 
-export async function getProducts({ q, sort, minPrice, maxPrice }: useProductsProps) {
+export async function getProducts({ q, sort, minPrice, maxPrice, categoryId }: useProductsProps) {
 
     try {
         const conditions = [
@@ -223,6 +223,9 @@ export async function getProducts({ q, sort, minPrice, maxPrice }: useProductsPr
             ilike(product.name, `%${q}%`),
         ];
 
+        if (categoryId != null) {
+            conditions.push(eq(product.categoryId, categoryId));
+        }
         if (minPrice != null) {
             conditions.push(gte(product.price, minPrice));
         }
@@ -249,7 +252,7 @@ export async function getProducts({ q, sort, minPrice, maxPrice }: useProductsPr
 
 }
 
-export async function getOwnnProducts({ q, sort, minPrice, maxPrice, status = "all" }: useProductsProps) {
+export async function getOwnnProducts({ q, sort, minPrice, maxPrice, status = "all", categoryId }: useProductsProps) {
 
     try {
         const session = await getSession();
@@ -274,6 +277,9 @@ export async function getOwnnProducts({ q, sort, minPrice, maxPrice, status = "a
             conditions.push(isNull(product.deleted_at));
         }
 
+        if (categoryId != null) {
+            conditions.push(eq(product.categoryId, categoryId));
+        }
         if (minPrice != null) {
             conditions.push(gte(product.price, minPrice));
         }

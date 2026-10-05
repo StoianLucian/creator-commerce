@@ -27,6 +27,10 @@ interface DeleteProductButtonProps {
      * page, which 404s once the product is soft-deleted.
      */
     redirectTo?: string;
+    /** Trigger button styling; defaults keep the standalone destructive look. */
+    variant?: React.ComponentProps<typeof Button>["variant"];
+    size?: React.ComponentProps<typeof Button>["size"];
+    className?: string;
 }
 
 export function DeleteProductButton({
@@ -34,6 +38,9 @@ export function DeleteProductButton({
     productName,
     label,
     redirectTo,
+    variant = "destructive",
+    size,
+    className,
 }: DeleteProductButtonProps) {
     const deleteProduct = useDeleteProduct();
     const router = useRouter();
@@ -51,7 +58,13 @@ export function DeleteProductButton({
     return (
         <AlertDialog>
             <AlertDialogTrigger
-                render={<Button variant="destructive" size={label ? "default" : "sm"} />}
+                render={
+                    <Button
+                        variant={variant}
+                        size={size ?? (label ? "default" : "sm")}
+                        className={className}
+                    />
+                }
                 disabled={deleteProduct.isPending}
                 aria-label={`Delete ${productName}`}
             >

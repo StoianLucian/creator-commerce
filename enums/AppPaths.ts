@@ -3,6 +3,7 @@ import { toHandle } from "@/lib/handle";
 export const AppPaths = {
     LOGIN: "/login",
     REGISTER: "/register",
+    EMAIL_VERIFIED: "/email-verified",
     HOME: "/",
     DASHBOARD: "/dashboard",
     ORDERS: "/orders",

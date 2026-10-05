@@ -31,12 +31,13 @@ export type useProductsProps = {
     minPrice?: number,
     maxPrice?: number,
     status?: ProductStatusFilter,
+    categoryId?: number,
 }
 
-export function useProducts({ q, sort = "newest", minPrice, maxPrice }: useProductsProps) {
+export function useProducts({ q, sort = "newest", minPrice, maxPrice, categoryId }: useProductsProps) {
     return useQuery<ProductWithRelations[], Error>({
-        queryKey: ["products", q, sort, minPrice, maxPrice],
+        queryKey: ["products", q, sort, minPrice, maxPrice, categoryId],
         queryFn: async (): Promise<ProductWithRelations[]> =>
-            await getProducts({ q, sort, minPrice, maxPrice })
+            await getProducts({ q, sort, minPrice, maxPrice, categoryId })
     });
 }

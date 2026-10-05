@@ -42,6 +42,12 @@ export function LoginForm() {
     setLoading(false)
 
     if (result.error) {
+      // Sign-in is blocked until the address is verified; point the user at
+      // the link we emailed rather than showing a generic credentials error.
+      if (result.error.code === "EMAIL_NOT_VERIFIED") {
+        setError("Please verify your email before signing in — check your inbox for the verification link.")
+        return
+      }
       setError(result.error.message ?? "Invalid username or password")
       return
     }

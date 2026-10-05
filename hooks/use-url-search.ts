@@ -9,6 +9,7 @@ const SORT_PARAM = "sort";
 const MIN_PARAM = "minPrice";
 const MAX_PARAM = "maxPrice";
 const STATUS_PARAM = "status";
+const CATEGORY_PARAM = "category";
 
 export type SearchFilters = {
     search: string;
@@ -16,12 +17,19 @@ export type SearchFilters = {
     minPrice?: number;
     maxPrice?: number;
     status: ProductStatusFilter;
+    categoryId?: number;
 };
 
 function parsePriceParam(value: string | null) {
     if (!value) return undefined;
     const parsed = Number(value);
     return Number.isFinite(parsed) && parsed >= 0 ? parsed : undefined;
+}
+
+function parseCategoryParam(value: string | null) {
+    if (!value) return undefined;
+    const parsed = Number(value);
+    return Number.isInteger(parsed) && parsed > 0 ? parsed : undefined;
 }
 
 export function useUrlSearch(
@@ -38,6 +46,7 @@ export function useUrlSearch(
         minPrice: parsePriceParam(searchParams.get(MIN_PARAM)),
         maxPrice: parsePriceParam(searchParams.get(MAX_PARAM)),
         status: (searchParams.get(STATUS_PARAM) as ProductStatusFilter) ?? DEFAULT_STATUS,
+        categoryId: parseCategoryParam(searchParams.get(CATEGORY_PARAM)),
     });
 
     const searchDebounce = useDebounce(filters.search, debounceMs);
@@ -50,19 +59,22 @@ export function useUrlSearch(
         const currentMax = searchParams.get(MAX_PARAM) ?? "";
         const currentStatus =
             (searchParams.get(STATUS_PARAM) as ProductStatusFilter) ?? DEFAULT_STATUS;
+        const currentCategory = searchParams.get(CATEGORY_PARAM) ?? "";
 
         const nextQuery = searchDebounce.trim();
         const nextSort = filters.sort;
         const nextMin = filters.minPrice != null ? String(filters.minPrice) : "";
         const nextMax = filters.maxPrice != null ? String(filters.maxPrice) : "";
         const nextStatus = filters.status;
+        const nextCategory = filters.categoryId != null ? String(filters.categoryId) : "";
 
         if (
             currentQuery === nextQuery &&
             currentSort === nextSort &&
             currentMin === nextMin &&
             currentMax === nextMax &&
-            currentStatus === nextStatus
+            currentStatus === nextStatus &&
+            currentCategory === nextCategory
         ) {
             return;
         }
@@ -99,6 +111,12 @@ export function useUrlSearch(
             params.delete(STATUS_PARAM);
         }
 
+        if (nextCategory) {
+            params.set(CATEGORY_PARAM, nextCategory);
+        } else {
+            params.delete(CATEGORY_PARAM);
+        }
+
         router.replace(`${pathname}?${params.toString()}`, {
             scroll: false,
         });
@@ -108,6 +126,7 @@ export function useUrlSearch(
         filters.minPrice,
         filters.maxPrice,
         filters.status,
+        filters.categoryId,
         searchParams,
         router,
         pathname,
@@ -121,6 +140,7 @@ export function useUrlSearch(
             minPrice: undefined,
             maxPrice: undefined,
             status: DEFAULT_STATUS,
+            categoryId: undefined,
         });
 
     return {

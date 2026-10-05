@@ -10,16 +10,18 @@ import { z } from "zod";
 import { TogglePasswordInput } from "@/app/components/InputComponent";
 import { registerSchema } from "@/form-validations/auth";
 import { authClient } from "@/lib/auth-client";
-import { useRouter } from "next/navigation";
 import { AppPaths } from "@/enums/AppPaths";
 import { useState } from "react";
+import { toast } from "sonner";
 
 type RegisterFormData = z.infer<typeof registerSchema>;
 
 export function RegisterForm() {
-  const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  // Set once sign-up succeeds: email verification is required, so there's no
+  // session yet — we ask the user to check their inbox instead of redirecting.
+  const [verifyEmail, setVerifyEmail] = useState<string | null>(null);
 
   const { control, handleSubmit } = useForm<RegisterFormData>({
     resolver: zodResolver(registerSchema),
@@ -42,6 +44,7 @@ export function RegisterForm() {
       username,
       email,
       password,
+      callbackURL: AppPaths.EMAIL_VERIFIED,
     });
 
     setLoading(false);
@@ -51,7 +54,23 @@ export function RegisterForm() {
       return;
     }
 
-    router.push(AppPaths.LOGIN);
+    toast.success(`Verification email sent to ${email}`);
+    setVerifyEmail(email);
+  }
+
+  if (verifyEmail) {
+    return (
+      <Card className="w-full shadow-sm">
+        <CardHeader className="gap-1.5">
+          <CardTitle className="text-xl">Check your inbox</CardTitle>
+          <p className="text-sm text-muted-foreground">
+            We sent a verification link to{" "}
+            <span className="font-medium text-foreground">{verifyEmail}</span>.
+            Click it to activate your account, then sign in.
+          </p>
+        </CardHeader>
+      </Card>
+    );
   }
 
   return (

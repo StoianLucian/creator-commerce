@@ -2,11 +2,11 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Package, Pencil } from "lucide-react";
+import { Eye, ImageIcon, Pencil } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card } from "@/components/ui/card";
 import { AddToCartButton } from "@/components/cart/AddToCartButton";
 import { DeleteProductButton } from "@/components/products-page/DeleteProductButton";
 import { CreatorPaths } from "@/enums/AppPaths";
@@ -14,6 +14,8 @@ import type { ProductWithRelations } from "@/lib/actions/products";
 import { priceFormatter } from "@/lib/format";
 import { cn } from "@/lib/utils";
 
+// The app's palette is monochrome, so status is conveyed by badge variant
+// (solid = active, outline = draft, muted = sold) rather than hue.
 const statusVariant = {
     draft: "outline",
     active: "default",
@@ -28,121 +30,141 @@ interface ProductCardProps {
 export function ProductCard({ product, editable }: ProductCardProps) {
     const router = useRouter();
 
-    const variant =
-        statusVariant[product.status as keyof typeof statusVariant] ?? "outline";
-
     const coverImage = product.images[0];
     const isDeleted = Boolean(product.deleted_at);
 
+    const badgeVariant = isDeleted
+        ? "destructive"
+        : statusVariant[product.status as keyof typeof statusVariant] ?? "outline";
+
+    // Active is the one status that gets a color accent (green) — everything
+    // else stays on the monochrome palette.
+    const isActive = !isDeleted && product.status === "active";
+
+    const detailHref = CreatorPaths.product(
+        product.owner.username ?? "",
+        product.id,
+        product.slug,
+    );
+
     const card = (
-            <Card
-                className={cn(
-                    "h-full shadow-sm transition-all",
-                    isDeleted
-                        ? "opacity-60"
-                        : "group-hover:border-primary/40 group-hover:shadow-md",
+        <Card
+            className={cn(
+                "group/card relative h-full gap-3 p-3 transition-all",
+                isDeleted
+                    ? "opacity-60"
+                    : "group-hover:shadow-md group-hover:ring-foreground/20",
+            )}
+        >
+            {/* Inset media with a rounded frame and the status badge overlaid. */}
+            <div className="relative aspect-[4/3] w-full overflow-hidden rounded-lg bg-muted">
+                {coverImage ? (
+                    <img
+                        src={coverImage.imageUrl}
+                        alt={product.name}
+                        className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                    />
+                ) : (
+                    <div className="flex h-full w-full items-center justify-center">
+                        <ImageIcon className="h-8 w-8 text-muted-foreground/50" />
+                    </div>
                 )}
-            >
-                <CardHeader>
-                    <div className="flex items-start justify-between gap-3">
-                        <div className="min-w-0 space-y-1">
-                            <CardTitle className="truncate text-lg">
-                                {product.name}
-                            </CardTitle>
 
-                            <p className="text-sm text-muted-foreground">
-                                {product.sold} sold
-                            </p>
-                        </div>
-
-                        {isDeleted ? (
-                            <Badge variant="destructive">Deleted</Badge>
-                        ) : (
-                            <Badge variant={variant} className="capitalize">
-                                {product.status}
-                            </Badge>
+                <div className="absolute right-2 top-2">
+                    <Badge
+                        variant={badgeVariant}
+                        className={cn(
+                            "capitalize shadow-sm",
+                            // Outline is transparent, so back it for legibility
+                            // over the product image.
+                            badgeVariant === "outline" &&
+                                "bg-background/80 backdrop-blur-sm",
                         )}
-                    </div>
-                </CardHeader>
+                    >
+                        {isDeleted ? "Deleted" : product.status}
+                    </Badge>
+                </div>
+            </div>
 
-                <CardContent className="space-y-6">
-                    {coverImage ? (
-                        <img
-                            src={coverImage.imageUrl}
-                            alt={product.name}
-                            className="aspect-video w-full rounded-lg border object-cover"
-                        />
-                    ) : (
-                        <div className="flex aspect-video w-full items-center justify-center rounded-lg border bg-muted">
-                            <Package className="h-6 w-6 text-muted-foreground" />
-                        </div>
-                    )}
+            {/* Title + short description. */}
+            <div className="flex flex-1 flex-col gap-1">
+                <h3 className="truncate font-medium leading-snug">{product.name}</h3>
+                <p className="truncate text-sm text-muted-foreground">
+                    {product.description || "No description yet"}
+                </p>
+            </div>
 
-                    {product.description ? (
-                        <p className="line-clamp-2 text-sm text-muted-foreground">
-                            {product.description}
-                        </p>
-                    ) : (
-                        <p className="flex items-center gap-2 text-sm text-muted-foreground">
-                            <Package className="h-4 w-4" />
-                            No description yet
-                        </p>
-                    )}
+            {/* Price and units sold. */}
+            <div className="flex items-baseline justify-between gap-2">
+                <span className="text-lg font-semibold tabular-nums">
+                    {priceFormatter.format(product.price)}
+                </span>
+                <span className="text-sm text-muted-foreground">
+                    {product.sold} sold
+                </span>
+            </div>
 
-                    <div className="flex items-center justify-between gap-3">
-                        <span className="text-2xl font-semibold tabular-nums">
-                            {priceFormatter.format(product.price)}
-                        </span>
-
-                        {/*
-                          * The whole card is a link, so keep the button's
-                          * click from bubbling up into a navigation. Deleted
-                          * products have no actions.
-                          */}
-                        {!isDeleted && (
-                            <div
-                                className="flex items-center gap-2"
-                                onClick={(event) => {
-                                    event.preventDefault();
-                                    event.stopPropagation();
-                                }}
+            {/*
+              * The whole card is a link, so keep clicks on the action row from
+              * bubbling up into a navigation. Deleted products have no actions.
+              */}
+            {!isDeleted && (
+                <div
+                    className="grid grid-cols-3 gap-2"
+                    onClick={(event) => {
+                        event.preventDefault();
+                        event.stopPropagation();
+                    }}
+                >
+                    {editable ? (
+                        <>
+                            <Button
+                                variant="outline"
+                                size="sm"
+                                className="w-full"
+                                onClick={() =>
+                                    router.push(
+                                        CreatorPaths.productEdit(
+                                            product.owner.username ?? "",
+                                            product.id,
+                                        ),
+                                    )
+                                }
                             >
-                                {editable && (
-                                    <Button
-                                        variant="outline"
-                                        size="sm"
-                                        onClick={() =>
-                                            router.push(
-                                                CreatorPaths.productEdit(
-                                                    product.owner.username ?? "",
-                                                    product.id,
-                                                ),
-                                            )
-                                        }
-                                    >
-                                        <Pencil className="h-4 w-4" />
-                                        Edit
-                                    </Button>
-                                )}
+                                <Pencil className="h-4 w-4" />
+                                Edit
+                            </Button>
 
-                                {editable && (
-                                    <DeleteProductButton
-                                        productId={product.id}
-                                        productName={product.name}
-                                    />
-                                )}
+                            <DeleteProductButton
+                                productId={product.id}
+                                productName={product.name}
+                                label="Delete"
+                                variant="outline"
+                                size="sm"
+                                className="w-full"
+                            />
 
-                                <AddToCartButton
-                                    productId={product.id}
-                                    productName={product.name}
-                                    size="sm"
-                                    variant="outline"
-                                />
-                            </div>
-                        )}
-                    </div>
-                </CardContent>
-            </Card>
+                            <Button
+                                variant="outline"
+                                size="sm"
+                                className="w-full"
+                                onClick={() => router.push(detailHref)}
+                            >
+                                <Eye className="h-4 w-4" />
+                                View
+                            </Button>
+                        </>
+                    ) : (
+                        <AddToCartButton
+                            productId={product.id}
+                            productName={product.name}
+                            size="sm"
+                            className="col-span-3 w-full"
+                        />
+                    )}
+                </div>
+            )}
+        </Card>
     );
 
     // A deleted product's detail page 404s, so drop the link and just show
@@ -153,11 +175,7 @@ export function ProductCard({ product, editable }: ProductCardProps) {
 
     return (
         <Link
-            href={CreatorPaths.product(
-                product.owner.username ?? "",
-                product.id,
-                product.slug,
-            )}
+            href={detailHref}
             className="group block rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
         >
             {card}

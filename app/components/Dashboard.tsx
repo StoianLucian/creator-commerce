@@ -8,13 +8,14 @@ import { cn } from '@/lib/utils';
 
 function Dashboard() {
   const { filters, setFilters, searchDebounce, resetFilters } = useUrlSearch();
-  const { sort, minPrice, maxPrice } = filters;
+  const { sort, minPrice, maxPrice, categoryId } = filters;
 
   const { data: products = [], isPending } = useProducts({
     q: searchDebounce,
     sort,
     minPrice,
     maxPrice,
+    categoryId,
   });
 
   return (
@@ -26,7 +27,7 @@ function Dashboard() {
           resetFilters={resetFilters}
         />
 
-        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           <ProductCardWrapper products={products} isPending={isPending} />
         </div>
       </div>

@@ -79,6 +79,34 @@ async function send(args: {
     }
 }
 
+/**
+ * Account email-verification link, sent by Better Auth's `emailVerification`
+ * hook on sign-up. `url` is Better Auth's `/api/auth/verify-email?token=...`
+ * endpoint — clicking it marks the address verified and redirects to the
+ * callback. escapeHtml doubles as attribute encoding (it escapes `&` and `"`),
+ * so it's safe in both the href and the visible fallback link.
+ */
+export async function sendVerificationEmail(args: {
+    to: string;
+    url: string;
+}): Promise<void> {
+    const { to, url } = args;
+    const safeUrl = escapeHtml(url);
+
+    const html = layout(
+        "Verify your email",
+        `
+        <p>Welcome to Creator Commerce! Confirm your email address to activate your account.</p>
+        <p style="margin:24px 0;">
+            <a href="${safeUrl}" style="display:inline-block;background:#111;color:#fff;text-decoration:none;padding:12px 20px;border-radius:8px;font-size:14px;">Verify email</a>
+        </p>
+        <p style="font-size:12px;color:#888;">If the button doesn't work, paste this link into your browser:<br>${safeUrl}</p>
+        <p style="font-size:12px;color:#888;">If you didn't create this account, you can safely ignore this email.</p>`
+    );
+
+    await send({ to, subject: "Verify your email", html });
+}
+
 /** Amounts are stored in cents (Stripe's unit); render them as money. */
 function money(cents: number, currency: string): string {
     return new Intl.NumberFormat("en-US", {
