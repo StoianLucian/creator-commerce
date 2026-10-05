@@ -56,7 +56,7 @@ export function TopBar({ className, user, isSignedIn }: TopBarProps) {
         </Link>
 
         <div className="flex flex-1 items-center justify-end gap-2">
-          <CartSheet />
+          <CartSheet isSignedIn={isSignedIn} />
 
           {isSignedIn && user ? (
             <DropdownMenu>

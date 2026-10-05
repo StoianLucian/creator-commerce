@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { AddToCartButton } from "@/components/cart/AddToCartButton";
+import { WishlistButton } from "@/components/wishlist/WishlistButton";
 import { DeleteProductButton } from "@/components/products-page/DeleteProductButton";
 import { CreatorPaths } from "@/enums/AppPaths";
 import type { ProductWithRelations } from "@/lib/actions/products";
@@ -67,6 +68,24 @@ export function ProductCard({ product, editable }: ProductCardProps) {
                 ) : (
                     <div className="flex h-full w-full items-center justify-center">
                         <ImageIcon className="h-8 w-8 text-muted-foreground/50" />
+                    </div>
+                )}
+
+                {/*
+                  * Wishlist heart, shown only when browsing other people's
+                  * products (Explore, detail, the wishlist page) — not in the
+                  * owner's own editable list. Overlaid opposite the status
+                  * badge; its own handler stops the card's link navigation.
+                  */}
+                {!editable && !isDeleted && (
+                    <div className="absolute left-2 top-2">
+                        <WishlistButton
+                            productId={product.id}
+                            productName={product.name}
+                            size="icon-sm"
+                            variant="secondary"
+                            className="rounded-full bg-background/80 shadow-sm backdrop-blur-sm"
+                        />
                     </div>
                 )}
 

@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Loader2, ShoppingCart } from "lucide-react";
+import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -24,9 +25,9 @@ import { CartLineItem } from "./CartLineItem";
  * Cart trigger plus the slide-over panel that shows its contents.
  *
  * Lives in the top bar. The cart itself is a cookie, so this works for
- * signed-out visitors too.
+ * signed-out visitors too — but checkout is locked behind authentication.
  */
-export function CartSheet() {
+export function CartSheet({ isSignedIn = false }: { isSignedIn?: boolean }) {
     const [open, setOpen] = useState(false);
 
     const { data: cart, isPending, isError, error } = useCart();
@@ -124,7 +125,15 @@ export function CartSheet() {
                             size="lg"
                             className="w-full justify-center"
                             disabled={checkout.isPending}
-                            onClick={() => checkout.mutate()}
+                            onClick={() => {
+                                if (!isSignedIn) {
+                                    toast.error(
+                                        "Please log in to make purchases"
+                                    );
+                                    return;
+                                }
+                                checkout.mutate();
+                            }}
                         >
                             {checkout.isPending ? (
                                 <Loader2 className="h-4 w-4 animate-spin" />

@@ -6,6 +6,7 @@ export const AppPaths = {
     EMAIL_VERIFIED: "/email-verified",
     HOME: "/",
     DASHBOARD: "/dashboard",
+    WISHLIST: "/wishlist",
     ORDERS: "/orders",
     SALES: "/sales"
 }

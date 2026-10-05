@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
+  Heart,
   LayoutDashboard,
   Package,
   Receipt,
@@ -57,6 +58,7 @@ export const NavBar = ({ user, isSignedIn }: NavBarProps) => {
 
   const guestItems = [
     { name: "Explore", href: AppPaths.DASHBOARD, icon: LayoutDashboard },
+    { name: "Wishlist", href: AppPaths.WISHLIST, icon: Heart },
   ]
 
   return (

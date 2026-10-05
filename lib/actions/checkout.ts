@@ -30,6 +30,12 @@ export async function createCheckoutSession(): Promise<CheckoutResult> {
 
     const session = await getSession();
 
+    // Checkout is locked behind authentication — the button is hidden for
+    // signed-out visitors, but this is the authoritative guard.
+    if (!session?.user?.id) {
+        return { success: false, error: "Please log in to check out" };
+    }
+
     let orderId: number;
 
     try {

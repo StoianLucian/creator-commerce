@@ -3,7 +3,7 @@ import { db } from "@/src/db";
 import { product } from "@/src/db/product-schema";
 import { productImages } from "@/src/db/product-images-schema";
 import { user } from "@/src/db/auth-schema";
-import { eq, asc, desc, and, ilike, inArray, gte, lte, isNull, isNotNull } from "drizzle-orm";
+import { eq, and, ilike, inArray, gte, lte, isNull, isNotNull } from "drizzle-orm";
 
 import { revalidatePath } from "next/cache";
 import { CreateProductInput, createProductSchema } from "@/form-validations/products";
@@ -11,20 +11,8 @@ import slugify from "slugify";
 import { redirect } from "next/navigation";
 import { CreatorPaths } from "@/enums/AppPaths";
 import { getSession } from "../session";
-import { useProductsProps, ProductSort } from "@/hooks/useProducts";
-
-function productOrderBy(sort: ProductSort = "newest") {
-    switch (sort) {
-        case "price-asc":
-            return asc(product.price);
-        case "price-desc":
-            return desc(product.price);
-        case "most-sold":
-            return desc(product.sold);
-        default:
-            return desc(product.created_at);
-    }
-}
+import { useProductsProps } from "@/hooks/useProducts";
+import { productOrderBy } from "@/lib/products/sort";
 
 export async function createProduct(data: CreateProductInput) {
 
