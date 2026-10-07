@@ -45,12 +45,7 @@ export function ShowProduct({
                 </Link>
 
                 <div className="flex items-center gap-2">
-                    <AddToCartButton
-                        productId={product.id}
-                        productName={product.name}
-                    />
-
-                    {isOwner && (
+                    {isOwner ? (
                         <>
                             <Link
                                 href={`${productsPath}/${product.id}/edit`}
@@ -67,6 +62,11 @@ export function ShowProduct({
                                 redirectTo={productsPath}
                             />
                         </>
+                    ) : (
+                        <AddToCartButton
+                            productId={product.id}
+                            productName={product.name}
+                        />
                     )}
                 </div>
             </div>

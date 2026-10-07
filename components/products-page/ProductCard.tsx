@@ -10,7 +10,7 @@ import { Card } from "@/components/ui/card";
 import { AddToCartButton } from "@/components/cart/AddToCartButton";
 import { WishlistButton } from "@/components/wishlist/WishlistButton";
 import { DeleteProductButton } from "@/components/products-page/DeleteProductButton";
-import { CreatorPaths } from "@/enums/AppPaths";
+import { CreatorPaths, DashboardPaths } from "@/enums/AppPaths";
 import type { ProductWithRelations } from "@/lib/actions/products";
 import { priceFormatter } from "@/lib/format";
 import { cn } from "@/lib/utils";
@@ -42,11 +42,11 @@ export function ProductCard({ product, editable }: ProductCardProps) {
     // else stays on the monochrome palette.
     const isActive = !isDeleted && product.status === "active";
 
-    const detailHref = CreatorPaths.product(
-        product.owner.username ?? "",
-        product.id,
-        product.slug,
-    );
+    // Owner cards (editable) link to the management detail; everyone else goes
+    // to the buyer-facing Explore detail with Add to Cart.
+    const detailHref = editable
+        ? CreatorPaths.product(product.owner.username ?? "", product.id, product.slug)
+        : DashboardPaths.product(product.owner.username ?? "", product.id, product.slug);
 
     const card = (
         <Card
