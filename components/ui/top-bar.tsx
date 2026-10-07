@@ -88,7 +88,9 @@ export function TopBar({ className, user, isSignedIn }: TopBarProps) {
 
                 <DropdownMenuSeparator />
 
-                <DropdownMenuItem>
+                <DropdownMenuItem
+                  render={<Link href={AppPaths.SETTINGS} />}
+                >
                   <SettingsIcon className="mr-2 h-4 w-4" />
                   Settings
                 </DropdownMenuItem>

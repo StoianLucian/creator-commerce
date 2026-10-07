@@ -8,6 +8,13 @@ import { useUrlSearch } from "@/hooks/use-url-search";
 import ProductCardWrapper from "@/components/products-page/ProductCardWrapper";
 import { ProductFilters } from "@/components/products-page/ProductFilters";
 import { Button } from "@/components/ui/button";
+import {
+  Empty,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyMedia,
+  EmptyTitle,
+} from "@/components/ui/empty";
 import { AppPaths } from "@/enums/AppPaths";
 
 function Wishlist() {
@@ -41,14 +48,17 @@ function Wishlist() {
       </div>
 
       {isWishlistEmpty ? (
-        <div className="flex flex-col items-center justify-center gap-3 rounded-xl border border-dashed py-16 text-center">
-          <Heart className="h-8 w-8 text-muted-foreground/50" />
-          <div className="space-y-1">
-            <p className="font-medium">Your wishlist is empty</p>
-            <p className="text-sm text-muted-foreground">
+        <Empty>
+          <EmptyHeader>
+            <EmptyMedia variant="icon">
+              <Heart />
+            </EmptyMedia>
+            <EmptyTitle>Your wishlist is empty</EmptyTitle>
+            <EmptyDescription>
               Tap the heart on any product to save it here.
-            </p>
-          </div>
+            </EmptyDescription>
+          </EmptyHeader>
+
           <Button
             render={<Link href={AppPaths.DASHBOARD} />}
             nativeButton={false}
@@ -57,7 +67,7 @@ function Wishlist() {
           >
             Explore products
           </Button>
-        </div>
+        </Empty>
       ) : (
         <div className="flex flex-col gap-4">
           <ProductFilters
@@ -68,18 +78,21 @@ function Wishlist() {
           />
 
           {noMatches ? (
-            <div className="flex flex-col items-center justify-center gap-3 rounded-xl border border-dashed py-16 text-center">
-              <SearchX className="h-8 w-8 text-muted-foreground/50" />
-              <div className="space-y-1">
-                <p className="font-medium">No saved products match your filters</p>
-                <p className="text-sm text-muted-foreground">
+            <Empty>
+              <EmptyHeader>
+                <EmptyMedia variant="icon">
+                  <SearchX />
+                </EmptyMedia>
+                <EmptyTitle>No saved products match your filters</EmptyTitle>
+                <EmptyDescription>
                   Try adjusting or resetting your filters.
-                </p>
-              </div>
+                </EmptyDescription>
+              </EmptyHeader>
+
               <Button variant="outline" size="sm" onClick={resetFilters}>
                 Reset filters
               </Button>
-            </div>
+            </Empty>
           ) : (
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
               <ProductCardWrapper products={products} isPending={isPending} />

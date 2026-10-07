@@ -9,6 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { z } from "zod";
 import { TogglePasswordInput } from "@/app/components/InputComponent";
 import { AppPaths } from "@/enums/AppPaths";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { loginSchema } from "@/form-validations/auth";
 import { authClient } from "@/lib/auth-client";
@@ -93,9 +94,17 @@ export function LoginForm() {
             name="password"
             render={({ field, fieldState: { error } }) => (
               <div className="space-y-2">
-                <label htmlFor="password" className="text-sm font-medium leading-none">
-                  Password
-                </label>
+                <div className="flex items-center justify-between">
+                  <label htmlFor="password" className="text-sm font-medium leading-none">
+                    Password
+                  </label>
+                  <Link
+                    href={AppPaths.FORGOT_PASSWORD}
+                    className="text-sm font-medium text-muted-foreground underline underline-offset-4 transition-colors hover:text-primary"
+                  >
+                    Forgot password?
+                  </Link>
+                </div>
                 <TogglePasswordInput
                   id="password"
                   type="password"

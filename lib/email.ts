@@ -107,6 +107,65 @@ export async function sendVerificationEmail(args: {
     await send({ to, subject: "Verify your email", html });
 }
 
+/**
+ * Password-reset link, sent by Better Auth's `emailAndPassword.sendResetPassword`
+ * hook. `url` is Better Auth's `/api/auth/reset-password/:token` endpoint —
+ * clicking it validates the token and redirects to our reset page with the
+ * token in the query string. escapeHtml doubles as attribute encoding (it
+ * escapes `&` and `"`), so it's safe in both the href and the fallback link.
+ */
+export async function sendResetPasswordEmail(args: {
+    to: string;
+    url: string;
+}): Promise<void> {
+    const { to, url } = args;
+    const safeUrl = escapeHtml(url);
+
+    const html = layout(
+        "Reset your password",
+        `
+        <p>We received a request to reset your Creator Commerce password. Click the button below to choose a new one.</p>
+        <p style="margin:24px 0;">
+            <a href="${safeUrl}" style="display:inline-block;background:#111;color:#fff;text-decoration:none;padding:12px 20px;border-radius:8px;font-size:14px;">Reset password</a>
+        </p>
+        <p style="font-size:12px;color:#888;">If the button doesn't work, paste this link into your browser:<br>${safeUrl}</p>
+        <p style="font-size:12px;color:#888;">This link expires in 1 hour. If you didn't request a password reset, you can safely ignore this email.</p>`
+    );
+
+    await send({ to, subject: "Reset your password", html });
+}
+
+/**
+ * Confirmation link for an email-address change, sent by Better Auth's
+ * `user.changeEmail.sendChangeEmailConfirmation` hook to the user's *current*
+ * address. Clicking it verifies the request and switches the account over to
+ * `newEmail`. escapeHtml doubles as attribute encoding, so it's safe in both
+ * the href and the visible fallback link.
+ */
+export async function sendChangeEmailConfirmation(args: {
+    to: string;
+    newEmail: string;
+    url: string;
+}): Promise<void> {
+    const { to, newEmail, url } = args;
+    const safeUrl = escapeHtml(url);
+
+    const html = layout(
+        "Confirm your new email",
+        `
+        <p>We received a request to change your Creator Commerce email to <strong>${escapeHtml(
+            newEmail
+        )}</strong>. Confirm the change by clicking the button below.</p>
+        <p style="margin:24px 0;">
+            <a href="${safeUrl}" style="display:inline-block;background:#111;color:#fff;text-decoration:none;padding:12px 20px;border-radius:8px;font-size:14px;">Confirm email change</a>
+        </p>
+        <p style="font-size:12px;color:#888;">If the button doesn't work, paste this link into your browser:<br>${safeUrl}</p>
+        <p style="font-size:12px;color:#888;">If you didn't request this change, you can safely ignore this email — your address won't change.</p>`
+    );
+
+    await send({ to, subject: "Confirm your new email", html });
+}
+
 /** Amounts are stored in cents (Stripe's unit); render them as money. */
 function money(cents: number, currency: string): string {
     return new Intl.NumberFormat("en-US", {
