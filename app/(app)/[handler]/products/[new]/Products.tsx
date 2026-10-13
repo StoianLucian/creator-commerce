@@ -66,13 +66,15 @@ function Products() {
 
     return (
         <div className={cn("flex flex-col gap-4", products.length === 0 && "col-span-full")}>
-            <ProductFilters
-                filters={filters}
-                setFilters={setFilters}
-                resetFilters={resetFilters}
-                searchPlaceholder={t("filters.searchYourProducts")}
-                showStatus
-            />
+            <div className="sticky top-0 z-20 -mx-12 bg-background/95 px-12 py-4 backdrop-blur supports-backdrop-filter:bg-background/60">
+                <ProductFilters
+                    filters={filters}
+                    setFilters={setFilters}
+                    resetFilters={resetFilters}
+                    searchPlaceholder={t("filters.searchYourProducts")}
+                    showStatus
+                />
+            </div>
             {isEmpty ? (
                 hasActiveFilters ? (
                     <Empty>

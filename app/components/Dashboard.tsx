@@ -51,11 +51,13 @@ function Dashboard() {
   return (
     <div className="w-full space-y-6 px-12 py-8">
       <div className={cn("flex flex-col gap-4", products.length === 0 && "col-span-full")}>
-        <ProductFilters
-          filters={filters}
-          setFilters={setFilters}
-          resetFilters={resetFilters}
-        />
+        <div className="sticky top-0 z-20 -mx-12 bg-background/95 px-12 py-4 backdrop-blur supports-backdrop-filter:bg-background/60">
+          <ProductFilters
+            filters={filters}
+            setFilters={setFilters}
+            resetFilters={resetFilters}
+          />
+        </div>
 
         {isEmpty ? (
           hasActiveFilters ? (

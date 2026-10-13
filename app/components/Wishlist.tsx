@@ -72,12 +72,14 @@ function Wishlist() {
         </Empty>
       ) : (
         <div className="flex flex-col gap-4">
-          <ProductFilters
-            filters={filters}
-            setFilters={setFilters}
-            resetFilters={resetFilters}
-            searchPlaceholder={t("wishlist.searchPlaceholder")}
-          />
+          <div className="sticky top-0 z-20 -mx-12 bg-background/95 px-12 py-4 backdrop-blur supports-backdrop-filter:bg-background/60">
+            <ProductFilters
+              filters={filters}
+              setFilters={setFilters}
+              resetFilters={resetFilters}
+              searchPlaceholder={t("wishlist.searchPlaceholder")}
+            />
+          </div>
 
           {noMatches ? (
             <Empty>

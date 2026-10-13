@@ -17,7 +17,7 @@ import { AppPaths } from "@/enums/AppPaths"
 import { toHandle } from "@/lib/handle"
 import { LogoutButton } from "../logount-button/LogoutButton"
 import { CartSheet } from "../cart/CartSheet"
-import { LanguageToggle } from "@/app/components/LanguageToggle"
+import { LanguageSwitcher } from "@/app/components/LanguageSwitcher"
 
 interface TopBarUser {
   name: string
@@ -60,7 +60,7 @@ export function TopBar({ className, user, isSignedIn }: TopBarProps) {
         </Link>
 
         <div className="flex flex-1 items-center justify-end gap-2">
-          <LanguageToggle />
+          <LanguageSwitcher />
 
           <CartSheet isSignedIn={isSignedIn} />
 

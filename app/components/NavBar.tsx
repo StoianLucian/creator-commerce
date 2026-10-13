@@ -15,7 +15,6 @@ import {
 import {
   Sidebar,
   SidebarContent,
-  SidebarFooter,
   SidebarGroup,
   SidebarGroupContent,
   SidebarGroupLabel,
@@ -27,7 +26,6 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { AppPaths, CreatorPaths } from "@/enums/AppPaths";
 import { toHandle } from "@/lib/handle";
-import { LanguageSwitcher } from "./LanguageSwitcher";
 
 function initialsOf(name: string) {
   const parts = name.trim().split(/\s+/).filter(Boolean);
@@ -129,15 +127,6 @@ export const NavBar = ({ user, isSignedIn }: NavBarProps) => {
             </SidebarGroupContent>
           </SidebarGroup>
         </SidebarContent>
-
-        <SidebarFooter>
-          <SidebarGroup>
-            <SidebarGroupLabel>{t("nav.language")}</SidebarGroupLabel>
-            <SidebarGroupContent>
-              <LanguageSwitcher />
-            </SidebarGroupContent>
-          </SidebarGroup>
-        </SidebarFooter>
       </Sidebar>
     </>
   );

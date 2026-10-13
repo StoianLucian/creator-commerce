@@ -46,7 +46,7 @@ export function LanguageSwitcher() {
     return (
         <Select items={items} value={current} onValueChange={change}>
             <SelectTrigger
-                className="data-[size=default]:h-9 w-full"
+                className="data-[size=default]:h-9 w-auto gap-2"
                 aria-label={t("nav.language")}
             >
                 <Languages className="h-4 w-4" />

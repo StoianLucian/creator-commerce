@@ -15,12 +15,13 @@ async function AppLayout({ children }: { children: ReactNode }) {
     }
 
     return (
-        <div className="flex min-h-svh w-full bg-background">
+        <div className="flex h-svh w-full overflow-hidden bg-background">
             <NavBar user={user} isSignedIn={isSignedIn} />
 
             <div className="flex min-w-0 flex-1 flex-col">
                 <TopBar user={user} isSignedIn={isSignedIn} />
-                <main className="flex-1">{children}</main>
+                {/* Only this area scrolls, so the sidebar and top bar stay put. */}
+                <main className="min-h-0 flex-1 overflow-y-auto">{children}</main>
             </div>
         </div>
     )
