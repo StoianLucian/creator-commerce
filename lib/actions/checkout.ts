@@ -73,7 +73,7 @@ export async function createCheckoutSession(): Promise<CheckoutResult> {
     }
 
     try {
-        const baseUrl = getBaseUrl();
+        const baseUrl = await getBaseUrl();
 
         const checkoutSession = await stripe.checkout.sessions.create({
             mode: "payment",

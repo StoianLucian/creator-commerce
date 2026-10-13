@@ -14,7 +14,7 @@ import { clearCart } from "@/lib/actions/cart";
 import { getBaseUrl, stripe } from "@/lib/stripe";
 
 export async function GET(req: NextRequest) {
-    const baseUrl = getBaseUrl();
+    const baseUrl = await getBaseUrl();
     const sessionId = req.nextUrl.searchParams.get("session_id");
 
     if (!sessionId) {
