@@ -10,6 +10,7 @@ import { DeleteProductButton } from "@/components/products-page/DeleteProductBut
 import { AppPaths, CreatorPaths } from "@/enums/AppPaths";
 import type { ProductDetail } from "@/lib/actions/products";
 import { priceFormatter } from "@/lib/format";
+import { categoryLabel } from "@/lib/i18n/category";
 import { ProductGallery } from "./ProductGallery";
 import { ProductInfo } from "./ProductInfo";
 
@@ -82,7 +83,10 @@ export function ShowProduct({
                 </h1>
 
                 <p className="text-sm text-muted-foreground">
-                    {product.category?.name ?? "Uncategorized"} ·{" "}
+                    {product.category?.name
+                        ? categoryLabel(t, product.category.name)
+                        : t("product.uncategorized")}{" "}
+                    ·{" "}
                     <span className="tabular-nums">
                         {priceFormatter.format(product.price)}
                     </span>

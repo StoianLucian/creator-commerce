@@ -82,7 +82,9 @@ export function ProductInfo({ product }: ProductInfoProps) {
 
                     <CardContent>
                         <Badge variant={variant} className="capitalize">
-                            {product.status}
+                            {t(`filters.statuses.${product.status}`, {
+                                defaultValue: product.status,
+                            })}
                         </Badge>
                     </CardContent>
                 </Card>
