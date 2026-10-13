@@ -3,6 +3,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 
+import i18n from "@/i18n/i18n";
 import {
     addToCart,
     clearCart,
@@ -27,7 +28,7 @@ export function useCart() {
  */
 function useCartMutation<TInput>(
     mutationFn: (input: TInput) => Promise<{ success: boolean; error?: string }>,
-    successMessage?: string
+    successKey?: string
 ) {
     const queryClient = useQueryClient();
 
@@ -36,19 +37,19 @@ function useCartMutation<TInput>(
 
         onSuccess: (result) => {
             if (!result.success) {
-                toast.error(result.error ?? "Something went wrong");
+                toast.error(result.error ?? i18n.t("toasts.generic"));
                 return;
             }
 
-            if (successMessage) {
-                toast.success(successMessage);
+            if (successKey) {
+                toast.success(i18n.t(successKey));
             }
 
             queryClient.invalidateQueries({ queryKey: cartQueryKey });
         },
 
         onError: () => {
-            toast.error("Something went wrong");
+            toast.error(i18n.t("toasts.generic"));
         },
     });
 }
@@ -56,7 +57,7 @@ function useCartMutation<TInput>(
 export function useAddToCart() {
     return useCartMutation<{ productId: number; quantity?: number }>(
         addToCart,
-        "Added to cart"
+        "toasts.addedToCart"
     );
 }
 
@@ -67,9 +68,9 @@ export function useUpdateCartQuantity() {
 }
 
 export function useRemoveFromCart() {
-    return useCartMutation<{ productId: number }>(removeFromCart, "Removed from cart");
+    return useCartMutation<{ productId: number }>(removeFromCart, "toasts.removedFromCart");
 }
 
 export function useClearCart() {
-    return useCartMutation<void>(() => clearCart(), "Cart cleared");
+    return useCartMutation<void>(() => clearCart(), "toasts.cartCleared");
 }

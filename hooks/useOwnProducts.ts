@@ -3,6 +3,7 @@ import { toast } from "sonner";
 import { deleteProduct, getOwnnProducts, ProductWithRelations } from "@/lib/actions/products";
 import { useProductsProps } from "./useProducts";
 import type { Paginated } from "@/lib/products/pagination";
+import i18n from "@/i18n/i18n";
 
 export function useOwnProducts({ q, sort = "newest", minPrice, maxPrice, status = "all", categoryId, page = 1, pageSize }: useProductsProps) {
     return useQuery<Paginated<ProductWithRelations>, Error>({
@@ -22,17 +23,17 @@ export function useDeleteProduct() {
 
         onSuccess: (result) => {
             if (!result.success) {
-                toast.error(result.error ?? "Something went wrong");
+                toast.error(result.error ?? i18n.t("toasts.generic"));
                 return;
             }
 
-            toast.success("Product deleted");
+            toast.success(i18n.t("toasts.productDeleted"));
             // Prefix match refreshes every filter/sort variation of the list.
             queryClient.invalidateQueries({ queryKey: ["products-own"] });
         },
 
         onError: () => {
-            toast.error("Something went wrong");
+            toast.error(i18n.t("toasts.generic"));
         },
     });
 }

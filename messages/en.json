@@ -108,6 +108,20 @@
     "common": {
         "loading": "Loading..."
     },
+    "toasts": {
+        "generic": "Something went wrong",
+        "addedToCart": "Added to cart",
+        "removedFromCart": "Removed from cart",
+        "cartCleared": "Cart cleared",
+        "addedToWishlist": "Added to wishlist",
+        "removedFromWishlist": "Removed from wishlist",
+        "productDeleted": "Product deleted",
+        "productCreated": "Product created successfully!",
+        "productCreateError": "Error creating the product!",
+        "productUpdated": "Product updated successfully!",
+        "productUpdateError": "Error updating the product!",
+        "checkoutError": "Could not start checkout"
+    },
     "wishlistButton": {
         "add": "Add {{name}} to wishlist",
         "remove": "Remove {{name}} from wishlist"

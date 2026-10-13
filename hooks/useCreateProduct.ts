@@ -5,6 +5,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { CreateProductInput } from "@/form-validations/products";
 import { createProduct } from "@/lib/actions/products";
 import { toast } from "sonner";
+import i18n from "@/i18n/i18n";
 
 
 export function useCreateProduct() {
@@ -14,10 +15,10 @@ export function useCreateProduct() {
         mutationFn: (data: CreateProductInput) => createProduct(data),
 
         onError: () => {
-            toast.error("Error creating the product!");
+            toast.error(i18n.t("toasts.productCreateError"));
         },
         onSuccess: () => {
-            toast.success("Product created successfully!");
+            toast.success(i18n.t("toasts.productCreated"));
             queryClient.invalidateQueries({
                 queryKey: ["products"],
             });

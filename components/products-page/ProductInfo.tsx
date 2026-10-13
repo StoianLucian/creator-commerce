@@ -17,10 +17,12 @@ const statusVariant = {
 
 interface ProductInfoProps {
     product: ProductDetail;
+    /** Status is owner-only; hidden on the buyer-facing (Explore) detail view. */
+    isOwner?: boolean;
 }
 
 /** Description, attributes, status and metadata panels for one product. */
-export function ProductInfo({ product }: ProductInfoProps) {
+export function ProductInfo({ product, isOwner = false }: ProductInfoProps) {
     const { t } = useTranslation();
     const variant =
         statusVariant[product.status as keyof typeof statusVariant] ?? "outline";
@@ -73,22 +75,24 @@ export function ProductInfo({ product }: ProductInfoProps) {
                 </Card>
             </div>
 
-            {/* Sidebar */}
-            <div className="space-y-6">
-                <Card>
-                    <CardHeader>
-                        <CardTitle className="text-lg">{t("product.status")}</CardTitle>
-                    </CardHeader>
+            {/* Sidebar — status is owner-only, hidden on the Explore detail view. */}
+            {isOwner && (
+                <div className="space-y-6">
+                    <Card>
+                        <CardHeader>
+                            <CardTitle className="text-lg">{t("product.status")}</CardTitle>
+                        </CardHeader>
 
-                    <CardContent>
-                        <Badge variant={variant} className="capitalize">
-                            {t(`filters.statuses.${product.status}`, {
-                                defaultValue: product.status,
-                            })}
-                        </Badge>
-                    </CardContent>
-                </Card>
-            </div>
+                        <CardContent>
+                            <Badge variant={variant} className="capitalize">
+                                {t(`filters.statuses.${product.status}`, {
+                                    defaultValue: product.status,
+                                })}
+                            </Badge>
+                        </CardContent>
+                    </Card>
+                </div>
+            )}
         </div>
     );
 }

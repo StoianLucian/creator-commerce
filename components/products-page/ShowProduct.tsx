@@ -100,7 +100,7 @@ export function ShowProduct({
                     productName={product.name}
                 />
 
-                <ProductInfo product={product} />
+                <ProductInfo product={product} isOwner={isOwner} />
             </div>
         </div>
     );

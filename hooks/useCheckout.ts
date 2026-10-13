@@ -4,6 +4,7 @@ import { useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
 
 import { createCheckoutSession } from "@/lib/actions/checkout";
+import i18n from "@/i18n/i18n";
 
 /**
  * Kicks off Stripe Checkout for the current cart and redirects the whole
@@ -24,7 +25,7 @@ export function useCheckout() {
         },
 
         onError: () => {
-            toast.error("Could not start checkout");
+            toast.error(i18n.t("toasts.checkoutError"));
         },
     });
 }

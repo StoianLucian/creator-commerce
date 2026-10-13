@@ -3,6 +3,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 
+import i18n from "@/i18n/i18n";
 import {
     fetchWishlist,
     fetchWishlistIds,
@@ -44,19 +45,19 @@ export function useToggleWishlist() {
 
         onSuccess: (result) => {
             if (!result.success) {
-                toast.error(result.error ?? "Something went wrong");
+                toast.error(result.error ?? i18n.t("toasts.generic"));
                 return;
             }
 
             toast.success(
-                result.wishlisted ? "Added to wishlist" : "Removed from wishlist"
+                i18n.t(result.wishlisted ? "toasts.addedToWishlist" : "toasts.removedFromWishlist")
             );
 
             queryClient.invalidateQueries({ queryKey: wishlistQueryKey });
         },
 
         onError: () => {
-            toast.error("Something went wrong");
+            toast.error(i18n.t("toasts.generic"));
         },
     });
 }
@@ -69,17 +70,17 @@ export function useRemoveFromWishlist() {
 
         onSuccess: (result) => {
             if (!result.success) {
-                toast.error(result.error ?? "Something went wrong");
+                toast.error(result.error ?? i18n.t("toasts.generic"));
                 return;
             }
 
-            toast.success("Removed from wishlist");
+            toast.success(i18n.t("toasts.removedFromWishlist"));
 
             queryClient.invalidateQueries({ queryKey: wishlistQueryKey });
         },
 
         onError: () => {
-            toast.error("Something went wrong");
+            toast.error(i18n.t("toasts.generic"));
         },
     });
 }

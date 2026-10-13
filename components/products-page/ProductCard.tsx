@@ -40,10 +40,6 @@ export function ProductCard({ product, editable }: ProductCardProps) {
         ? "destructive"
         : statusVariant[product.status as keyof typeof statusVariant] ?? "outline";
 
-    // Active is the one status that gets a color accent (green) — everything
-    // else stays on the monochrome palette.
-    const isActive = !isDeleted && product.status === "active";
-
     // Owner cards (editable) link to the management detail; everyone else goes
     // to the buyer-facing Explore detail with Add to Cart.
     const detailHref = editable
@@ -91,22 +87,25 @@ export function ProductCard({ product, editable }: ProductCardProps) {
                     </div>
                 )}
 
-                <div className="absolute right-2 top-2">
-                    <Badge
-                        variant={badgeVariant}
-                        className={cn(
-                            "capitalize shadow-sm",
-                            // Outline is transparent, so back it for legibility
-                            // over the product image.
-                            badgeVariant === "outline" &&
-                                "bg-background/80 backdrop-blur-sm",
-                        )}
-                    >
-                        {isDeleted
-                            ? t("productCard.deleted")
-                            : t(`filters.statuses.${product.status}`)}
-                    </Badge>
-                </div>
+                {/* Status is owner-only info; buyers on Explore never see it. */}
+                {editable && (
+                    <div className="absolute right-2 top-2">
+                        <Badge
+                            variant={badgeVariant}
+                            className={cn(
+                                "capitalize shadow-sm",
+                                // Outline is transparent, so back it for legibility
+                                // over the product image.
+                                badgeVariant === "outline" &&
+                                    "bg-background/80 backdrop-blur-sm",
+                            )}
+                        >
+                            {isDeleted
+                                ? t("productCard.deleted")
+                                : t(`filters.statuses.${product.status}`)}
+                        </Badge>
+                    </div>
+                )}
             </div>
 
             {/* Title + short description. */}

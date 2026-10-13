@@ -108,6 +108,20 @@
     "common": {
         "loading": "Se încarcă..."
     },
+    "toasts": {
+        "generic": "Ceva nu a mers bine",
+        "addedToCart": "Adăugat în coș",
+        "removedFromCart": "Eliminat din coș",
+        "cartCleared": "Coș golit",
+        "addedToWishlist": "Adăugat la favorite",
+        "removedFromWishlist": "Eliminat din favorite",
+        "productDeleted": "Produs șters",
+        "productCreated": "Produs creat cu succes!",
+        "productCreateError": "Eroare la crearea produsului!",
+        "productUpdated": "Produs actualizat cu succes!",
+        "productUpdateError": "Eroare la actualizarea produsului!",
+        "checkoutError": "Nu am putut începe finalizarea comenzii"
+    },
     "wishlistButton": {
         "add": "Adaugă {{name}} la favorite",
         "remove": "Elimină {{name}} din favorite"
