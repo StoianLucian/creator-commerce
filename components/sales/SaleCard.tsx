@@ -1,5 +1,8 @@
+"use client";
+
 import Link from "next/link";
 import { Package } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 import { Separator } from "@/components/ui/separator";
 import { OrderStatusBadge } from "@/components/orders/OrderStatusBadge";
@@ -11,12 +14,14 @@ const fromCents = (cents: number) => priceFormatter.format(cents / 100);
 
 /** The seller's view of one order — only their own lines. See `getMySales`. */
 export function SaleCard({ sale }: { sale: SaleEntry }) {
+    const { t } = useTranslation();
+
     return (
         <li className="rounded-xl border bg-card text-card-foreground shadow-sm transition hover:border-foreground/20 hover:shadow-md">
             <div className="flex flex-wrap items-center justify-between gap-3 p-4">
                 <div className="space-y-1">
                     <div className="flex items-center gap-2">
-                        <h2 className="font-semibold">Order #{sale.id}</h2>
+                        <h2 className="font-semibold">{t("sales.orderNumber", { id: sale.id })}</h2>
                         <OrderStatusBadge status={sale.status} />
                     </div>
 
@@ -25,7 +30,7 @@ export function SaleCard({ sale }: { sale: SaleEntry }) {
                             {dateFormatter.format(sale.createdAt)}
                         </time>
                         {" · "}
-                        {sale.itemCount} item{sale.itemCount === 1 ? "" : "s"}
+                        {t("sales.items", { count: sale.itemCount })}
                         {sale.buyerEmail ? ` · ${sale.buyerEmail}` : ""}
                     </p>
                 </div>

@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import type { ProductDetail } from "@/lib/actions/products";
 import { priceFormatter } from "@/lib/format";
+import { categoryLabel } from "@/lib/i18n/category";
 
 const statusVariant = {
     draft: "outline",
@@ -56,7 +57,11 @@ export function ProductInfo({ product }: ProductInfoProps) {
                     <CardContent className="grid gap-4 sm:grid-cols-2">
                         <Info
                             label={t("product.category")}
-                            value={product.category?.name ?? t("product.uncategorized")}
+                            value={
+                                product.category?.name
+                                    ? categoryLabel(t, product.category.name)
+                                    : t("product.uncategorized")
+                            }
                         />
                         <Info
                             label={t("product.price")}

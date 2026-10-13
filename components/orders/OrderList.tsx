@@ -2,11 +2,13 @@
 
 import { useMemo, useState } from "react";
 import { Search } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 import type { OrderHistoryEntry } from "@/lib/data/orders";
 import { OrderCard } from "./OrderCard";
 
 export function OrderList({ orders }: { orders: OrderHistoryEntry[] }) {
+    const { t } = useTranslation();
     const [query, setQuery] = useState("");
 
     const filtered = useMemo(() => {
@@ -35,15 +37,15 @@ export function OrderList({ orders }: { orders: OrderHistoryEntry[] }) {
                     type="search"
                     value={query}
                     onChange={(event) => setQuery(event.target.value)}
-                    placeholder="Search by order number, product, or status..."
-                    aria-label="Search orders"
+                    placeholder={t("orders.searchPlaceholder")}
+                    aria-label={t("orders.searchAria")}
                     className="h-10 w-full rounded-lg border border-input bg-background py-2 pl-10 pr-4 text-sm outline-none transition-colors placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring"
                 />
             </div>
 
             {filtered.length === 0 ? (
                 <p className="rounded-xl border border-dashed p-8 text-center text-sm text-muted-foreground">
-                    No orders match &ldquo;{query.trim()}&rdquo;.
+                    {t("orders.noMatch", { q: query.trim() })}
                 </p>
             ) : (
                 <ul className="space-y-4">

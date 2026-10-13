@@ -18,6 +18,7 @@ import { Label } from "@/components/ui/label";
 import type { SearchFilters } from "@/hooks/use-url-search";
 import type { ProductSort, ProductStatusFilter } from "@/hooks/useProducts";
 import { useCategories } from "@/hooks/useCategories";
+import { categoryLabel } from "@/lib/i18n/category";
 
 // Sentinel for the "no category filter" Select option, since the trigger needs
 // a concrete string value but the filter itself is `categoryId: undefined`.
@@ -168,7 +169,7 @@ export function ProductFilters({
   // Base UI's Select reads `items` to render the selected label while closed.
   const categoryItems = [
     { value: ALL_CATEGORIES, label: t("filters.allCategories") },
-    ...categories.map((c) => ({ value: String(c.id), label: c.name })),
+    ...categories.map((c) => ({ value: String(c.id), label: categoryLabel(t, c.name) })),
   ];
 
   // Base UI's Select reads `items` to render the selected label while closed,
@@ -220,7 +221,7 @@ export function ProductFilters({
           <SelectItem value={ALL_CATEGORIES}>{t("filters.allCategories")}</SelectItem>
           {categories.map((c) => (
             <SelectItem key={c.id} value={String(c.id)}>
-              {c.name}
+              {categoryLabel(t, c.name)}
             </SelectItem>
           ))}
         </SelectContent>

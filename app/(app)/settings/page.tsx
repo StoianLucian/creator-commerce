@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 import { AppPaths } from "@/enums/AppPaths";
 import { getSession } from "@/lib/session";
 import { SettingsForm } from "@/app/components/SettingsForm";
+import { PageHeading } from "@/app/components/PageHeading";
 
 export const metadata = {
     title: "Settings",
@@ -25,12 +26,10 @@ export default async function SettingsPage() {
 
     return (
         <div className="mx-auto max-w-2xl space-y-6 px-12 py-8">
-            <div>
-                <h1 className="text-3xl font-bold">Settings</h1>
-                <p className="text-muted-foreground">
-                    Manage your account details and password.
-                </p>
-            </div>
+            <PageHeading
+                titleKey="headings.settingsTitle"
+                subtitleKey="headings.settingsSubtitle"
+            />
 
             <SettingsForm user={user} />
         </div>

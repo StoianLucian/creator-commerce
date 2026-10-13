@@ -1,6 +1,7 @@
 "use client"
 
 import { Save, Loader2 } from "lucide-react"
+import { useTranslation } from "react-i18next"
 
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
@@ -24,6 +25,7 @@ import {
 import { useCreateProduct } from "@/hooks/useCreateProduct"
 import { useUpdateProduct } from "@/hooks/useUpdateProduct"
 import { useCategories } from "@/hooks/useCategories"
+import { categoryLabel } from "@/lib/i18n/category"
 import { UploadThingDropzone } from "../upload-button/UploadThingDropzone"
 import { UploadedImagesCarousel } from "../upload-button/UploadedImagesCarousel"
 
@@ -46,6 +48,7 @@ export default function CreateProductPage({
     initialValues,
 }: CreateProductPageProps) {
     const isEdit = productId != null
+    const { t } = useTranslation()
 
     const form = useForm<CreateProductInput>({
         resolver: zodResolver(createProductSchema),
@@ -76,24 +79,24 @@ export default function CreateProductPage({
             <div className="flex items-center justify-between gap-4">
                 <div className="space-y-1">
                     <h1 className="text-3xl font-semibold tracking-tight">
-                        {isEdit ? "Edit Product" : "Create Product"}
+                        {isEdit ? t("productForm.editTitle") : t("productForm.createTitle")}
                     </h1>
                     <p className="text-sm text-muted-foreground">
                         {isEdit
-                            ? "Update your product details and status."
-                            : "Add a new product to your catalog."}
+                            ? t("productForm.editSubtitle")
+                            : t("productForm.createSubtitle")}
                     </p>
                 </div>
                 <Button type="submit" disabled={isPending}>
                     {isPending ? (
                         <>
                             <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                            Saving...
+                            {t("productForm.saving")}
                         </>
                     ) : (
                         <>
                             <Save className="mr-2 h-4 w-4" />
-                            {isEdit ? "Save Changes" : "Save Product"}
+                            {isEdit ? t("productForm.saveChanges") : t("productForm.saveProduct")}
                         </>
                     )}
                 </Button>
@@ -104,9 +107,9 @@ export default function CreateProductPage({
                 <div className="space-y-6 lg:col-span-2">
                     <Card>
                         <CardHeader>
-                            <CardTitle>General Information</CardTitle>
+                            <CardTitle>{t("productForm.generalInfo")}</CardTitle>
                             <CardDescription>
-                                Basic details about your product.
+                                {t("productForm.generalInfoDesc")}
                             </CardDescription>
                         </CardHeader>
 
@@ -116,11 +119,11 @@ export default function CreateProductPage({
                                 name="name"
                                 render={({ field, fieldState }) => (
                                     <div className="space-y-2">
-                                        <Label htmlFor="name">Product Name</Label>
+                                        <Label htmlFor="name">{t("productForm.name")}</Label>
 
                                         <Input
                                             id="name"
-                                            placeholder="Wireless Mechanical Keyboard"
+                                            placeholder={t("productForm.namePlaceholder")}
                                             {...field}
                                         />
 
@@ -139,12 +142,12 @@ export default function CreateProductPage({
                                     name="description"
                                     render={({ field, fieldState }) => (
                                         <div className="space-y-2">
-                                            <Label htmlFor="description">Description</Label>
+                                            <Label htmlFor="description">{t("productForm.description")}</Label>
 
                                             <Textarea
                                                 id="description"
                                                 rows={6}
-                                                placeholder="Describe your product..."
+                                                placeholder={t("productForm.descriptionPlaceholder")}
                                                 {...field}
                                             />
 
@@ -165,17 +168,17 @@ export default function CreateProductPage({
                                     name="categoryId"
                                     render={({ field, fieldState: { error } }) => (
                                         <div className="space-y-2">
-                                            <Label>Category</Label>
+                                            <Label>{t("productForm.category")}</Label>
                                             <Select
                                                 items={categories.map((category) => ({
                                                     value: String(category.id),
-                                                    label: category.name,
+                                                    label: categoryLabel(t, category.name),
                                                 }))}
                                                 value={field.value ? String(field.value) : ""}
                                                 onValueChange={(value) => field.onChange(Number(value))}
                                             >
                                                 <SelectTrigger className="w-full">
-                                                    <SelectValue placeholder="Select category" />
+                                                    <SelectValue placeholder={t("productForm.selectCategory")} />
                                                 </SelectTrigger>
 
                                                 <SelectContent>
@@ -184,7 +187,7 @@ export default function CreateProductPage({
                                                             key={category.id}
                                                             value={String(category.id)}
                                                         >
-                                                            {category.name}
+                                                            {categoryLabel(t, category.name)}
                                                         </SelectItem>
                                                     ))}
                                                 </SelectContent>
@@ -205,9 +208,9 @@ export default function CreateProductPage({
 
                     <Card>
                         <CardHeader>
-                            <CardTitle>Pricing</CardTitle>
+                            <CardTitle>{t("productForm.pricing")}</CardTitle>
                             <CardDescription>
-                                Configure pricing and inventory.
+                                {t("productForm.pricingDesc")}
                             </CardDescription>
                         </CardHeader>
 
@@ -217,12 +220,12 @@ export default function CreateProductPage({
                                 name="price"
                                 render={({ field, fieldState: { error } }) => (
                                     <div className="space-y-2">
-                                        <Label htmlFor="price">Price</Label>
+                                        <Label htmlFor="price">{t("productForm.price")}</Label>
                                         <Input
                                             id="price"
                                             type="number"
                                             min="0"
-                                            placeholder="99"
+                                            placeholder={t("productForm.pricePlaceholder")}
                                             value={field.value ? field.value : ""}
                                             onChange={(e) => {
                                                 const value = e.target.value;
@@ -246,7 +249,7 @@ export default function CreateProductPage({
                 <div className="space-y-6">
                     <Card>
                         <CardHeader>
-                            <CardTitle>Product Image</CardTitle>
+                            <CardTitle>{t("productForm.image")}</CardTitle>
                         </CardHeader>
 
                         <CardContent>
@@ -292,7 +295,7 @@ export default function CreateProductPage({
 
                     <Card>
                         <CardHeader>
-                            <CardTitle>Visibility</CardTitle>
+                            <CardTitle>{t("productForm.visibility")}</CardTitle>
                         </CardHeader>
 
                         <CardContent className="space-y-4">
@@ -301,32 +304,32 @@ export default function CreateProductPage({
                                 name="status"
                                 render={({ field, fieldState: { error } }) => (
                                     <div className="space-y-2">
-                                        <Label>Status</Label>
+                                        <Label>{t("productForm.status")}</Label>
 
                                         <Select
                                             items={[
-                                                { value: "draft", label: "Draft" },
-                                                { value: "active", label: "Active" },
-                                                { value: "sold", label: "Sold" },
+                                                { value: "draft", label: t("filters.statuses.draft") },
+                                                { value: "active", label: t("filters.statuses.active") },
+                                                { value: "sold", label: t("filters.statuses.sold") },
                                             ]}
                                             value={field.value}
                                             onValueChange={field.onChange}
                                         >
                                             <SelectTrigger className="w-full">
-                                                <SelectValue placeholder="Draft" />
+                                                <SelectValue placeholder={t("filters.statuses.draft")} />
                                             </SelectTrigger>
 
                                             <SelectContent>
                                                 <SelectItem value="draft">
-                                                    Draft
+                                                    {t("filters.statuses.draft")}
                                                 </SelectItem>
 
                                                 <SelectItem value="active">
-                                                    Active
+                                                    {t("filters.statuses.active")}
                                                 </SelectItem>
 
                                                 <SelectItem value="sold">
-                                                    Sold
+                                                    {t("filters.statuses.sold")}
                                                 </SelectItem>
                                             </SelectContent>
                                         </Select>

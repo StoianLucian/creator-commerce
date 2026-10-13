@@ -12,10 +12,12 @@ import { AppPaths } from "@/enums/AppPaths";
 import { forgotPasswordSchema } from "@/form-validations/auth";
 import { authClient } from "@/lib/auth-client";
 import { useState } from "react";
+import { Trans, useTranslation } from "react-i18next";
 
 type ForgotPasswordFormData = z.infer<typeof forgotPasswordSchema>;
 
 export function ForgotPasswordForm() {
+  const { t } = useTranslation();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   // Set once the request succeeds. We never reveal whether the address exists,
@@ -41,7 +43,7 @@ export function ForgotPasswordForm() {
     setLoading(false);
 
     if (result.error) {
-      setError(result.error.message ?? "Could not send the reset link");
+      setError(result.error.message ?? t("auth.forgot.sendFailed"));
       return;
     }
 
@@ -52,11 +54,13 @@ export function ForgotPasswordForm() {
     return (
       <Card className="w-full shadow-sm">
         <CardHeader className="gap-1.5">
-          <CardTitle className="text-xl">Check your inbox</CardTitle>
+          <CardTitle className="text-xl">{t("auth.forgot.checkInbox")}</CardTitle>
           <p className="text-sm text-muted-foreground">
-            If an account exists for{" "}
-            <span className="font-medium text-foreground">{sentTo}</span>, we
-            sent a password reset link. The link expires in 1 hour.
+            <Trans
+              i18nKey="auth.forgot.sentBody"
+              values={{ email: sentTo }}
+              components={{ strong: <span className="font-medium text-foreground" /> }}
+            />
           </p>
         </CardHeader>
         <CardContent>
@@ -67,7 +71,7 @@ export function ForgotPasswordForm() {
             nativeButton={false}
             render={<Link href={AppPaths.LOGIN} />}
           >
-            Back to sign in
+            {t("auth.forgot.backToSignIn")}
           </Button>
         </CardContent>
       </Card>
@@ -77,9 +81,9 @@ export function ForgotPasswordForm() {
   return (
     <Card className="w-full shadow-sm">
       <CardHeader className="gap-1.5">
-        <CardTitle className="text-xl">Forgot your password?</CardTitle>
+        <CardTitle className="text-xl">{t("auth.forgot.title")}</CardTitle>
         <p className="text-sm text-muted-foreground">
-          Enter your email and we&apos;ll send you a link to reset it
+          {t("auth.forgot.subtitle")}
         </p>
       </CardHeader>
       <CardContent>
@@ -90,12 +94,12 @@ export function ForgotPasswordForm() {
             render={({ field, fieldState: { error } }) => (
               <div className="space-y-2">
                 <label htmlFor="email" className="text-sm font-medium leading-none">
-                  Email
+                  {t("auth.forgot.email")}
                 </label>
 
                 <Input
                   id="email"
-                  placeholder="Enter your email"
+                  placeholder={t("auth.forgot.emailPlaceholder")}
                   {...field}
                 />
 
@@ -118,7 +122,7 @@ export function ForgotPasswordForm() {
           )}
 
           <Button type="submit" size="lg" className="w-full" disabled={loading}>
-            Send reset link
+            {t("auth.forgot.submit")}
           </Button>
 
           <p className="text-center text-sm text-muted-foreground">
@@ -126,7 +130,7 @@ export function ForgotPasswordForm() {
               href={AppPaths.LOGIN}
               className="font-medium text-foreground underline underline-offset-4 transition-colors hover:text-primary"
             >
-              Back to sign in
+              {t("auth.forgot.backToSignIn")}
             </Link>
           </p>
         </form>

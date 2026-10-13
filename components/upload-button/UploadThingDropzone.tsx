@@ -2,6 +2,7 @@
 
 import { ImageIcon, Upload } from "lucide-react";
 import { toast } from "sonner";
+import { useTranslation } from "react-i18next";
 
 import { UploadDropzone } from "@/lib/uploadthing";
 import { cn } from "@/lib/utils";
@@ -33,6 +34,8 @@ export function UploadThingDropzone({
     className,
     disabled,
 }: UploadThingDropzoneProps) {
+    const { t } = useTranslation();
+
     return (
         <UploadDropzone
             endpoint="productImage"
@@ -70,18 +73,20 @@ export function UploadThingDropzone({
                             />
                         )}
                         {isDragActive
-                            ? "Drop to upload"
+                            ? t("upload.dropToUpload")
                             : compact
-                                ? "Add more images"
-                                : "Drag & drop your product images"}
+                                ? t("upload.addMore")
+                                : t("upload.dragDrop")}
                     </span>
                 ),
                 allowedContent:
                     remaining === undefined
-                        ? "PNG, JPG up to 4MB"
-                        : `PNG, JPG up to 4MB · ${remaining} left`,
+                        ? t("upload.allowed")
+                        : t("upload.allowedLeft", { count: remaining }),
                 button: ({ isUploading, uploadProgress }) =>
-                    isUploading ? `Uploading ${uploadProgress}%` : "Choose files",
+                    isUploading
+                        ? t("upload.uploading", { progress: uploadProgress })
+                        : t("upload.chooseFiles"),
             }}
             /** Guard against selecting more files than the remaining slots allow. */
             onBeforeUploadBegin={(files) => {
@@ -89,9 +94,7 @@ export function UploadThingDropzone({
                     return files;
                 }
 
-                toast.warning(
-                    `Only ${remaining} more image${remaining === 1 ? "" : "s"} can be added — the rest were skipped.`,
-                );
+                toast.warning(t("upload.limitWarning", { count: remaining }));
 
                 return files.slice(0, remaining);
             }}
@@ -100,19 +103,15 @@ export function UploadThingDropzone({
                     res?.map((file) => ({ url: file.ufsUrl, key: file.key })) ?? [];
 
                 if (!images.length) {
-                    toast.error("Upload finished but no file was returned.");
+                    toast.error(t("upload.noFile"));
                     return;
                 }
 
                 onUploaded(images);
-                toast.success(
-                    images.length === 1
-                        ? "Image uploaded!"
-                        : `${images.length} images uploaded!`,
-                );
+                toast.success(t("upload.uploaded", { count: images.length }));
             }}
             onUploadError={(error) => {
-                toast.error(error.message || "Failed to upload the image.");
+                toast.error(error.message || t("upload.uploadFailed"));
             }}
         />
     );

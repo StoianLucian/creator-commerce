@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import { Package } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 import {
     Carousel,
@@ -31,6 +32,7 @@ export function ProductGallery({
     productName,
     className,
 }: ProductGalleryProps) {
+    const { t } = useTranslation();
     const [api, setApi] = useState<CarouselApi>();
     const [current, setCurrent] = useState(0);
 
@@ -59,7 +61,7 @@ export function ProductGallery({
             >
                 <div className="flex flex-col items-center gap-2 text-muted-foreground">
                     <Package className="h-8 w-8" />
-                    <p className="text-sm">No images yet</p>
+                    <p className="text-sm">{t("gallery.noImages")}</p>
                 </div>
             </div>
         );
@@ -100,7 +102,7 @@ export function ProductGallery({
                             key={image.id}
                             type="button"
                             onClick={() => api?.scrollTo(index)}
-                            aria-label={`Show image ${index + 1}`}
+                            aria-label={t("gallery.showImage", { n: index + 1 })}
                             aria-current={index === current}
                             className={cn(
                                 "relative h-16 w-16 overflow-hidden rounded-lg border transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",

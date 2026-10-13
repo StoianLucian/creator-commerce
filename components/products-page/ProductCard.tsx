@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Eye, ImageIcon, Pencil } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -30,6 +31,7 @@ interface ProductCardProps {
 
 export function ProductCard({ product, editable }: ProductCardProps) {
     const router = useRouter();
+    const { t } = useTranslation();
 
     const coverImage = product.images[0];
     const isDeleted = Boolean(product.deleted_at);
@@ -100,7 +102,9 @@ export function ProductCard({ product, editable }: ProductCardProps) {
                                 "bg-background/80 backdrop-blur-sm",
                         )}
                     >
-                        {isDeleted ? "Deleted" : product.status}
+                        {isDeleted
+                            ? t("productCard.deleted")
+                            : t(`filters.statuses.${product.status}`)}
                     </Badge>
                 </div>
             </div>
@@ -109,7 +113,7 @@ export function ProductCard({ product, editable }: ProductCardProps) {
             <div className="flex flex-1 flex-col gap-1">
                 <h3 className="truncate font-medium leading-snug">{product.name}</h3>
                 <p className="truncate text-sm text-muted-foreground">
-                    {product.description || "No description yet"}
+                    {product.description || t("productCard.noDescription")}
                 </p>
             </div>
 
@@ -119,7 +123,7 @@ export function ProductCard({ product, editable }: ProductCardProps) {
                     {priceFormatter.format(product.price)}
                 </span>
                 <span className="text-sm text-muted-foreground">
-                    {product.sold} sold
+                    {t("productCard.soldCount", { count: product.sold })}
                 </span>
             </div>
 
@@ -151,13 +155,13 @@ export function ProductCard({ product, editable }: ProductCardProps) {
                                 }
                             >
                                 <Pencil className="h-4 w-4" />
-                                Edit
+                                {t("productCard.edit")}
                             </Button>
 
                             <DeleteProductButton
                                 productId={product.id}
                                 productName={product.name}
-                                label="Delete"
+                                label={t("productCard.delete")}
                                 variant="outline"
                                 size="sm"
                                 className="w-full"
@@ -170,7 +174,7 @@ export function ProductCard({ product, editable }: ProductCardProps) {
                                 onClick={() => router.push(detailHref)}
                             >
                                 <Eye className="h-4 w-4" />
-                                View
+                                {t("productCard.view")}
                             </Button>
                         </>
                     ) : (

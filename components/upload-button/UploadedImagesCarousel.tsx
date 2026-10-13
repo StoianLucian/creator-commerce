@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import { X } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 import {
     Carousel,
@@ -32,6 +33,7 @@ export function UploadedImagesCarousel({
     onRemove,
     className,
 }: UploadedImagesCarouselProps) {
+    const { t } = useTranslation();
     const [api, setApi] = useState<CarouselApi>();
     const [current, setCurrent] = useState(0);
 
@@ -63,7 +65,7 @@ export function UploadedImagesCarousel({
                             <div className="relative h-56 w-full overflow-hidden rounded-xl border bg-muted shadow-sm">
                                 <Image
                                     src={image.url}
-                                    alt={`Product image ${index + 1}`}
+                                    alt={t("gallery.imageAlt", { n: index + 1 })}
                                     fill
                                     sizes="(max-width: 1024px) 100vw, 33vw"
                                     className="object-cover"
@@ -73,7 +75,7 @@ export function UploadedImagesCarousel({
                                     <button
                                         type="button"
                                         onClick={() => onRemove(image.key)}
-                                        aria-label={`Remove image ${index + 1}`}
+                                        aria-label={t("gallery.removeImage", { n: index + 1 })}
                                         className="absolute right-2 top-2 rounded-lg border bg-background/80 p-1.5 text-foreground opacity-0 backdrop-blur-sm transition hover:bg-accent hover:text-accent-foreground focus-visible:opacity-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring group-hover:opacity-100"
                                     >
                                         <X className="h-4 w-4" />
@@ -81,7 +83,7 @@ export function UploadedImagesCarousel({
                                 )}
 
                                 <span className="absolute bottom-2 left-2 rounded-lg border bg-background/80 px-2 py-0.5 text-xs font-medium text-muted-foreground backdrop-blur-sm tabular-nums">
-                                    {index === 0 ? "Cover" : `${index + 1} / ${images.length}`}
+                                    {index === 0 ? t("gallery.cover") : `${index + 1} / ${images.length}`}
                                 </span>
                             </div>
                         </CarouselItem>
@@ -103,7 +105,7 @@ export function UploadedImagesCarousel({
                             key={image.key}
                             type="button"
                             onClick={() => api?.scrollTo(index)}
-                            aria-label={`Go to image ${index + 1}`}
+                            aria-label={t("gallery.goToImage", { n: index + 1 })}
                             aria-current={index === current}
                             className={cn(
                                 "h-1.5 rounded-full transition-all",

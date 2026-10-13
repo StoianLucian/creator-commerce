@@ -1,6 +1,7 @@
 "use client";
 
 import { Heart, Loader2 } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 import { Button } from "@/components/ui/button";
 import { useToggleWishlist, useWishlistIds } from "@/hooks/useWishlist";
@@ -30,6 +31,7 @@ export function WishlistButton({
 }: WishlistButtonProps) {
     const { data: ids = [] } = useWishlistIds();
     const toggle = useToggleWishlist();
+    const { t } = useTranslation();
 
     const wishlisted = ids.includes(productId);
 
@@ -43,8 +45,8 @@ export function WishlistButton({
             aria-pressed={wishlisted}
             aria-label={
                 wishlisted
-                    ? `Remove ${productName} from wishlist`
-                    : `Add ${productName} to wishlist`
+                    ? t("wishlistButton.remove", { name: productName })
+                    : t("wishlistButton.add", { name: productName })
             }
             onClick={(event) => {
                 event.preventDefault();

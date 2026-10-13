@@ -14,11 +14,13 @@ import { resetPasswordSchema } from "@/form-validations/auth";
 import { authClient } from "@/lib/auth-client";
 import { useState } from "react";
 import { toast } from "sonner";
+import { useTranslation } from "react-i18next";
 
 type ResetPasswordFormData = z.infer<typeof resetPasswordSchema>;
 
 export function ResetPasswordForm({ token }: { token?: string }) {
   const router = useRouter();
+  const { t } = useTranslation();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -44,11 +46,11 @@ export function ResetPasswordForm({ token }: { token?: string }) {
     setLoading(false);
 
     if (result.error) {
-      setError(result.error.message ?? "Could not reset your password");
+      setError(result.error.message ?? t("auth.reset.resetFailed"));
       return;
     }
 
-    toast.success("Your password has been reset");
+    toast.success(t("auth.reset.resetSuccess"));
     router.push(AppPaths.LOGIN);
   }
 
@@ -58,10 +60,9 @@ export function ResetPasswordForm({ token }: { token?: string }) {
     return (
       <Card className="w-full shadow-sm">
         <CardHeader className="gap-1.5">
-          <CardTitle className="text-xl">Invalid reset link</CardTitle>
+          <CardTitle className="text-xl">{t("auth.reset.invalidTitle")}</CardTitle>
           <p className="text-sm text-muted-foreground">
-            This password reset link is invalid or has expired. Request a new
-            one to continue.
+            {t("auth.reset.invalidBody")}
           </p>
         </CardHeader>
         <CardContent>
@@ -71,7 +72,7 @@ export function ResetPasswordForm({ token }: { token?: string }) {
             nativeButton={false}
             render={<Link href={AppPaths.FORGOT_PASSWORD} />}
           >
-            Request a new link
+            {t("auth.reset.requestNew")}
           </Button>
         </CardContent>
       </Card>
@@ -81,9 +82,9 @@ export function ResetPasswordForm({ token }: { token?: string }) {
   return (
     <Card className="w-full shadow-sm">
       <CardHeader className="gap-1.5">
-        <CardTitle className="text-xl">Choose a new password</CardTitle>
+        <CardTitle className="text-xl">{t("auth.reset.title")}</CardTitle>
         <p className="text-sm text-muted-foreground">
-          Enter and confirm your new password below
+          {t("auth.reset.subtitle")}
         </p>
       </CardHeader>
       <CardContent>
@@ -94,12 +95,12 @@ export function ResetPasswordForm({ token }: { token?: string }) {
             render={({ field, fieldState: { error } }) => (
               <div className="space-y-2">
                 <label htmlFor="password" className="text-sm font-medium leading-none">
-                  New password
+                  {t("auth.reset.newPassword")}
                 </label>
                 <TogglePasswordInput
                   id="password"
                   type="password"
-                  placeholder="Enter your new password"
+                  placeholder={t("auth.reset.newPasswordPlaceholder")}
                   {...field}
                 />
 
@@ -117,12 +118,12 @@ export function ResetPasswordForm({ token }: { token?: string }) {
             render={({ field, fieldState: { error } }) => (
               <div className="space-y-2">
                 <label htmlFor="confirmPassword" className="text-sm font-medium leading-none">
-                  Confirm new password
+                  {t("auth.reset.confirmPassword")}
                 </label>
                 <TogglePasswordInput
                   id="confirmPassword"
                   type="password"
-                  placeholder="Confirm your new password"
+                  placeholder={t("auth.reset.confirmPasswordPlaceholder")}
                   {...field}
                 />
 
@@ -145,7 +146,7 @@ export function ResetPasswordForm({ token }: { token?: string }) {
           )}
 
           <Button type="submit" size="lg" className="w-full" disabled={loading}>
-            Reset password
+            {t("auth.reset.submit")}
           </Button>
         </form>
       </CardContent>

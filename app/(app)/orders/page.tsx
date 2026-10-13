@@ -5,6 +5,7 @@ import { Suspense } from "react";
 import AuthGuard from "@/components/auth-guard/AuthGuard";
 import { OrderHistory } from "@/components/orders/OrderHistory";
 import { Skeleton } from "@/components/ui/skeleton";
+import { PageHeading } from "@/app/components/PageHeading";
 
 export const metadata = {
     title: "Orders",
@@ -13,12 +14,10 @@ export const metadata = {
 export default function OrdersPage() {
     return (
         <div className="space-y-6 px-12 py-8">
-            <div>
-                <h1 className="text-3xl font-bold">Orders</h1>
-                <p className="text-muted-foreground">
-                    Everything you have bought, newest first.
-                </p>
-            </div>
+            <PageHeading
+                titleKey="headings.ordersTitle"
+                subtitleKey="headings.ordersSubtitle"
+            />
 
             <AuthGuard>
                 <Suspense

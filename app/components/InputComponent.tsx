@@ -1,7 +1,10 @@
+"use client";
+
 import * as React from "react";
 import { Input } from "@/components/ui/input";
 import { Eye, EyeOff } from "lucide-react";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { cn } from "@/lib/utils";
 
 interface TogglePasswordInputProps extends React.InputHTMLAttributes<HTMLInputElement> {
@@ -20,6 +23,7 @@ export const TogglePasswordInput: React.FC<TogglePasswordInputProps> = ({
   ...props
 }: TogglePasswordInputProps) => {
   const [showPassword, setShowPassword] = useState(false);
+  const { t } = useTranslation();
 
   const isPasswordType = type === inputTypes.PASSWORD;
 
@@ -38,7 +42,7 @@ export const TogglePasswordInput: React.FC<TogglePasswordInputProps> = ({
       {isPasswordType && <button
         type="button"
         onClick={togglePassword}
-        aria-label={showPassword ? "Hide password" : "Show password"}
+        aria-label={showPassword ? t("input.hidePassword") : t("input.showPassword")}
         aria-pressed={showPassword}
         className="absolute right-2 top-1/2 inline-flex -translate-y-1/2 items-center justify-center rounded-md p-1 text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
       >

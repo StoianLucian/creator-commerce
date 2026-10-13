@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { Heart, SearchX } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 import { useWishlist, useWishlistIds } from "@/hooks/useWishlist";
 import { useUrlSearch } from "@/hooks/use-url-search";
@@ -18,6 +19,7 @@ import {
 import { AppPaths } from "@/enums/AppPaths";
 
 function Wishlist() {
+  const { t } = useTranslation();
   const { filters, setFilters, searchDebounce, resetFilters } = useUrlSearch();
   const { sort, minPrice, maxPrice, categoryId } = filters;
 
@@ -41,9 +43,9 @@ function Wishlist() {
   return (
     <div className="w-full space-y-6 px-12 py-8">
       <div className="flex flex-col gap-1">
-        <h1 className="text-2xl font-semibold">Wishlist</h1>
+        <h1 className="text-2xl font-semibold">{t("wishlist.title")}</h1>
         <p className="text-sm text-muted-foreground">
-          Products you&apos;ve saved for later.
+          {t("wishlist.subtitle")}
         </p>
       </div>
 
@@ -53,9 +55,9 @@ function Wishlist() {
             <EmptyMedia variant="icon">
               <Heart />
             </EmptyMedia>
-            <EmptyTitle>Your wishlist is empty</EmptyTitle>
+            <EmptyTitle>{t("wishlist.emptyTitle")}</EmptyTitle>
             <EmptyDescription>
-              Tap the heart on any product to save it here.
+              {t("wishlist.emptyDesc")}
             </EmptyDescription>
           </EmptyHeader>
 
@@ -65,7 +67,7 @@ function Wishlist() {
             variant="outline"
             size="sm"
           >
-            Explore products
+            {t("wishlist.explore")}
           </Button>
         </Empty>
       ) : (
@@ -74,7 +76,7 @@ function Wishlist() {
             filters={filters}
             setFilters={setFilters}
             resetFilters={resetFilters}
-            searchPlaceholder="Search your wishlist..."
+            searchPlaceholder={t("wishlist.searchPlaceholder")}
           />
 
           {noMatches ? (
@@ -83,14 +85,14 @@ function Wishlist() {
                 <EmptyMedia variant="icon">
                   <SearchX />
                 </EmptyMedia>
-                <EmptyTitle>No saved products match your filters</EmptyTitle>
+                <EmptyTitle>{t("wishlist.noMatchTitle")}</EmptyTitle>
                 <EmptyDescription>
-                  Try adjusting or resetting your filters.
+                  {t("wishlist.noMatchDesc")}
                 </EmptyDescription>
               </EmptyHeader>
 
               <Button variant="outline" size="sm" onClick={resetFilters}>
-                Reset filters
+                {t("filters.resetFilters")}
               </Button>
             </Empty>
           ) : (

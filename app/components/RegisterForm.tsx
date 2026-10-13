@@ -13,10 +13,12 @@ import { authClient } from "@/lib/auth-client";
 import { AppPaths } from "@/enums/AppPaths";
 import { useState } from "react";
 import { toast } from "sonner";
+import { Trans, useTranslation } from "react-i18next";
 
 type RegisterFormData = z.infer<typeof registerSchema>;
 
 export function RegisterForm() {
+  const { t } = useTranslation();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   // Set once sign-up succeeds: email verification is required, so there's no
@@ -50,11 +52,11 @@ export function RegisterForm() {
     setLoading(false);
 
     if (result.error) {
-      setError(result.error.message ?? "Could not create your account");
+      setError(result.error.message ?? t("auth.register.createFailed"));
       return;
     }
 
-    toast.success(`Verification email sent to ${email}`);
+    toast.success(t("auth.register.verificationSent", { email }));
     setVerifyEmail(email);
   }
 
@@ -62,11 +64,13 @@ export function RegisterForm() {
     return (
       <Card className="w-full shadow-sm">
         <CardHeader className="gap-1.5">
-          <CardTitle className="text-xl">Check your inbox</CardTitle>
+          <CardTitle className="text-xl">{t("auth.register.checkInbox")}</CardTitle>
           <p className="text-sm text-muted-foreground">
-            We sent a verification link to{" "}
-            <span className="font-medium text-foreground">{verifyEmail}</span>.
-            Click it to activate your account, then sign in.
+            <Trans
+              i18nKey="auth.register.verifyBody"
+              values={{ email: verifyEmail }}
+              components={{ strong: <span className="font-medium text-foreground" /> }}
+            />
           </p>
         </CardHeader>
       </Card>
@@ -76,9 +80,9 @@ export function RegisterForm() {
   return (
     <Card className="w-full shadow-sm">
       <CardHeader className="gap-1.5">
-        <CardTitle className="text-xl">Create your account</CardTitle>
+        <CardTitle className="text-xl">{t("auth.register.title")}</CardTitle>
         <p className="text-sm text-muted-foreground">
-          Please enter your details to get started
+          {t("auth.register.subtitle")}
         </p>
       </CardHeader>
       <CardContent>
@@ -89,12 +93,12 @@ export function RegisterForm() {
             render={({ field, fieldState: { error } }) => (
               <div className="space-y-2">
                 <label htmlFor="username" className="text-sm font-medium leading-none">
-                  Username
+                  {t("auth.register.username")}
                 </label>
 
                 <Input
                   id="username"
-                  placeholder="Enter your username"
+                  placeholder={t("auth.register.usernamePlaceholder")}
                   {...field}
                 />
 
@@ -112,12 +116,12 @@ export function RegisterForm() {
             render={({ field, fieldState: { error } }) => (
               <div className="space-y-2">
                 <label htmlFor="email" className="text-sm font-medium leading-none">
-                  Email
+                  {t("auth.register.email")}
                 </label>
 
                 <Input
                   id="email"
-                  placeholder="Enter your email"
+                  placeholder={t("auth.register.emailPlaceholder")}
                   {...field}
                 />
 
@@ -135,12 +139,12 @@ export function RegisterForm() {
             render={({ field, fieldState: { error } }) => (
               <div className="space-y-2">
                 <label htmlFor="password" className="text-sm font-medium leading-none">
-                  Password
+                  {t("auth.register.password")}
                 </label>
                 <TogglePasswordInput
                   id="password"
                   type="password"
-                  placeholder="Enter your password"
+                  placeholder={t("auth.register.passwordPlaceholder")}
                   {...field}
                 />
 
@@ -158,12 +162,12 @@ export function RegisterForm() {
             render={({ field, fieldState: { error } }) => (
               <div className="space-y-2">
                 <label htmlFor="confirmPassword" className="text-sm font-medium leading-none">
-                  Confirm Password
+                  {t("auth.register.confirmPassword")}
                 </label>
                 <TogglePasswordInput
                   id="confirmPassword"
                   type="password"
-                  placeholder="Confirm your password"
+                  placeholder={t("auth.register.confirmPasswordPlaceholder")}
                   {...field}
                 />
 
@@ -186,7 +190,7 @@ export function RegisterForm() {
           )}
 
           <Button type="submit" size="lg" className="w-full" disabled={loading}>
-            Register
+            {t("auth.register.submit")}
           </Button>
         </form>
       </CardContent>

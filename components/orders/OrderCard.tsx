@@ -1,5 +1,8 @@
+"use client";
+
 import Link from "next/link";
 import { Package } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 import { Separator } from "@/components/ui/separator";
 import type { OrderHistoryEntry } from "@/lib/data/orders";
@@ -10,12 +13,14 @@ import { OrderStatusBadge } from "./OrderStatusBadge";
 const fromCents = (cents: number) => priceFormatter.format(cents / 100);
 
 export function OrderCard({ entry }: { entry: OrderHistoryEntry }) {
+    const { t } = useTranslation();
+
     return (
         <li className="rounded-xl border bg-card text-card-foreground shadow-sm transition hover:border-foreground/20 hover:shadow-md">
             <div className="flex flex-wrap items-center justify-between gap-3 p-4 sm:p-6">
                 <div className="space-y-1">
                     <div className="flex items-center gap-2">
-                        <h2 className="font-semibold">Order #{entry.id}</h2>
+                        <h2 className="font-semibold">{t("orders.orderNumber", { id: entry.id })}</h2>
                         <OrderStatusBadge status={entry.status} />
                     </div>
 
@@ -24,7 +29,7 @@ export function OrderCard({ entry }: { entry: OrderHistoryEntry }) {
                             {dateFormatter.format(entry.createdAt)}
                         </time>
                         {" · "}
-                        {entry.itemCount} item{entry.itemCount === 1 ? "" : "s"}
+                        {t("orders.items", { count: entry.itemCount })}
                     </p>
                 </div>
 

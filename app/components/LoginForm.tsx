@@ -14,12 +14,14 @@ import { useRouter } from "next/navigation";
 import { loginSchema } from "@/form-validations/auth";
 import { authClient } from "@/lib/auth-client";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 
 type LoginFormData = z.infer<typeof loginSchema>;
 
 export function LoginForm() {
 
   const router = useRouter()
+  const { t } = useTranslation()
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
@@ -46,10 +48,10 @@ export function LoginForm() {
       // Sign-in is blocked until the address is verified; point the user at
       // the link we emailed rather than showing a generic credentials error.
       if (result.error.code === "EMAIL_NOT_VERIFIED") {
-        setError("Please verify your email before signing in — check your inbox for the verification link.")
+        setError(t("auth.login.emailNotVerified"))
         return
       }
-      setError(result.error.message ?? "Invalid username or password")
+      setError(result.error.message ?? t("auth.login.invalidCredentials"))
       return
     }
 
@@ -59,9 +61,9 @@ export function LoginForm() {
   return (
     <Card className="w-full shadow-sm">
       <CardHeader className="gap-1.5">
-        <CardTitle className="text-xl">Welcome Back</CardTitle>
+        <CardTitle className="text-xl">{t("auth.login.title")}</CardTitle>
         <p className="text-sm text-muted-foreground">
-          Please enter your credentials to continue
+          {t("auth.login.subtitle")}
         </p>
       </CardHeader>
       <CardContent>
@@ -72,12 +74,12 @@ export function LoginForm() {
             render={({ field, fieldState: { error } }) => (
               <div className="space-y-2">
                 <label htmlFor="username" className="text-sm font-medium leading-none">
-                  Username
+                  {t("auth.login.username")}
                 </label>
 
                 <Input
                   id="username"
-                  placeholder="Enter your username"
+                  placeholder={t("auth.login.usernamePlaceholder")}
                   {...field}
                 />
 
@@ -96,19 +98,19 @@ export function LoginForm() {
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
                   <label htmlFor="password" className="text-sm font-medium leading-none">
-                    Password
+                    {t("auth.login.password")}
                   </label>
                   <Link
                     href={AppPaths.FORGOT_PASSWORD}
                     className="text-sm font-medium text-muted-foreground underline underline-offset-4 transition-colors hover:text-primary"
                   >
-                    Forgot password?
+                    {t("auth.login.forgot")}
                   </Link>
                 </div>
                 <TogglePasswordInput
                   id="password"
                   type="password"
-                  placeholder="Enter your password"
+                  placeholder={t("auth.login.passwordPlaceholder")}
                   {...field}
                 />
 
@@ -130,7 +132,7 @@ export function LoginForm() {
           )}
 
           <Button type="submit" size="lg" className="w-full" disabled={loading}>
-            Login
+            {t("auth.login.submit")}
           </Button>
         </form>
       </CardContent>

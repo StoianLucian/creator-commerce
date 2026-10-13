@@ -5,10 +5,12 @@ import { AppPaths } from "@/enums/AppPaths";
 import { authClient } from "@/lib/auth-client";
 import { LogOutIcon } from "lucide-react";
 import { useRouter } from "next/navigation"
+import { useTranslation } from "react-i18next";
 
 export function LogoutButton() {
 
     const router = useRouter()
+    const { t } = useTranslation();
 
     async function handleLogout() {
         try {
@@ -30,7 +32,7 @@ export function LogoutButton() {
             onClick={() => handleLogout()}
         >
             <LogOutIcon className="mr-2 h-4 w-4" />
-            Log out
+            {t("logout.label")}
         </Button>
     );
 }

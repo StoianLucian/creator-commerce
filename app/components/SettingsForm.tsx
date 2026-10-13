@@ -6,6 +6,7 @@ import { z } from "zod";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
+import { useTranslation } from "react-i18next";
 
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -72,6 +73,7 @@ export function SettingsForm({ user }: SettingsFormProps) {
 
 function ProfileSection({ user }: SettingsFormProps) {
   const router = useRouter();
+  const { t } = useTranslation();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -96,23 +98,23 @@ function ProfileSection({ user }: SettingsFormProps) {
 
     if (result.error) {
       if (result.error.code === "USERNAME_IS_ALREADY_TAKEN") {
-        setError("That username is already taken — pick another.");
+        setError(t("settingsForm.usernameTaken"));
         return;
       }
-      setError(result.error.message ?? "Could not update your profile");
+      setError(result.error.message ?? t("settingsForm.profileFailed"));
       return;
     }
 
-    toast.success("Profile updated");
+    toast.success(t("settingsForm.profileUpdated"));
     router.refresh();
   }
 
   return (
     <Card className="w-full shadow-sm">
       <CardHeader>
-        <CardTitle>Profile</CardTitle>
+        <CardTitle>{t("settingsForm.profile")}</CardTitle>
         <CardDescription>
-          Your display name and public @handle.
+          {t("settingsForm.profileDesc")}
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -121,8 +123,8 @@ function ProfileSection({ user }: SettingsFormProps) {
             control={control}
             name="name"
             render={({ field, fieldState: { error } }) => (
-              <Field id="name" label="Display name" error={error?.message}>
-                <Input id="name" placeholder="Your name" {...field} />
+              <Field id="name" label={t("settingsForm.displayName")} error={error?.message}>
+                <Input id="name" placeholder={t("settingsForm.displayNamePlaceholder")} {...field} />
               </Field>
             )}
           />
@@ -130,8 +132,8 @@ function ProfileSection({ user }: SettingsFormProps) {
             control={control}
             name="username"
             render={({ field, fieldState: { error } }) => (
-              <Field id="username" label="Username" error={error?.message}>
-                <Input id="username" placeholder="your_handle" {...field} />
+              <Field id="username" label={t("settingsForm.username")} error={error?.message}>
+                <Input id="username" placeholder={t("settingsForm.usernamePlaceholder")} {...field} />
               </Field>
             )}
           />
@@ -146,7 +148,7 @@ function ProfileSection({ user }: SettingsFormProps) {
           )}
 
           <Button type="submit" disabled={loading}>
-            Save changes
+            {t("settingsForm.saveChanges")}
           </Button>
         </form>
       </CardContent>
@@ -155,6 +157,7 @@ function ProfileSection({ user }: SettingsFormProps) {
 }
 
 function EmailSection({ email }: { email: string }) {
+  const { t } = useTranslation();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [sent, setSent] = useState(false);
@@ -166,7 +169,7 @@ function EmailSection({ email }: { email: string }) {
 
   async function onSubmit(data: ChangeEmailFormData) {
     if (data.email.toLowerCase() === email.toLowerCase()) {
-      setError("That's already your email address.");
+      setError(t("settingsForm.emailSame"));
       return;
     }
 
@@ -184,7 +187,7 @@ function EmailSection({ email }: { email: string }) {
     setLoading(false);
 
     if (result.error) {
-      setError(result.error.message ?? "Could not request the email change");
+      setError(result.error.message ?? t("settingsForm.emailChangeFailed"));
       return;
     }
 
@@ -194,16 +197,16 @@ function EmailSection({ email }: { email: string }) {
   return (
     <Card className="w-full shadow-sm">
       <CardHeader>
-        <CardTitle>Email</CardTitle>
+        <CardTitle>{t("settingsForm.email")}</CardTitle>
         <CardDescription>
-          Current email: <span className="font-medium text-foreground">{email}</span>
+          {t("settingsForm.currentEmail")}{" "}
+          <span className="font-medium text-foreground">{email}</span>
         </CardDescription>
       </CardHeader>
       <CardContent>
         {sent ? (
           <p className="rounded-lg border border-dashed px-3 py-3 text-sm text-muted-foreground">
-            Check your current inbox ({email}) for a link to confirm the change.
-            Your email won&apos;t change until you click it.
+            {t("settingsForm.emailSent", { email })}
           </p>
         ) : (
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
@@ -211,10 +214,10 @@ function EmailSection({ email }: { email: string }) {
               control={control}
               name="email"
               render={({ field, fieldState: { error } }) => (
-                <Field id="new-email" label="New email" error={error?.message}>
+                <Field id="new-email" label={t("settingsForm.newEmail")} error={error?.message}>
                   <Input
                     id="new-email"
-                    placeholder="you@example.com"
+                    placeholder={t("settingsForm.newEmailPlaceholder")}
                     {...field}
                   />
                 </Field>
@@ -231,7 +234,7 @@ function EmailSection({ email }: { email: string }) {
             )}
 
             <Button type="submit" disabled={loading}>
-              Send confirmation link
+              {t("settingsForm.sendConfirmation")}
             </Button>
           </form>
         )}
@@ -241,6 +244,7 @@ function EmailSection({ email }: { email: string }) {
 }
 
 function PasswordSection() {
+  const { t } = useTranslation();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -268,23 +272,23 @@ function PasswordSection() {
 
     if (result.error) {
       if (result.error.code === "INVALID_PASSWORD") {
-        setError("Your current password is incorrect.");
+        setError(t("settingsForm.passwordIncorrect"));
         return;
       }
-      setError(result.error.message ?? "Could not change your password");
+      setError(result.error.message ?? t("settingsForm.passwordChangeFailed"));
       return;
     }
 
-    toast.success("Password changed");
+    toast.success(t("settingsForm.passwordChanged"));
     reset();
   }
 
   return (
     <Card className="w-full shadow-sm">
       <CardHeader>
-        <CardTitle>Password</CardTitle>
+        <CardTitle>{t("settingsForm.password")}</CardTitle>
         <CardDescription>
-          Changing your password signs you out everywhere else.
+          {t("settingsForm.passwordDesc")}
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -295,13 +299,13 @@ function PasswordSection() {
             render={({ field, fieldState: { error } }) => (
               <Field
                 id="currentPassword"
-                label="Current password"
+                label={t("settingsForm.currentPassword")}
                 error={error?.message}
               >
                 <TogglePasswordInput
                   id="currentPassword"
                   type="password"
-                  placeholder="Enter your current password"
+                  placeholder={t("settingsForm.currentPasswordPlaceholder")}
                   {...field}
                 />
               </Field>
@@ -311,11 +315,11 @@ function PasswordSection() {
             control={control}
             name="newPassword"
             render={({ field, fieldState: { error } }) => (
-              <Field id="newPassword" label="New password" error={error?.message}>
+              <Field id="newPassword" label={t("settingsForm.newPassword")} error={error?.message}>
                 <TogglePasswordInput
                   id="newPassword"
                   type="password"
-                  placeholder="Enter your new password"
+                  placeholder={t("settingsForm.newPasswordPlaceholder")}
                   {...field}
                 />
               </Field>
@@ -327,13 +331,13 @@ function PasswordSection() {
             render={({ field, fieldState: { error } }) => (
               <Field
                 id="confirmNewPassword"
-                label="Confirm new password"
+                label={t("settingsForm.confirmPassword")}
                 error={error?.message}
               >
                 <TogglePasswordInput
                   id="confirmNewPassword"
                   type="password"
-                  placeholder="Confirm your new password"
+                  placeholder={t("settingsForm.confirmPasswordPlaceholder")}
                   {...field}
                 />
               </Field>
@@ -350,7 +354,7 @@ function PasswordSection() {
           )}
 
           <Button type="submit" disabled={loading}>
-            Change password
+            {t("settingsForm.changePassword")}
           </Button>
         </form>
       </CardContent>

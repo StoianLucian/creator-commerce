@@ -2,6 +2,7 @@
 
 import { Loader2, Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { useTranslation } from "react-i18next";
 
 import {
     AlertDialog,
@@ -44,6 +45,7 @@ export function DeleteProductButton({
 }: DeleteProductButtonProps) {
     const deleteProduct = useDeleteProduct();
     const router = useRouter();
+    const { t } = useTranslation();
 
     const handleDelete = () => {
         deleteProduct.mutate(productId, {
@@ -66,7 +68,7 @@ export function DeleteProductButton({
                     />
                 }
                 disabled={deleteProduct.isPending}
-                aria-label={`Delete ${productName}`}
+                aria-label={t("deleteDialog.trigger", { name: productName })}
             >
                 {deleteProduct.isPending ? (
                     <Loader2 className="h-4 w-4 animate-spin" />
@@ -78,17 +80,16 @@ export function DeleteProductButton({
 
             <AlertDialogContent>
                 <AlertDialogHeader>
-                    <AlertDialogTitle>Delete “{productName}”?</AlertDialogTitle>
+                    <AlertDialogTitle>{t("deleteDialog.title", { name: productName })}</AlertDialogTitle>
                     <AlertDialogDescription>
-                        This removes the product from your store and the marketplace.
-                        Past orders keep their record of it. This can’t be undone.
+                        {t("deleteDialog.desc")}
                     </AlertDialogDescription>
                 </AlertDialogHeader>
 
                 <AlertDialogFooter>
-                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                    <AlertDialogCancel>{t("deleteDialog.cancel")}</AlertDialogCancel>
                     <AlertDialogAction onClick={handleDelete}>
-                        Delete
+                        {t("deleteDialog.confirm")}
                     </AlertDialogAction>
                 </AlertDialogFooter>
             </AlertDialogContent>

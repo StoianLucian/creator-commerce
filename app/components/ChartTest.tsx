@@ -8,6 +8,8 @@ import {
     LabelList,
 } from "recharts"
 
+import { useTranslation } from "react-i18next"
+
 import {
     ChartContainer,
     ChartTooltip,
@@ -24,16 +26,18 @@ export type RevenuePoint = {
     revenue: number
 }
 
-// Keys have to match the series `dataKey`, that's how the tooltip finds the
-// label and the `--color-revenue` variable.
-const chartConfig = {
-    revenue: {
-        label: "Revenue",
-        color: "var(--primary)",
-    },
-} satisfies ChartConfig
-
 export function MyChart({ data }: { data: RevenuePoint[] }) {
+    const { t } = useTranslation()
+
+    // Keys have to match the series `dataKey`, that's how the tooltip finds the
+    // label and the `--color-revenue` variable.
+    const chartConfig = {
+        revenue: {
+            label: t("chart.revenue"),
+            color: "var(--primary)",
+        },
+    } satisfies ChartConfig
+
     return (
         <ChartContainer config={chartConfig} className="h-75 w-full">
             <LineChart data={data} margin={{ top: 20 }}>

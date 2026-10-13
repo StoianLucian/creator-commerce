@@ -2,6 +2,7 @@
 
 import AuthGuard from "@/components/auth-guard/AuthGuard";
 import SalesList from "@/app/components/SalesList";
+import { PageHeading } from "@/app/components/PageHeading";
 
 export const metadata = {
     title: "Sales",
@@ -10,12 +11,10 @@ export const metadata = {
 export default function SalesPage() {
     return (
         <div className="space-y-6 px-12 py-8">
-            <div>
-                <h1 className="text-3xl font-bold">Sales</h1>
-                <p className="text-muted-foreground">
-                    Orders for your products, newest first.
-                </p>
-            </div>
+            <PageHeading
+                titleKey="headings.salesTitle"
+                subtitleKey="headings.salesSubtitle"
+            />
 
             <AuthGuard>
                 <SalesList />

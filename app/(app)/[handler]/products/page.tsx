@@ -1,12 +1,10 @@
 // app/(app)/[handler]/products/page.tsx
 
-import Link from "next/link";
 import { notFound } from "next/navigation";
-import { Plus } from "lucide-react";
 import Products from "./[new]/Products";
-import { CreatorPaths } from "@/enums/AppPaths";
 import { parseHandle } from "@/lib/handle";
 import { isHandleOwner } from "@/lib/data/creators";
+import { OwnerProductsHeader } from "@/app/components/OwnerProductsHeader";
 
 
 export default async function ProductsPage({
@@ -21,22 +19,7 @@ export default async function ProductsPage({
 
     return (
         <div className="space-y-6 px-12 py-8">
-            <div className="flex items-center justify-between">
-                <div>
-                    <h1 className="text-3xl font-bold">Products</h1>
-                    <p className="text-muted-foreground">
-                        Manage your product catalog.
-                    </p>
-                </div>
-
-                <Link
-                    href={CreatorPaths.productsNew(username)}
-                    className="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-primary-foreground hover:opacity-90"
-                >
-                    <Plus className="h-4 w-4" />
-                    New Product
-                </Link>
-            </div>
+            <OwnerProductsHeader username={username} />
             <Products />
         </div>
     );

@@ -1,6 +1,7 @@
 "use client";
 
 import { TrendingUp } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 import {
   Empty,
@@ -19,6 +20,7 @@ import { MyChart } from "./ChartTest";
 const fromCents = (cents: number) => priceFormatter.format(cents / 100);
 
 function SalesList() {
+  const { t } = useTranslation();
   const { data: sales = [], isPending, isError, error } = useSales();
 
 
@@ -38,7 +40,7 @@ function SalesList() {
   if (isError) {
     return (
       <div className="rounded-xl border border-destructive/50 bg-destructive/5 p-6">
-        <p className="font-medium text-destructive">Could not load your sales</p>
+        <p className="font-medium text-destructive">{t("sales.loadError")}</p>
         <p className="text-sm text-muted-foreground">{error.message}</p>
       </div>
     );
@@ -61,9 +63,9 @@ function SalesList() {
           <EmptyMedia variant="icon">
             <TrendingUp />
           </EmptyMedia>
-          <EmptyTitle>No sales yet</EmptyTitle>
+          <EmptyTitle>{t("sales.emptyTitle")}</EmptyTitle>
           <EmptyDescription>
-            When someone buys one of your products, the order shows up here.
+            {t("sales.emptyDesc")}
           </EmptyDescription>
         </EmptyHeader>
       </Empty>
@@ -77,12 +79,14 @@ function SalesList() {
     <div className="flex flex-col gap-6">
       <div className="flex flex-wrap items-end justify-between gap-4 rounded-xl border bg-card p-6 text-card-foreground shadow-sm">
         <div className="space-y-1">
-          <p className="text-sm text-muted-foreground">Total revenue</p>
+          <p className="text-sm text-muted-foreground">{t("sales.totalRevenue")}</p>
           <p className="text-3xl font-semibold tabular-nums">{fromCents(revenue)}</p>
         </div>
         <p className="text-sm text-muted-foreground tabular-nums">
-          {unitsSold} item{unitsSold === 1 ? "" : "s"} across {sales.length}{" "}
-          order{sales.length === 1 ? "" : "s"}
+          {t("sales.summary", {
+            count: sales.length,
+            items: t("sales.items", { count: unitsSold }),
+          })}
         </p>
       </div>
       <MyChart data={revenueByDay} />

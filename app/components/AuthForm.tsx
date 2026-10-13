@@ -4,6 +4,7 @@ import Link from "next/link";
 import { ReactNode } from "react";
 import { usePathname } from "next/navigation";
 import { ShoppingBag, ShieldCheck, Truck, Sparkles, Store } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { AppPaths } from "@/enums/AppPaths";
 
@@ -12,13 +13,14 @@ interface AuthFormProps {
 }
 
 const trustItems = [
-  { icon: ShieldCheck, label: "Secure checkout" },
-  { icon: Truck, label: "Order tracking" },
-  { icon: Sparkles, label: "Curated by creators" },
+  { icon: ShieldCheck, labelKey: "auth.trust.secure" },
+  { icon: Truck, labelKey: "auth.trust.tracking" },
+  { icon: Sparkles, labelKey: "auth.trust.curated" },
 ];
 
 export default function AuthForm({ children }: AuthFormProps) {
   const pathname = usePathname();
+  const { t } = useTranslation();
 
   const isLogin = pathname.includes(AppPaths.LOGIN);
 
@@ -35,11 +37,9 @@ export default function AuthForm({ children }: AuthFormProps) {
             <ShoppingBag className="h-7 w-7" />
           </span>
           <div className="space-y-1">
-            <h1 className="text-2xl font-bold tracking-tight">Creator Commerce</h1>
+            <h1 className="text-2xl font-bold tracking-tight">{t("auth.brand")}</h1>
             <p className="text-sm text-muted-foreground">
-              {isLogin
-                ? "Sign in to pick up where you left off"
-                : "Create an account and start shopping"}
+              {isLogin ? t("auth.loginTagline") : t("auth.registerTagline")}
             </p>
           </div>
         </div>
@@ -53,42 +53,42 @@ export default function AuthForm({ children }: AuthFormProps) {
           render={<Link href={AppPaths.DASHBOARD} />}
         >
           <Store className="mr-2 h-4 w-4" />
-          Continue browsing as guest
+          {t("auth.continueGuest")}
         </Button>
 
         <p className="text-center text-sm text-muted-foreground">
-          {isLogin ? "New to Creator Commerce? " : "Already have an account? "}
+          {isLogin ? t("auth.newHere") : t("auth.haveAccount")}
           <Link
             href={isLogin ? AppPaths.REGISTER : AppPaths.LOGIN}
             className="font-medium text-foreground underline underline-offset-4 transition-colors hover:text-primary"
           >
-            {isLogin ? "Create an account" : "Sign in"}
+            {isLogin ? t("auth.createAccount") : t("auth.signIn")}
           </Link>
         </p>
 
         <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2 text-xs text-muted-foreground">
           {trustItems.map((item) => (
-            <span key={item.label} className="flex items-center gap-1.5">
+            <span key={item.labelKey} className="flex items-center gap-1.5">
               <item.icon className="h-3.5 w-3.5" />
-              {item.label}
+              {t(item.labelKey)}
             </span>
           ))}
         </div>
 
         <p className="text-center text-xs text-muted-foreground">
-          By continuing, you agree to our{" "}
+          {t("auth.agree")}{" "}
           <Link
             href="/terms"
             className="underline underline-offset-4 hover:text-foreground"
           >
-            Terms
+            {t("auth.terms")}
           </Link>{" "}
-          and{" "}
+          {t("auth.and")}{" "}
           <Link
             href="/privacy"
             className="underline underline-offset-4 hover:text-foreground"
           >
-            Privacy Policy
+            {t("auth.privacy")}
           </Link>
           .
         </p>
