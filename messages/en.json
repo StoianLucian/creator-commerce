@@ -105,6 +105,9 @@
     "chart": {
         "revenue": "Revenue"
     },
+    "common": {
+        "loading": "Loading..."
+    },
     "wishlistButton": {
         "add": "Add {{name}} to wishlist",
         "remove": "Remove {{name}} from wishlist"

@@ -105,6 +105,9 @@
     "chart": {
         "revenue": "Venit"
     },
+    "common": {
+        "loading": "Se încarcă..."
+    },
     "wishlistButton": {
         "add": "Adaugă {{name}} la favorite",
         "remove": "Elimină {{name}} din favorite"
