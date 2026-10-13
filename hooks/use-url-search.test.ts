@@ -35,6 +35,8 @@ describe("useUrlSearch", () => {
             maxPrice: 50,
             status: "active",
             categoryId: 3,
+            page: 1,
+            pageSize: 8,
         });
     });
 
@@ -48,6 +50,8 @@ describe("useUrlSearch", () => {
             maxPrice: undefined,
             status: "all",
             categoryId: undefined,
+            page: 1,
+            pageSize: 8,
         });
     });
 
@@ -87,6 +91,49 @@ describe("useUrlSearch", () => {
         expect(result.current.filters.sort).toBe("most-sold");
     });
 
+    it("parses page and pageSize from the search params", () => {
+        state.search = "page=3&pageSize=24";
+
+        const { result } = renderHook(() => useUrlSearch());
+
+        expect(result.current.filters.page).toBe(3);
+        expect(result.current.filters.pageSize).toBe(24);
+    });
+
+    it("ignores a pageSize that is not one of the offered sizes", () => {
+        state.search = "pageSize=7";
+
+        const { result } = renderHook(() => useUrlSearch());
+
+        expect(result.current.filters.pageSize).toBe(8);
+    });
+
+    it("setPage changes the page without touching the other filters", () => {
+        state.search = "sort=price-asc";
+
+        const { result } = renderHook(() => useUrlSearch());
+
+        act(() => {
+            result.current.setPage(4);
+        });
+
+        expect(result.current.filters.page).toBe(4);
+        expect(result.current.filters.sort).toBe("price-asc");
+    });
+
+    it("resets to page 1 when a filter changes via setFilters", () => {
+        state.search = "page=5";
+
+        const { result } = renderHook(() => useUrlSearch());
+        expect(result.current.filters.page).toBe(5);
+
+        act(() => {
+            result.current.setFilters((prev) => ({ ...prev, sort: "most-sold" }));
+        });
+
+        expect(result.current.filters.page).toBe(1);
+    });
+
     it("resetFilters restores the defaults", () => {
         state.search = "q=hello&sort=price-asc&minPrice=10&category=3";
 
@@ -103,6 +150,8 @@ describe("useUrlSearch", () => {
             maxPrice: undefined,
             status: "all",
             categoryId: undefined,
+            page: 1,
+            pageSize: 8,
         });
     });
 

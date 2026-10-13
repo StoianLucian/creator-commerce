@@ -2,6 +2,7 @@
 
 import { Dispatch, SetStateAction, useState } from "react";
 import { Search, SlidersHorizontal, X } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 import {
   Select,
@@ -22,19 +23,20 @@ import { useCategories } from "@/hooks/useCategories";
 // a concrete string value but the filter itself is `categoryId: undefined`.
 const ALL_CATEGORIES = "all";
 
-const sortOptions: { value: ProductSort; label: string }[] = [
-  { value: "newest", label: "Newest" },
-  { value: "price-asc", label: "Price: Low to High" },
-  { value: "price-desc", label: "Price: High to Low" },
-  { value: "most-sold", label: "Most sold" },
+// `labelKey` resolves against the "filters" i18n namespace at render time.
+const sortOptions: { value: ProductSort; labelKey: string }[] = [
+  { value: "newest", labelKey: "filters.sort.newest" },
+  { value: "price-asc", labelKey: "filters.sort.priceAsc" },
+  { value: "price-desc", labelKey: "filters.sort.priceDesc" },
+  { value: "most-sold", labelKey: "filters.sort.mostSold" },
 ];
 
-const statusOptions: { value: ProductStatusFilter; label: string }[] = [
-  { value: "all", label: "All statuses" },
-  { value: "active", label: "Active" },
-  { value: "draft", label: "Draft" },
-  { value: "sold", label: "Sold" },
-  { value: "deleted", label: "Deleted" },
+const statusOptions: { value: ProductStatusFilter; labelKey: string }[] = [
+  { value: "all", labelKey: "filters.statuses.all" },
+  { value: "active", labelKey: "filters.statuses.active" },
+  { value: "draft", labelKey: "filters.statuses.draft" },
+  { value: "sold", labelKey: "filters.statuses.sold" },
+  { value: "deleted", labelKey: "filters.statuses.deleted" },
 ];
 
 interface PriceRange {
@@ -47,6 +49,7 @@ function PriceFilter({
   maxPrice,
   onApply,
 }: PriceRange & { onApply: (range: PriceRange) => void }) {
+  const { t } = useTranslation();
   const [open, setOpen] = useState(false);
   const [min, setMin] = useState(minPrice != null ? String(minPrice) : "");
   const [max, setMax] = useState(maxPrice != null ? String(maxPrice) : "");
@@ -83,17 +86,17 @@ function PriceFilter({
       >
         <SlidersHorizontal className="mr-2 h-4 w-4" />
         {hasRange
-          ? `$${minPrice ?? 0} – ${maxPrice != null ? `$${maxPrice}` : "Any"}`
-          : "Price"}
+          ? `${minPrice ?? 0} – ${maxPrice != null ? `${maxPrice} lei` : t("filters.any")}`
+          : t("filters.price")}
       </PopoverTrigger>
 
       <PopoverContent align="end" className="w-72">
-        <p className="text-sm font-medium">Price range</p>
+        <p className="text-sm font-medium">{t("filters.priceRange")}</p>
 
         <div className="flex items-end gap-2">
           <div className="flex-1 space-y-1">
             <Label htmlFor="min-price" className="text-xs text-muted-foreground">
-              Min
+              {t("filters.min")}
             </Label>
             <Input
               id="min-price"
@@ -109,13 +112,13 @@ function PriceFilter({
 
           <div className="flex-1 space-y-1">
             <Label htmlFor="max-price" className="text-xs text-muted-foreground">
-              Max
+              {t("filters.max")}
             </Label>
             <Input
               id="max-price"
               type="number"
               min="0"
-              placeholder="Any"
+              placeholder={t("filters.any")}
               value={max}
               onChange={(e) => setMax(e.target.value)}
             />
@@ -129,10 +132,10 @@ function PriceFilter({
             onClick={clear}
             disabled={!hasRange && min === "" && max === ""}
           >
-            Clear
+            {t("filters.clear")}
           </Button>
           <Button size="sm" onClick={apply}>
-            Apply
+            {t("filters.apply")}
           </Button>
         </div>
       </PopoverContent>
@@ -152,18 +155,26 @@ export function ProductFilters({
   filters,
   setFilters,
   resetFilters,
-  searchPlaceholder = "Search products...",
+  searchPlaceholder,
   showStatus = false,
 }: ProductFiltersProps) {
+  const { t } = useTranslation();
   const { search, sort, minPrice, maxPrice, status, categoryId } = filters;
+
+  const placeholder = searchPlaceholder ?? t("filters.searchProducts");
 
   const { data: categories = [] } = useCategories();
 
   // Base UI's Select reads `items` to render the selected label while closed.
   const categoryItems = [
-    { value: ALL_CATEGORIES, label: "All categories" },
+    { value: ALL_CATEGORIES, label: t("filters.allCategories") },
     ...categories.map((c) => ({ value: String(c.id), label: c.name })),
   ];
+
+  // Base UI's Select reads `items` to render the selected label while closed,
+  // so these carry the translated labels alongside each value.
+  const sortItems = sortOptions.map((o) => ({ value: o.value, label: t(o.labelKey) }));
+  const statusItems = statusOptions.map((o) => ({ value: o.value, label: t(o.labelKey) }));
 
   const hasActiveFilters =
     search !== "" ||
@@ -179,8 +190,8 @@ export function ProductFilters({
         <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
         <input
           type="text"
-          placeholder={searchPlaceholder}
-          aria-label="Search products"
+          placeholder={placeholder}
+          aria-label={t("filters.searchAria")}
           className="h-10 w-full rounded-lg border border-input bg-background py-2 pl-10 pr-4 text-sm transition-colors outline-none placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring"
           value={search}
           onChange={(e) => setFilters((prev) => ({ ...prev, search: e.target.value }))}
@@ -201,12 +212,12 @@ export function ProductFilters({
           }))
         }
       >
-        <SelectTrigger className="data-[size=default]:h-10 min-w-40 flex-1 min-[1200px]:w-48 min-[1200px]:flex-none min-[1200px]:min-w-0" aria-label="Filter by category">
-          <SelectValue placeholder="Category" />
+        <SelectTrigger className="data-[size=default]:h-10 min-w-40 flex-1 min-[1200px]:w-48 min-[1200px]:flex-none min-[1200px]:min-w-0" aria-label={t("filters.filterByCategory")}>
+          <SelectValue placeholder={t("filters.category")} />
         </SelectTrigger>
 
         <SelectContent>
-          <SelectItem value={ALL_CATEGORIES}>All categories</SelectItem>
+          <SelectItem value={ALL_CATEGORIES}>{t("filters.allCategories")}</SelectItem>
           {categories.map((c) => (
             <SelectItem key={c.id} value={String(c.id)}>
               {c.name}
@@ -223,20 +234,20 @@ export function ProductFilters({
 
       {showStatus && (
         <Select
-          items={statusOptions}
+          items={statusItems}
           value={status}
           onValueChange={(value) =>
             setFilters((prev) => ({ ...prev, status: value as ProductStatusFilter }))
           }
         >
-          <SelectTrigger className="data-[size=default]:h-10 min-w-40 flex-1 min-[1200px]:w-44 min-[1200px]:flex-none min-[1200px]:min-w-0" aria-label="Filter by status">
-            <SelectValue placeholder="Status" />
+          <SelectTrigger className="data-[size=default]:h-10 min-w-40 flex-1 min-[1200px]:w-44 min-[1200px]:flex-none min-[1200px]:min-w-0" aria-label={t("filters.filterByStatus")}>
+            <SelectValue placeholder={t("filters.status")} />
           </SelectTrigger>
 
           <SelectContent>
             {statusOptions.map((option) => (
               <SelectItem key={option.value} value={option.value}>
-                {option.label}
+                {t(option.labelKey)}
               </SelectItem>
             ))}
           </SelectContent>
@@ -244,18 +255,18 @@ export function ProductFilters({
       )}
 
       <Select
-        items={sortOptions}
+        items={sortItems}
         value={sort}
         onValueChange={(value) => setFilters((prev) => ({ ...prev, sort: value as ProductSort }))}
       >
-        <SelectTrigger className="data-[size=default]:h-10 min-w-40 flex-1 min-[1200px]:w-56 min-[1200px]:flex-none min-[1200px]:min-w-0" aria-label="Sort products">
-          <SelectValue placeholder="Sort by" />
+        <SelectTrigger className="data-[size=default]:h-10 min-w-40 flex-1 min-[1200px]:w-56 min-[1200px]:flex-none min-[1200px]:min-w-0" aria-label={t("filters.sortProducts")}>
+          <SelectValue placeholder={t("filters.sortBy")} />
         </SelectTrigger>
 
         <SelectContent>
           {sortOptions.map((option) => (
             <SelectItem key={option.value} value={option.value}>
-              {option.label}
+              {t(option.labelKey)}
             </SelectItem>
           ))}
         </SelectContent>
@@ -264,7 +275,7 @@ export function ProductFilters({
         {hasActiveFilters && (
           <Button variant="ghost" className="h-10 min-w-40 flex-1 min-[1200px]:w-auto min-[1200px]:flex-none min-[1200px]:min-w-0" onClick={resetFilters}>
             <X className="mr-2 h-4 w-4" />
-            Reset filters
+            {t("filters.resetFilters")}
           </Button>
         )}
       </div>

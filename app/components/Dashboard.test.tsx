@@ -36,24 +36,32 @@ const baseFilters = {
     maxPrice: undefined,
     status: "all",
     categoryId: undefined,
+    page: 1,
+    pageSize: 8,
 };
 
 function setup({
     filters = {},
     products = [] as unknown[],
     isPending = false,
+    totalPages = 1,
 }: {
     filters?: Partial<typeof baseFilters>;
     products?: unknown[];
     isPending?: boolean;
+    totalPages?: number;
 }) {
     useUrlSearchMock.mockReturnValue({
         filters: { ...baseFilters, ...filters },
         setFilters: vi.fn(),
+        setPage: vi.fn(),
         searchDebounce: "",
         resetFilters: resetFiltersMock,
     });
-    useProductsMock.mockReturnValue({ data: products, isPending });
+    useProductsMock.mockReturnValue({
+        data: { items: products, total: products.length, page: 1, pageSize: 8, totalPages },
+        isPending,
+    });
 }
 
 afterEach(() => {

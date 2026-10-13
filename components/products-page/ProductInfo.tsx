@@ -1,4 +1,7 @@
+"use client";
+
 import { Package } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -17,6 +20,7 @@ interface ProductInfoProps {
 
 /** Description, attributes, status and metadata panels for one product. */
 export function ProductInfo({ product }: ProductInfoProps) {
+    const { t } = useTranslation();
     const variant =
         statusVariant[product.status as keyof typeof statusVariant] ?? "outline";
 
@@ -25,7 +29,7 @@ export function ProductInfo({ product }: ProductInfoProps) {
             <div className="space-y-6 lg:col-span-2">
                 <Card>
                     <CardHeader>
-                        <CardTitle className="text-lg">Description</CardTitle>
+                        <CardTitle className="text-lg">{t("product.description")}</CardTitle>
                     </CardHeader>
 
                     <CardContent>
@@ -36,7 +40,7 @@ export function ProductInfo({ product }: ProductInfoProps) {
                         ) : (
                             <p className="flex items-center gap-2 text-sm text-muted-foreground">
                                 <Package className="h-4 w-4" />
-                                No description yet
+                                {t("product.noDescription")}
                             </p>
                         )}
                     </CardContent>
@@ -45,21 +49,21 @@ export function ProductInfo({ product }: ProductInfoProps) {
                 <Card>
                     <CardHeader>
                         <CardTitle className="text-lg">
-                            Product Information
+                            {t("product.information")}
                         </CardTitle>
                     </CardHeader>
 
                     <CardContent className="grid gap-4 sm:grid-cols-2">
                         <Info
-                            label="Category"
-                            value={product.category?.name ?? "Uncategorized"}
+                            label={t("product.category")}
+                            value={product.category?.name ?? t("product.uncategorized")}
                         />
                         <Info
-                            label="Price"
+                            label={t("product.price")}
                             value={priceFormatter.format(product.price)}
                         />
-                        <Info label="Sold" value={`${product.sold} units`} />
-                        <Info label="Images" value={`${product.images.length}`} />
+                        <Info label={t("product.sold")} value={t("product.soldUnits", { n: product.sold })} />
+                        <Info label={t("product.images")} value={`${product.images.length}`} />
                     </CardContent>
                 </Card>
             </div>
@@ -68,7 +72,7 @@ export function ProductInfo({ product }: ProductInfoProps) {
             <div className="space-y-6">
                 <Card>
                     <CardHeader>
-                        <CardTitle className="text-lg">Status</CardTitle>
+                        <CardTitle className="text-lg">{t("product.status")}</CardTitle>
                     </CardHeader>
 
                     <CardContent>

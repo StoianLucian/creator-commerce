@@ -1,6 +1,7 @@
 "use client";
 
 import { Loader2, ShoppingCart } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 import { Button } from "@/components/ui/button";
 import { useAddToCart } from "@/hooks/useCart";
@@ -24,6 +25,7 @@ export function AddToCartButton({
     variant,
 }: AddToCartButtonProps) {
     const addToCart = useAddToCart();
+    const { t } = useTranslation();
 
     return (
         <Button
@@ -32,14 +34,14 @@ export function AddToCartButton({
             className={cn("justify-center gap-2 transition-colors", className)}
             disabled={addToCart.isPending}
             onClick={() => addToCart.mutate({ productId, quantity })}
-            aria-label={`Add ${productName} to cart`}
+            aria-label={t("cart.addToCartAria", { name: productName })}
         >
             {addToCart.isPending ? (
                 <Loader2 className="h-4 w-4 animate-spin" />
             ) : (
                 <ShoppingCart className="h-4 w-4" />
             )}
-            Add to cart
+            {t("cart.addToCart")}
         </Button>
     );
 }

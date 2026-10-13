@@ -47,6 +47,8 @@ describe("useProducts", () => {
             minPrice: 10,
             maxPrice: 100,
             categoryId: 2,
+            page: 1,
+            pageSize: undefined,
         });
     });
 

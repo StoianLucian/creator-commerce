@@ -1,21 +1,13 @@
 import "dotenv/config";
-import slugify from "slugify";
-import { and, eq, inArray } from "drizzle-orm";
 
-import { db } from ".";
-import { user } from "./auth-schema";
-import { category } from "./category-schema";
-import { product } from "./product-schema";
-import { productImages } from "./product-images-schema";
+import { seedProductsForOwner, type SeedProduct } from "./seed-helpers";
 
 // The creator these demo products are listed under.
 const OWNER_USERNAME = "lucians";
 
-// 10 real products looked up on emag.ro. Prices are in whole lei (the app
-// stores and displays whole-leu prices). `category` matches a seeded
-// category name. Book prices are approximate — eMAG's listing page did not
-// expose a price for them.
-const products = [
+// Real products looked up on emag.ro. Prices are in whole lei. Book prices
+// are approximate — eMAG's listing page did not expose a price for them.
+const products: SeedProduct[] = [
     {
         name: "Apple iPhone 17 Pro, 256GB, 5G, Deep Blue",
         price: 6400,
@@ -62,7 +54,7 @@ const products = [
             "https://s13emagst.akamaized.net/products/117508/117507722/images/res_e6dd3e5b3182d0d1c1666c86670c4590.png",
     },
     {
-        name: 'Laptop ASUS Zenbook S 14 UX5406SA, Ultra 7 258V, 32GB RAM, 1TB SSD',
+        name: "Laptop ASUS Zenbook S 14 UX5406SA, Ultra 7 258V, 32GB RAM, 1TB SSD",
         price: 9500,
         category: "Electronics",
         description:
@@ -108,72 +100,13 @@ const products = [
     },
 ];
 
-async function seedProducts() {
-    const [owner] = await db
-        .select({ id: user.id })
-        .from(user)
-        .where(eq(user.username, OWNER_USERNAME));
-
-    if (!owner) {
-        throw new Error(`No user with username "${OWNER_USERNAME}" to own the products`);
-    }
-
-    const categories = await db.select().from(category);
-    const categoryIdByName = new Map(categories.map((c) => [c.name, c.id]));
-
-    // Idempotent: skip any product name this owner already has, so re-running
-    // doesn't create duplicates (the name column has no unique constraint).
-    const names = products.map((p) => p.name);
-    const existing = await db
-        .select({ name: product.name })
-        .from(product)
-        .where(and(eq(product.ownerId, owner.id), inArray(product.name, names)));
-    const existingNames = new Set(existing.map((p) => p.name));
-
-    let inserted = 0;
-
-    for (const p of products) {
-        if (existingNames.has(p.name)) {
-            console.log(`skip (exists): ${p.name}`);
-            continue;
-        }
-
-        const categoryId = categoryIdByName.get(p.category);
-        if (categoryId == null) {
-            console.warn(`skip (no category "${p.category}"): ${p.name}`);
-            continue;
-        }
-
-        const [newProduct] = await db
-            .insert(product)
-            .values({
-                name: p.name,
-                description: p.description,
-                ownerId: owner.id,
-                categoryId,
-                status: "active",
-                slug: slugify(p.name, { lower: true, strict: true }),
-                sold: 0,
-                price: p.price,
-            })
-            .returning({ id: product.id });
-
-        await db.insert(productImages).values({
-            productId: newProduct.id,
-            imageUrl: p.imageUrl,
-            // External seed image — no uploadthing key to delete later.
-            imageKey: `emag-seed-${newProduct.id}`,
-        });
-
-        inserted += 1;
-        console.log(`added: ${p.name} (${p.price} lei)`);
-    }
-
+async function main() {
+    const inserted = await seedProductsForOwner(OWNER_USERNAME, products);
     console.log(`\nDone. Inserted ${inserted} product(s).`);
     process.exit(0);
 }
 
-seedProducts().catch((error) => {
+main().catch((error) => {
     console.error(error);
     process.exit(1);
 });

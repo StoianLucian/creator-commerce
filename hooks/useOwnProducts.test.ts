@@ -50,6 +50,8 @@ describe("useOwnProducts", () => {
             maxPrice: undefined,
             status: "active",
             categoryId: 4,
+            page: 1,
+            pageSize: undefined,
         });
     });
 

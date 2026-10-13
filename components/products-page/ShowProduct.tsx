@@ -1,5 +1,8 @@
+"use client";
+
 import Link from "next/link";
 import { ArrowLeft, Pencil } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 import { buttonVariants } from "@/components/ui/button";
 import { AddToCartButton } from "@/components/cart/AddToCartButton";
@@ -30,6 +33,7 @@ export function ShowProduct({
     username,
     isOwner = false,
 }: ShowProductProps) {
+    const { t } = useTranslation();
     const productsPath = CreatorPaths.products(username);
 
     return (
@@ -41,7 +45,7 @@ export function ShowProduct({
                     className="inline-flex items-center gap-2 rounded-lg text-sm text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                 >
                     <ArrowLeft className="h-4 w-4" />
-                    {isOwner ? "Back to Products" : "Back to Explore"}
+                    {isOwner ? t("product.backToProducts") : t("product.backToExplore")}
                 </Link>
 
                 <div className="flex items-center gap-2">
@@ -52,13 +56,13 @@ export function ShowProduct({
                                 className={buttonVariants({ variant: "outline" })}
                             >
                                 <Pencil className="h-4 w-4" />
-                                Edit Product
+                                {t("product.editProduct")}
                             </Link>
 
                             <DeleteProductButton
                                 productId={product.id}
                                 productName={product.name}
-                                label="Delete Product"
+                                label={t("product.deleteProduct")}
                                 redirectTo={productsPath}
                             />
                         </>

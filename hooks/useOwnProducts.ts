@@ -1,13 +1,16 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { deleteProduct, getOwnnProducts, ProductWithRelations } from "@/lib/actions/products";
 import { useProductsProps } from "./useProducts";
+import type { Paginated } from "@/lib/products/pagination";
 
-export function useOwnProducts({ q, sort = "newest", minPrice, maxPrice, status = "all", categoryId }: useProductsProps) {
-    return useQuery<ProductWithRelations[], Error>({
-        queryKey: ["products-own", q, sort, minPrice, maxPrice, status, categoryId],
-        queryFn: async (): Promise<ProductWithRelations[]> =>
-            await getOwnnProducts({ q, sort, minPrice, maxPrice, status, categoryId })
+export function useOwnProducts({ q, sort = "newest", minPrice, maxPrice, status = "all", categoryId, page = 1, pageSize }: useProductsProps) {
+    return useQuery<Paginated<ProductWithRelations>, Error>({
+        queryKey: ["products-own", q, sort, minPrice, maxPrice, status, categoryId, page, pageSize],
+        queryFn: async (): Promise<Paginated<ProductWithRelations>> =>
+            await getOwnnProducts({ q, sort, minPrice, maxPrice, status, categoryId, page, pageSize }),
+        // Keep the current page visible while the next one loads.
+        placeholderData: keepPreviousData,
     });
 }
 

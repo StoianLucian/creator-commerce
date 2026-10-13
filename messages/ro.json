@@ -1,0 +1,96 @@
+{
+    "nav": {
+        "mySection": "Secțiunea mea",
+        "explore": "Explorează",
+        "products": "Produse",
+        "orders": "Comenzi",
+        "sales": "Vânzări",
+        "wishlist": "Favorite",
+        "settings": "Setări",
+        "language": "Limbă",
+        "login": "Autentificare",
+        "register": "Înregistrare",
+        "accountMenu": "Deschide meniul contului"
+    },
+    "catalog": {
+        "noProductsTitle": "Niciun produs încă",
+        "noProductsDescExplore": "Revino curând — produsele noi de la creatori vor apărea aici.",
+        "noProductsDescOwner": "Adaugă primul produs cu butonul Produs nou de mai sus.",
+        "noMatchTitle": "Niciun produs nu corespunde filtrelor",
+        "noMatchDesc": "Încearcă să ajustezi sau să ștergi filtrele pentru mai multe rezultate.",
+        "clearFilters": "Șterge filtrele",
+        "loadError": "Nu am putut încărca produsele tale"
+    },
+    "filters": {
+        "searchProducts": "Caută produse...",
+        "searchYourProducts": "Caută în produsele tale...",
+        "searchAria": "Caută produse",
+        "category": "Categorie",
+        "allCategories": "Toate categoriile",
+        "filterByCategory": "Filtrează după categorie",
+        "price": "Preț",
+        "priceRange": "Interval de preț",
+        "min": "Min",
+        "max": "Max",
+        "any": "Oricât",
+        "apply": "Aplică",
+        "clear": "Șterge",
+        "status": "Stare",
+        "filterByStatus": "Filtrează după stare",
+        "sortProducts": "Sortează produsele",
+        "sortBy": "Sortează după",
+        "resetFilters": "Resetează filtrele",
+        "sort": {
+            "newest": "Cele mai noi",
+            "priceAsc": "Preț: crescător",
+            "priceDesc": "Preț: descrescător",
+            "mostSold": "Cele mai vândute"
+        },
+        "statuses": {
+            "all": "Toate stările",
+            "active": "Activ",
+            "draft": "Ciornă",
+            "sold": "Vândut",
+            "deleted": "Șters"
+        }
+    },
+    "pagination": {
+        "perPage": "{{n}} / pagină",
+        "previous": "Anterior",
+        "next": "Următor"
+    },
+    "product": {
+        "backToExplore": "Înapoi la Explorează",
+        "backToProducts": "Înapoi la Produse",
+        "editProduct": "Editează produsul",
+        "deleteProduct": "Șterge produsul",
+        "description": "Descriere",
+        "noDescription": "Nicio descriere încă",
+        "information": "Informații produs",
+        "category": "Categorie",
+        "uncategorized": "Fără categorie",
+        "price": "Preț",
+        "sold": "Vândute",
+        "soldUnits": "{{n}} bucăți",
+        "images": "Imagini",
+        "status": "Stare"
+    },
+    "cart": {
+        "addToCart": "Adaugă în coș",
+        "addToCartAria": "Adaugă {{name}} în coș",
+        "title": "Coșul tău",
+        "empty": "Coșul tău este gol",
+        "nothingYet": "Nimic aici încă.",
+        "itemsInCart_one": "{{count}} produs în coș",
+        "itemsInCart_other": "{{count}} produse în coș",
+        "subtotal": "Subtotal",
+        "checkout": "Finalizează comanda",
+        "clearCart": "Golește coșul",
+        "loadError": "Nu am putut încărca coșul",
+        "each": "{{price}} bucata",
+        "loginToPurchase": "Autentifică-te pentru a face cumpărături",
+        "decreaseQty": "Scade cantitatea pentru {{name}}",
+        "increaseQty": "Crește cantitatea pentru {{name}}",
+        "removeItem": "Elimină {{name}} din coș"
+    }
+}

@@ -53,6 +53,8 @@ const baseFilters = {
     maxPrice: undefined,
     status: "all" as const,
     categoryId: undefined,
+    page: 1,
+    pageSize: 8,
 };
 
 function renderFilters(props: Partial<React.ComponentProps<typeof ProductFilters>> = {}) {

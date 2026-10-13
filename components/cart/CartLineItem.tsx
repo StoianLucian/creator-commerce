@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { Minus, Package, Plus, Trash2 } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 import { Button } from "@/components/ui/button";
 import { CreatorPaths } from "@/enums/AppPaths";
@@ -17,6 +18,7 @@ interface CartLineItemProps {
 }
 
 export function CartLineItem({ item, onNavigate }: CartLineItemProps) {
+    const { t } = useTranslation();
     const updateQuantity = useUpdateCartQuantity();
     const remove = useRemoveFromCart();
 
@@ -59,7 +61,7 @@ export function CartLineItem({ item, onNavigate }: CartLineItemProps) {
                         )}
 
                         <p className="text-sm text-muted-foreground tabular-nums">
-                            {priceFormatter.format(item.price)} each
+                            {t("cart.each", { price: priceFormatter.format(item.price) })}
                         </p>
                     </div>
 
@@ -75,7 +77,7 @@ export function CartLineItem({ item, onNavigate }: CartLineItemProps) {
                             size="icon-xs"
                             disabled={isBusy}
                             onClick={() => setQuantity(item.quantity - 1)}
-                            aria-label={`Decrease quantity of ${item.name}`}
+                            aria-label={t("cart.decreaseQty", { name: item.name })}
                         >
                             <Minus />
                         </Button>
@@ -92,7 +94,7 @@ export function CartLineItem({ item, onNavigate }: CartLineItemProps) {
                             size="icon-xs"
                             disabled={isBusy || item.quantity >= MAX_ITEM_QUANTITY}
                             onClick={() => setQuantity(item.quantity + 1)}
-                            aria-label={`Increase quantity of ${item.name}`}
+                            aria-label={t("cart.increaseQty", { name: item.name })}
                         >
                             <Plus />
                         </Button>
@@ -103,7 +105,7 @@ export function CartLineItem({ item, onNavigate }: CartLineItemProps) {
                         size="icon-xs"
                         disabled={isBusy}
                         onClick={() => remove.mutate({ productId: item.productId })}
-                        aria-label={`Remove ${item.name} from cart`}
+                        aria-label={t("cart.removeItem", { name: item.name })}
                     >
                         <Trash2 />
                     </Button>

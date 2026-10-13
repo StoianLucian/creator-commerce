@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Loader2, ShoppingCart } from "lucide-react";
 import { toast } from "sonner";
+import { useTranslation } from "react-i18next";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -28,6 +29,7 @@ import { CartLineItem } from "./CartLineItem";
  * signed-out visitors too — but checkout is locked behind authentication.
  */
 export function CartSheet({ isSignedIn = false }: { isSignedIn?: boolean }) {
+    const { t } = useTranslation();
     const [open, setOpen] = useState(false);
 
     const { data: cart, isPending, isError, error } = useCart();
@@ -57,18 +59,18 @@ export function CartSheet({ isSignedIn = false }: { isSignedIn?: boolean }) {
 
                 <span className="sr-only">
                     {itemCount > 0
-                        ? `Shopping cart, ${itemCount} item${itemCount === 1 ? "" : "s"}`
-                        : "Shopping cart, empty"}
+                        ? t("cart.itemsInCart", { count: itemCount })
+                        : t("cart.empty")}
                 </span>
             </SheetTrigger>
 
             <SheetContent side="right" className="w-full sm:max-w-md">
                 <SheetHeader>
-                    <SheetTitle>Your cart</SheetTitle>
+                    <SheetTitle>{t("cart.title")}</SheetTitle>
                     <SheetDescription>
                         {itemCount > 0
-                            ? `${itemCount} item${itemCount === 1 ? "" : "s"} in your cart`
-                            : "Nothing here yet."}
+                            ? t("cart.itemsInCart", { count: itemCount })
+                            : t("cart.nothingYet")}
                     </SheetDescription>
                 </SheetHeader>
 
@@ -84,7 +86,7 @@ export function CartSheet({ isSignedIn = false }: { isSignedIn?: boolean }) {
                     ) : isError ? (
                         <div className="rounded-xl border border-destructive/50 bg-destructive/5 p-4">
                             <p className="font-medium text-destructive">
-                                Could not load your cart
+                                {t("cart.loadError")}
                             </p>
                             <p className="text-sm text-muted-foreground">
                                 {error.message}
@@ -93,7 +95,7 @@ export function CartSheet({ isSignedIn = false }: { isSignedIn?: boolean }) {
                     ) : items.length === 0 ? (
                         <div className="flex flex-col items-center gap-2 py-12 text-muted-foreground">
                             <ShoppingCart className="h-8 w-8" />
-                            <p className="text-sm">Your cart is empty</p>
+                            <p className="text-sm">{t("cart.empty")}</p>
                         </div>
                     ) : (
                         <ul className="divide-y">
@@ -114,7 +116,7 @@ export function CartSheet({ isSignedIn = false }: { isSignedIn?: boolean }) {
 
                         <div className="flex items-center justify-between pt-2">
                             <span className="text-sm text-muted-foreground">
-                                Subtotal
+                                {t("cart.subtotal")}
                             </span>
                             <span className="text-lg font-semibold tabular-nums">
                                 {priceFormatter.format(cart?.subtotal ?? 0)}
@@ -127,9 +129,7 @@ export function CartSheet({ isSignedIn = false }: { isSignedIn?: boolean }) {
                             disabled={checkout.isPending}
                             onClick={() => {
                                 if (!isSignedIn) {
-                                    toast.error(
-                                        "Please log in to make purchases"
-                                    );
+                                    toast.error(t("cart.loginToPurchase"));
                                     return;
                                 }
                                 checkout.mutate();
@@ -138,7 +138,7 @@ export function CartSheet({ isSignedIn = false }: { isSignedIn?: boolean }) {
                             {checkout.isPending ? (
                                 <Loader2 className="h-4 w-4 animate-spin" />
                             ) : (
-                                "Checkout"
+                                t("cart.checkout")
                             )}
                         </Button>
 
@@ -149,7 +149,7 @@ export function CartSheet({ isSignedIn = false }: { isSignedIn?: boolean }) {
                             disabled={clear.isPending}
                             onClick={() => clear.mutate()}
                         >
-                            Clear cart
+                            {t("cart.clearCart")}
                         </Button>
                     </SheetFooter>
                 )}

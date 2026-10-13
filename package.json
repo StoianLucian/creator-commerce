@@ -13,6 +13,7 @@
     "db:migrate": "drizzle-kit migrate",
     "db:seed": "tsx src/db/seed.ts",
     "db:seed-products": "tsx src/db/seed-products.ts",
+    "db:seed-category-products": "tsx src/db/seed-category-products.ts",
     "db:setup": "drizzle-kit migrate && tsx src/db/seed.ts",
     "images:cleanup": "tsx lib/maintenance/cleanup-orphaned-images.ts"
   },
@@ -30,6 +31,7 @@
     "date-fns": "^4.4.0",
     "drizzle-orm": "^0.45.2",
     "embla-carousel-react": "^8.6.0",
+    "i18next": "^26.4.4",
     "input-otp": "^1.4.2",
     "lucide-react": "^1.23.0",
     "next": "16.2.10",
@@ -39,6 +41,7 @@
     "react-day-picker": "^10.0.1",
     "react-dom": "19.2.4",
     "react-hook-form": "^7.81.0",
+    "react-i18next": "^17.0.16",
     "react-resizable-panels": "^4.12.1",
     "recharts": "^3.8.0",
     "shadcn": "^4.13.0",

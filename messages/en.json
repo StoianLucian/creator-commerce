@@ -1,0 +1,96 @@
+{
+    "nav": {
+        "mySection": "My section",
+        "explore": "Explore",
+        "products": "Products",
+        "orders": "Orders",
+        "sales": "Sales",
+        "wishlist": "Wishlist",
+        "settings": "Settings",
+        "language": "Language",
+        "login": "Log in",
+        "register": "Sign up",
+        "accountMenu": "Open account menu"
+    },
+    "catalog": {
+        "noProductsTitle": "No products yet",
+        "noProductsDescExplore": "Check back soon — new products from creators will show up here.",
+        "noProductsDescOwner": "Add your first product with the New Product button above.",
+        "noMatchTitle": "No products match your filters",
+        "noMatchDesc": "Try adjusting or clearing your filters to see more.",
+        "clearFilters": "Clear filters",
+        "loadError": "Could not load your products"
+    },
+    "filters": {
+        "searchProducts": "Search products...",
+        "searchYourProducts": "Search your products...",
+        "searchAria": "Search products",
+        "category": "Category",
+        "allCategories": "All categories",
+        "filterByCategory": "Filter by category",
+        "price": "Price",
+        "priceRange": "Price range",
+        "min": "Min",
+        "max": "Max",
+        "any": "Any",
+        "apply": "Apply",
+        "clear": "Clear",
+        "status": "Status",
+        "filterByStatus": "Filter by status",
+        "sortProducts": "Sort products",
+        "sortBy": "Sort by",
+        "resetFilters": "Reset filters",
+        "sort": {
+            "newest": "Newest",
+            "priceAsc": "Price: Low to High",
+            "priceDesc": "Price: High to Low",
+            "mostSold": "Most sold"
+        },
+        "statuses": {
+            "all": "All statuses",
+            "active": "Active",
+            "draft": "Draft",
+            "sold": "Sold",
+            "deleted": "Deleted"
+        }
+    },
+    "pagination": {
+        "perPage": "{{n}} / page",
+        "previous": "Previous",
+        "next": "Next"
+    },
+    "product": {
+        "backToExplore": "Back to Explore",
+        "backToProducts": "Back to Products",
+        "editProduct": "Edit Product",
+        "deleteProduct": "Delete Product",
+        "description": "Description",
+        "noDescription": "No description yet",
+        "information": "Product Information",
+        "category": "Category",
+        "uncategorized": "Uncategorized",
+        "price": "Price",
+        "sold": "Sold",
+        "soldUnits": "{{n}} units",
+        "images": "Images",
+        "status": "Status"
+    },
+    "cart": {
+        "addToCart": "Add to cart",
+        "addToCartAria": "Add {{name}} to cart",
+        "title": "Your cart",
+        "empty": "Your cart is empty",
+        "nothingYet": "Nothing here yet.",
+        "itemsInCart_one": "{{count}} item in your cart",
+        "itemsInCart_other": "{{count}} items in your cart",
+        "subtotal": "Subtotal",
+        "checkout": "Checkout",
+        "clearCart": "Clear cart",
+        "loadError": "Could not load your cart",
+        "each": "{{price}} each",
+        "loginToPurchase": "Please log in to make purchases",
+        "decreaseQty": "Decrease quantity of {{name}}",
+        "increaseQty": "Increase quantity of {{name}}",
+        "removeItem": "Remove {{name}} from cart"
+    }
+}

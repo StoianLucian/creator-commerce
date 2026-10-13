@@ -3,7 +3,7 @@ import { db } from "@/src/db";
 import { product } from "@/src/db/product-schema";
 import { productImages } from "@/src/db/product-images-schema";
 import { user } from "@/src/db/auth-schema";
-import { eq, and, ilike, inArray, gte, lte, isNull, isNotNull } from "drizzle-orm";
+import { eq, and, ilike, inArray, gte, lte, isNull, isNotNull, count } from "drizzle-orm";
 
 import { revalidatePath } from "next/cache";
 import { CreateProductInput, createProductSchema } from "@/form-validations/products";
@@ -13,6 +13,14 @@ import { CreatorPaths } from "@/enums/AppPaths";
 import { getSession } from "../session";
 import { useProductsProps } from "@/hooks/useProducts";
 import { productOrderBy } from "@/lib/products/sort";
+import { PRODUCTS_PAGE_SIZE, type Paginated } from "@/lib/products/pagination";
+
+/** Clamp paging inputs and derive the SQL limit/offset for a page request. */
+function pageBounds(page?: number, pageSize?: number) {
+    const size = pageSize && pageSize > 0 ? pageSize : PRODUCTS_PAGE_SIZE;
+    const current = page && page > 0 ? Math.floor(page) : 1;
+    return { size, current, offset: (current - 1) * size };
+}
 
 export async function createProduct(data: CreateProductInput) {
 
@@ -157,7 +165,7 @@ export async function deleteProduct(id: number) {
     }
 }
 
-export type ProductWithRelations = Awaited<ReturnType<typeof getProducts>>[number];
+export type ProductWithRelations = Awaited<ReturnType<typeof getProducts>>["items"][number];
 
 export type ProductDetail = NonNullable<
     Awaited<ReturnType<typeof getProductByHandle>>
@@ -202,7 +210,7 @@ export async function getProductByHandle(username: string, id: number) {
     return found ?? null;
 }
 
-export async function getProducts({ q, sort, minPrice, maxPrice, categoryId }: useProductsProps) {
+export async function getProducts({ q, sort, minPrice, maxPrice, categoryId, page, pageSize }: useProductsProps) {
 
     try {
         const conditions = [
@@ -221,9 +229,19 @@ export async function getProducts({ q, sort, minPrice, maxPrice, categoryId }: u
             conditions.push(lte(product.price, maxPrice));
         }
 
-        const products = await db.query.product.findMany({
-            where: and(...conditions),
+        const where = and(...conditions);
+        const { size, current, offset } = pageBounds(page, pageSize);
+
+        const [{ total }] = await db
+            .select({ total: count() })
+            .from(product)
+            .where(where);
+
+        const items = await db.query.product.findMany({
+            where,
             orderBy: productOrderBy(sort),
+            limit: size,
+            offset,
             with: {
                 images: true,
 
@@ -233,14 +251,20 @@ export async function getProducts({ q, sort, minPrice, maxPrice, categoryId }: u
             },
         });
 
-        return products;
+        return {
+            items,
+            total,
+            page: current,
+            pageSize: size,
+            totalPages: Math.max(1, Math.ceil(total / size)),
+        } satisfies Paginated<typeof items[number]>;
     } catch {
         throw new Error("Error fetching products");
     }
 
 }
 
-export async function getOwnnProducts({ q, sort, minPrice, maxPrice, status = "all", categoryId }: useProductsProps) {
+export async function getOwnnProducts({ q, sort, minPrice, maxPrice, status = "all", categoryId, page, pageSize }: useProductsProps) {
 
     try {
         const session = await getSession();
@@ -275,9 +299,19 @@ export async function getOwnnProducts({ q, sort, minPrice, maxPrice, status = "a
             conditions.push(lte(product.price, maxPrice));
         }
 
-        const products = await db.query.product.findMany({
-            where: and(...conditions),
+        const where = and(...conditions);
+        const { size, current, offset } = pageBounds(page, pageSize);
+
+        const [{ total }] = await db
+            .select({ total: count() })
+            .from(product)
+            .where(where);
+
+        const items = await db.query.product.findMany({
+            where,
             orderBy: productOrderBy(sort),
+            limit: size,
+            offset,
             with: {
                 images: true,
 
@@ -287,7 +321,13 @@ export async function getOwnnProducts({ q, sort, minPrice, maxPrice, status = "a
             },
         });
 
-        return products;
+        return {
+            items,
+            total,
+            page: current,
+            pageSize: size,
+            totalPages: Math.max(1, Math.ceil(total / size)),
+        } satisfies Paginated<typeof items[number]>;
     } catch {
         throw new Error("Error fetching products");
     }

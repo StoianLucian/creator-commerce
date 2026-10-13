@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link"
+import { useTranslation } from "react-i18next"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -16,6 +17,7 @@ import { AppPaths } from "@/enums/AppPaths"
 import { toHandle } from "@/lib/handle"
 import { LogoutButton } from "../logount-button/LogoutButton"
 import { CartSheet } from "../cart/CartSheet"
+import { LanguageToggle } from "@/app/components/LanguageToggle"
 
 interface TopBarUser {
   name: string
@@ -37,6 +39,8 @@ function initialsOf(name: string) {
 }
 
 export function TopBar({ className, user, isSignedIn }: TopBarProps) {
+  const { t } = useTranslation()
+
   return (
     <header
       className={cn(
@@ -56,6 +60,8 @@ export function TopBar({ className, user, isSignedIn }: TopBarProps) {
         </Link>
 
         <div className="flex flex-1 items-center justify-end gap-2">
+          <LanguageToggle />
+
           <CartSheet isSignedIn={isSignedIn} />
 
           {isSignedIn && user ? (
@@ -66,7 +72,7 @@ export function TopBar({ className, user, isSignedIn }: TopBarProps) {
                     variant="ghost"
                     size="icon"
                     className="rounded-full"
-                    aria-label="Open account menu"
+                    aria-label={t("nav.accountMenu")}
                   />
                 }
               >
@@ -92,7 +98,7 @@ export function TopBar({ className, user, isSignedIn }: TopBarProps) {
                   render={<Link href={AppPaths.SETTINGS} />}
                 >
                   <SettingsIcon className="mr-2 h-4 w-4" />
-                  Settings
+                  {t("nav.settings")}
                 </DropdownMenuItem>
 
                 <DropdownMenuSeparator />
@@ -110,14 +116,14 @@ export function TopBar({ className, user, isSignedIn }: TopBarProps) {
                 nativeButton={false}
                 render={<Link href={AppPaths.LOGIN} />}
               >
-                Log in
+                {t("nav.login")}
               </Button>
               <Button
                 size="sm"
                 nativeButton={false}
                 render={<Link href={AppPaths.REGISTER} />}
               >
-                Sign up
+                {t("nav.register")}
               </Button>
             </div>
           )}

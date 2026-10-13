@@ -2,17 +2,20 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useTranslation } from "react-i18next";
 import {
   Heart,
   LayoutDashboard,
   Package,
   Receipt,
+  Settings,
   TrendingUp
 
 } from "lucide-react";
 import {
   Sidebar,
   SidebarContent,
+  SidebarFooter,
   SidebarGroup,
   SidebarGroupContent,
   SidebarGroupLabel,
@@ -24,6 +27,7 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { AppPaths, CreatorPaths } from "@/enums/AppPaths";
 import { toHandle } from "@/lib/handle";
+import { LanguageSwitcher } from "./LanguageSwitcher";
 
 function initialsOf(name: string) {
   const parts = name.trim().split(/\s+/).filter(Boolean);
@@ -44,21 +48,23 @@ interface NavBarProps {
 
 export const NavBar = ({ user, isSignedIn }: NavBarProps) => {
   const pathname = usePathname();
+  const { t } = useTranslation();
 
   const loggedInItems = isSignedIn
     ? [
       // Products live under the creator's own handle: /@handle/products
       ...(user.username
-        ? [{ name: "Products", href: CreatorPaths.products(user.username), icon: Package }]
+        ? [{ key: "products", name: t("nav.products"), href: CreatorPaths.products(user.username), icon: Package }]
         : []),
-      { name: "Orders", href: AppPaths.ORDERS, icon: Receipt },
-      { name: "Sales", href: AppPaths.SALES, icon: TrendingUp },
+      { key: "orders", name: t("nav.orders"), href: AppPaths.ORDERS, icon: Receipt },
+      { key: "sales", name: t("nav.sales"), href: AppPaths.SALES, icon: TrendingUp },
+      { key: "settings", name: t("nav.settings"), href: AppPaths.SETTINGS, icon: Settings },
     ]
     : [];
 
   const guestItems = [
-    { name: "Explore", href: AppPaths.DASHBOARD, icon: LayoutDashboard },
-    { name: "Wishlist", href: AppPaths.WISHLIST, icon: Heart },
+    { key: "explore", name: t("nav.explore"), href: AppPaths.DASHBOARD, icon: LayoutDashboard },
+    { key: "wishlist", name: t("nav.wishlist"), href: AppPaths.WISHLIST, icon: Heart },
   ]
 
   return (
@@ -68,7 +74,6 @@ export const NavBar = ({ user, isSignedIn }: NavBarProps) => {
       >
         <SidebarHeader>
           <SidebarGroup>
-            <SidebarGroupLabel>NEXT APP</SidebarGroupLabel>
             <div className="flex items-center gap-2 p-1">
               <Avatar className="h-8 w-8">
                 <AvatarImage src={user.image ?? undefined} alt={user.name} />
@@ -89,10 +94,10 @@ export const NavBar = ({ user, isSignedIn }: NavBarProps) => {
             <SidebarGroupContent>
               {loggedInItems.length > 0 && (
                 <>
-                  <SidebarGroupLabel>My section</SidebarGroupLabel>
+                  <SidebarGroupLabel>{t("nav.mySection")}</SidebarGroupLabel>
                   <SidebarMenu>
                     {loggedInItems.map((item) => (
-                      <SidebarMenuItem key={item.name}>
+                      <SidebarMenuItem key={item.key}>
                         <SidebarMenuButton
                           isActive={pathname === item.href}
                         >
@@ -106,10 +111,10 @@ export const NavBar = ({ user, isSignedIn }: NavBarProps) => {
                   </SidebarMenu>
                 </>
               )}
-              <SidebarGroupLabel>Explore</SidebarGroupLabel>
+              <SidebarGroupLabel>{t("nav.explore")}</SidebarGroupLabel>
               <SidebarMenu>
                 {guestItems.map((item) => (
-                  <SidebarMenuItem key={item.name}>
+                  <SidebarMenuItem key={item.key}>
                     <SidebarMenuButton
                       isActive={pathname === item.href}
                     >
@@ -124,6 +129,15 @@ export const NavBar = ({ user, isSignedIn }: NavBarProps) => {
             </SidebarGroupContent>
           </SidebarGroup>
         </SidebarContent>
+
+        <SidebarFooter>
+          <SidebarGroup>
+            <SidebarGroupLabel>{t("nav.language")}</SidebarGroupLabel>
+            <SidebarGroupContent>
+              <LanguageSwitcher />
+            </SidebarGroupContent>
+          </SidebarGroup>
+        </SidebarFooter>
       </Sidebar>
     </>
   );

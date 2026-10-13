@@ -1,11 +1,13 @@
 "use client";
 
 import { PackageOpen, SearchX } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 import { useProducts } from '@/hooks/useProducts'
 import { useUrlSearch } from '@/hooks/use-url-search';
 import ProductCardWrapper from '@/components/products-page/ProductCardWrapper';
 import { ProductFilters } from '@/components/products-page/ProductFilters';
+import { ProductsPagination } from '@/components/products-page/ProductsPagination';
 import {
   Empty,
   EmptyDescription,
@@ -17,16 +19,26 @@ import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 
 function Dashboard() {
-  const { filters, setFilters, searchDebounce, resetFilters } = useUrlSearch();
-  const { search, sort, minPrice, maxPrice, categoryId } = filters;
+  const { t } = useTranslation();
+  const { filters, setFilters, setPage, searchDebounce, resetFilters } = useUrlSearch();
+  const { search, sort, minPrice, maxPrice, categoryId, page, pageSize } = filters;
 
-  const { data: products = [], isPending } = useProducts({
+  const { data, isPending } = useProducts({
     q: searchDebounce,
     sort,
     minPrice,
     maxPrice,
     categoryId,
+    page,
+    pageSize,
   });
+
+  const products = data?.items ?? [];
+  const totalPages = data?.totalPages ?? 1;
+
+  // Changing page size goes through setFilters so it resets back to page 1.
+  const setPageSize = (next: number) =>
+    setFilters((prev) => ({ ...prev, pageSize: next }));
 
   const hasActiveFilters =
     search.trim() !== "" ||
@@ -52,14 +64,14 @@ function Dashboard() {
                 <EmptyMedia variant="icon">
                   <SearchX />
                 </EmptyMedia>
-                <EmptyTitle>No products match your filters</EmptyTitle>
+                <EmptyTitle>{t("catalog.noMatchTitle")}</EmptyTitle>
                 <EmptyDescription>
-                  Try adjusting or clearing your filters to see more.
+                  {t("catalog.noMatchDesc")}
                 </EmptyDescription>
               </EmptyHeader>
 
               <Button variant="outline" size="sm" onClick={resetFilters}>
-                Clear filters
+                {t("catalog.clearFilters")}
               </Button>
             </Empty>
           ) : (
@@ -68,17 +80,27 @@ function Dashboard() {
                 <EmptyMedia variant="icon">
                   <PackageOpen />
                 </EmptyMedia>
-                <EmptyTitle>No products yet</EmptyTitle>
+                <EmptyTitle>{t("catalog.noProductsTitle")}</EmptyTitle>
                 <EmptyDescription>
-                  Check back soon — new products from creators will show up here.
+                  {t("catalog.noProductsDescExplore")}
                 </EmptyDescription>
               </EmptyHeader>
             </Empty>
           )
         ) : (
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-            <ProductCardWrapper products={products} isPending={isPending} />
-          </div>
+          <>
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+              <ProductCardWrapper products={products} isPending={isPending} />
+            </div>
+            <ProductsPagination
+              page={page}
+              pageSize={pageSize}
+              totalPages={totalPages}
+              onPageChange={setPage}
+              onPageSizeChange={setPageSize}
+              className="pt-2"
+            />
+          </>
         )}
       </div>
     </div>

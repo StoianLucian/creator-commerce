@@ -29,6 +29,8 @@ const defaultFilters: SearchFilters = {
     maxPrice: undefined,
     status: "all",
     categoryId: undefined,
+    page: 1,
+    pageSize: 8,
 };
 
 function setup(opts: {
@@ -36,15 +38,24 @@ function setup(opts: {
     isPending?: boolean;
     isError?: boolean;
     filters?: Partial<SearchFilters>;
+    totalPages?: number;
 }) {
     useUrlSearchMock.mockReturnValue({
         filters: { ...defaultFilters, ...opts.filters },
         setFilters: vi.fn(),
+        setPage: vi.fn(),
         searchDebounce: opts.filters?.search ?? "",
         resetFilters: resetFiltersMock,
     });
+    const products = opts.products ?? [];
     useOwnProductsMock.mockReturnValue({
-        data: opts.products ?? [],
+        data: {
+            items: products,
+            total: products.length,
+            page: 1,
+            pageSize: 8,
+            totalPages: opts.totalPages ?? 1,
+        },
         isPending: opts.isPending ?? false,
         isError: opts.isError ?? false,
         error: opts.isError ? new Error("boom") : null,
