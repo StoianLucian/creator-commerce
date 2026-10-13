@@ -26,6 +26,7 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { AppPaths, CreatorPaths } from "@/enums/AppPaths";
 import { toHandle } from "@/lib/handle";
+import { AssistantDrawer } from "@/app/components/AssistantDrawer";
 
 function initialsOf(name: string) {
   const parts = name.trim().split(/\s+/).filter(Boolean);
@@ -83,6 +84,11 @@ export const NavBar = ({ user, isSignedIn }: NavBarProps) => {
                   {user.username ? toHandle(user.username) : user.email}
                 </span>
               </div>
+              {isSignedIn && (
+                <div className="ml-auto">
+                  <AssistantDrawer />
+                </div>
+              )}
             </div>
           </SidebarGroup>
         </SidebarHeader>

@@ -1,4 +1,28 @@
 {
+    "assistant": {
+        "open": "Deschide asistentul de vânzări",
+        "title": "Asistent de vânzări",
+        "subtitle": "Întreabă despre vânzările, produsele tale și ce să faci în continuare.",
+        "emptyHint": "Pot verifica vânzările și catalogul tău. Încearcă una dintre acestea:",
+        "placeholder": "Întreabă despre vânzările tale…",
+        "thinking": "Se gândește…",
+        "sendLabel": "Trimite",
+        "stop": "Oprește",
+        "model": "Model",
+        "stepsSummary_one": "{{count}} pas",
+        "stepsSummary_other": "{{count}} pași",
+        "steps": {
+            "get_sold_products": "Îți citesc vânzările",
+            "get_product_catalog": "Verific catalogul tău",
+            "suggest_products": "Caut în magazin"
+        },
+        "suggestions": [
+            "Care sunt cele mai vândute produse ale mele?",
+            "Cât am câștigat până acum?",
+            "Ce produse nu s-au vândut încă?",
+            "Ce ar trebui să promovez în continuare?"
+        ]
+    },
     "nav": {
         "mySection": "Secțiunea mea",
         "explore": "Explorează",

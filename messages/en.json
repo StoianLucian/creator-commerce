@@ -1,4 +1,28 @@
 {
+    "assistant": {
+        "open": "Open sales assistant",
+        "title": "Sales assistant",
+        "subtitle": "Ask about your sales, products, and what to do next.",
+        "emptyHint": "I can look up your sales and catalog. Try one of these:",
+        "placeholder": "Ask about your sales…",
+        "thinking": "Thinking…",
+        "sendLabel": "Send",
+        "stop": "Stop",
+        "model": "Model",
+        "stepsSummary_one": "{{count}} step",
+        "stepsSummary_other": "{{count}} steps",
+        "steps": {
+            "get_sold_products": "Reading your sales",
+            "get_product_catalog": "Checking your catalog",
+            "suggest_products": "Browsing the store"
+        },
+        "suggestions": [
+            "What are my best selling products?",
+            "How much have I earned so far?",
+            "Which products haven't sold yet?",
+            "What should I promote next?"
+        ]
+    },
     "nav": {
         "mySection": "My section",
         "explore": "Explore",
