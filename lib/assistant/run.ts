@@ -30,6 +30,7 @@ const MAX_TOOL_ROUNDS = 4;
  */
 export type AssistantEvent =
     | { type: "step"; tool: string }
+    | { type: "step-done"; ms: number }
     | { type: "products"; products: ProductCard[] }
     | { type: "delta"; text: string };
 
@@ -81,7 +82,9 @@ export async function* runAssistant(
 
         for (const call of toolCalls) {
             yield { type: "step", tool: call.function.name };
+            const startedAt = Date.now();
             const result = await runTool(call.function.name, ownerId);
+            yield { type: "step-done", ms: Date.now() - startedAt };
 
             // Surface any product cards the tool produced so the UI can render
             // them — separate from the text the model gets back.

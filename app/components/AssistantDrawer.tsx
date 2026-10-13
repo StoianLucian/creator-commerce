@@ -24,13 +24,73 @@ import {
 } from "@/components/ui/drawer";
 import { Message, MessageContent } from "@/components/ui/message";
 import { Bubble, BubbleContent } from "@/components/ui/bubble";
-import { useAssistant, type ChatMessage } from "@/hooks/useAssistant";
+import {
+    useAssistant,
+    type AssistantStep,
+    type ChatMessage,
+} from "@/hooks/useAssistant";
 
-/** Render assistant text, handling markdown links `[label](/path)`. A link that
- *  has a product card below it becomes plain bold text (the card carries the
- *  link, so we don't show it twice); any other link stays clickable. Everything
- *  else is plain text (the container keeps whitespace, so newlines survive). */
-function renderContent(text: string, cardUrls: Set<string>) {
+/** One styled, clickable recommendation card. */
+function ProductCardItem({ product: p }: { product: ProductCard }) {
+    return (
+        <Link
+            href={p.url}
+            className="group flex items-center gap-3 rounded-xl border border-border bg-background p-2 transition-colors hover:bg-muted"
+        >
+            {p.imageUrl ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                    src={p.imageUrl}
+                    alt={p.name}
+                    className="h-14 w-14 shrink-0 rounded-lg object-cover"
+                />
+            ) : (
+                <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-lg bg-muted">
+                    <Package className="h-5 w-5 text-muted-foreground" />
+                </div>
+            )}
+            <div className="flex min-w-0 flex-col">
+                <span className="truncate text-sm font-medium group-hover:underline">
+                    {p.name}
+                </span>
+                {p.category && (
+                    <span className="truncate text-xs text-muted-foreground">
+                        {p.category}
+                    </span>
+                )}
+                <span className="text-sm font-semibold tabular-nums">
+                    {priceFormatter.format(p.priceLei)}
+                </span>
+            </div>
+        </Link>
+    );
+}
+
+/** A plain list of cards (fallback when the answer links no products). */
+function ProductCards({ products }: { products: ProductCard[] }) {
+    if (products.length === 0) return null;
+    return (
+        <div className="flex flex-col gap-2">
+            {products.map((p) => (
+                <ProductCardItem key={p.url} product={p} />
+            ))}
+        </div>
+    );
+}
+
+/** Render assistant text, handling markdown links `[label](/path)`.
+ *
+ *  When `inlineCards` is on and a link points at a product we have card data
+ *  for, the card is rendered inline — right where the model wrote the link.
+ *  While the answer is still streaming (`inlineCards` off) that same link shows
+ *  as bold text, so cards only appear once the suggestion is complete. Any
+ *  other link stays clickable; everything else is plain text (the container
+ *  keeps whitespace, so newlines survive). */
+function renderContent(
+    text: string,
+    productByUrl: Map<string, ProductCard>,
+    inlineCards: boolean
+) {
     const pattern = /\[([^\]]+)\]\((\S+?)\)/g;
     const nodes: React.ReactNode[] = [];
     let last = 0;
@@ -39,12 +99,22 @@ function renderContent(text: string, cardUrls: Set<string>) {
     while ((match = pattern.exec(text)) !== null) {
         if (match.index > last) nodes.push(text.slice(last, match.index));
         const [, label, href] = match;
-        nodes.push(
-            cardUrls.has(href) ? (
+        const product = productByUrl.get(href);
+
+        if (product && inlineCards) {
+            nodes.push(
+                <div key={match.index} className="my-1.5">
+                    <ProductCardItem product={product} />
+                </div>
+            );
+        } else if (product) {
+            nodes.push(
                 <strong key={match.index} className="font-medium">
                     {label}
                 </strong>
-            ) : (
+            );
+        } else {
+            nodes.push(
                 <Link
                     key={match.index}
                     href={href}
@@ -52,8 +122,8 @@ function renderContent(text: string, cardUrls: Set<string>) {
                 >
                     {label}
                 </Link>
-            )
-        );
+            );
+        }
         last = pattern.lastIndex;
     }
     if (last < text.length) nodes.push(text.slice(last));
@@ -61,53 +131,10 @@ function renderContent(text: string, cardUrls: Set<string>) {
     return nodes.map((node, i) => <Fragment key={i}>{node}</Fragment>);
 }
 
-/** Styled, clickable recommendation cards. */
-function ProductCards({ products }: { products: ProductCard[] }) {
-    if (products.length === 0) return null;
-
-    return (
-        <div className="flex flex-col gap-2">
-            {products.map((p) => (
-                <Link
-                    key={p.url}
-                    href={p.url}
-                    className="group flex items-center gap-3 rounded-xl border border-border bg-background p-2 transition-colors hover:bg-muted"
-                >
-                    {p.imageUrl ? (
-                        // eslint-disable-next-line @next/next/no-img-element
-                        <img
-                            src={p.imageUrl}
-                            alt={p.name}
-                            className="h-14 w-14 shrink-0 rounded-lg object-cover"
-                        />
-                    ) : (
-                        <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-lg bg-muted">
-                            <Package className="h-5 w-5 text-muted-foreground" />
-                        </div>
-                    )}
-                    <div className="flex min-w-0 flex-col">
-                        <span className="truncate text-sm font-medium group-hover:underline">
-                            {p.name}
-                        </span>
-                        {p.category && (
-                            <span className="truncate text-xs text-muted-foreground">
-                                {p.category}
-                            </span>
-                        )}
-                        <span className="text-sm font-semibold tabular-nums">
-                            {priceFormatter.format(p.priceLei)}
-                        </span>
-                    </div>
-                </Link>
-            ))}
-        </div>
-    );
-}
-
 /** The steps the model took this turn. Shown live (expanded, with a spinner on
  *  the step in progress) while answering, then collapsed into a toggle once the
  *  answer is in. */
-function Steps({ steps, active }: { steps: string[]; active: boolean }) {
+function Steps({ steps, active }: { steps: AssistantStep[]; active: boolean }) {
     const { t } = useTranslation();
     const [open, setOpen] = useState(active);
 
@@ -121,21 +148,29 @@ function Steps({ steps, active }: { steps: string[]; active: boolean }) {
     const label = (tool: string) =>
         t(`assistant.steps.${tool}`, { defaultValue: tool });
 
+    const duration = (ms: number) =>
+        ms < 1000 ? `${ms}ms` : `${(ms / 1000).toFixed(1)}s`;
+
     const list = (
         <ul className="flex flex-col gap-1">
-            {steps.map((tool, i) => {
-                const inProgress = active && i === steps.length - 1;
+            {steps.map((step, i) => {
+                const done = step.ms !== undefined;
                 return (
                     <li
                         key={i}
                         className="flex items-center gap-2 text-xs text-muted-foreground"
                     >
-                        {inProgress ? (
-                            <Spinner className="size-3" />
-                        ) : (
+                        {done ? (
                             <Check className="size-3 text-primary" />
+                        ) : (
+                            <Spinner className="size-3" />
                         )}
-                        {label(tool)}
+                        <span>{label(step.tool)}</span>
+                        {done && (
+                            <span className="ml-auto tabular-nums text-muted-foreground/70">
+                                {duration(step.ms!)}
+                            </span>
+                        )}
                     </li>
                 );
             })}
@@ -158,6 +193,14 @@ function Steps({ steps, active }: { steps: string[]; active: boolean }) {
                     className={`size-3 transition-transform ${open ? "" : "-rotate-90"}`}
                 />
                 {t("assistant.stepsSummary", { count: steps.length })}
+                {(() => {
+                    const total = steps.reduce((sum, s) => sum + (s.ms ?? 0), 0);
+                    return total > 0 ? (
+                        <span className="ml-auto tabular-nums text-muted-foreground/70">
+                            {duration(total)}
+                        </span>
+                    ) : null;
+                })()}
             </button>
             {open && <div className="mt-2">{list}</div>}
         </div>
@@ -349,16 +392,18 @@ function AssistantTurn({
     const hasAnswer = message.content.length > 0;
 
     const allProducts = message.products ?? [];
-    // Cards only appear once the suggestion is finished — never mid-stream.
-    // Prefer the products the answer links to; if it linked none, fall back to
-    // a small sample so the turn isn't empty-handed.
-    const referenced = allProducts.filter((p) => message.content.includes(p.url));
-    const cards = streaming
-        ? []
-        : referenced.length > 0
-          ? referenced
-          : allProducts.slice(0, 5);
-    const cardUrls = new Set(cards.map((p) => p.url));
+    const productByUrl = new Map(allProducts.map((p) => [p.url, p]));
+    // Render each card inline as soon as its link finishes streaming. A partial
+    // link (no closing `)`) won't match the parser yet, so cards only appear
+    // once their link is whole — never half-formed, and no "all products" flash.
+    const inlineCards = true;
+    const referenced = allProducts.some((p) => message.content.includes(p.url));
+    // Fallback: the answer is done but linked no products — show a small sample
+    // below so the turn isn't empty-handed.
+    const fallback =
+        !streaming && !referenced && allProducts.length > 0
+            ? allProducts.slice(0, 5)
+            : [];
 
     return (
         <Message align="start">
@@ -369,11 +414,11 @@ function AssistantTurn({
                 {(hasAnswer || !streaming) && (
                     <Bubble variant="muted" align="start">
                         <BubbleContent className="whitespace-pre-wrap">
-                            {renderContent(message.content, cardUrls)}
+                            {renderContent(message.content, productByUrl, inlineCards)}
                         </BubbleContent>
                     </Bubble>
                 )}
-                {cards.length > 0 && <ProductCards products={cards} />}
+                {fallback.length > 0 && <ProductCards products={fallback} />}
                 {streaming && !hasAnswer && (!message.steps || message.steps.length === 0) && (
                     <span className="flex items-center gap-2 text-sm text-muted-foreground">
                         <Spinner className="size-3" />

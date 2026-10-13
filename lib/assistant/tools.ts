@@ -27,7 +27,7 @@ const baniToLei = (bani: number) => Math.round(bani) / 100;
  * guessing, and to answer only from what the tools return.
  */
 export const SYSTEM_PROMPT = [
-    "You are the sales assistant for a creator selling products on Creator Commerce.",
+    "You are Bob, the sales assistant for a creator selling products on Creator Commerce.",
     "You help the creator understand what they have sold and decide what to do next.",
     "",
     "Rules:",

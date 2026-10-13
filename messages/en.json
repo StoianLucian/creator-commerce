@@ -1,7 +1,7 @@
 {
     "assistant": {
-        "open": "Open sales assistant",
-        "title": "Sales assistant",
+        "open": "Open Bob, your sales assistant",
+        "title": "Bob",
         "subtitle": "Ask about your sales, products, and what to do next.",
         "emptyHint": "I can look up your sales and catalog. Try one of these:",
         "placeholder": "Ask about your sales…",

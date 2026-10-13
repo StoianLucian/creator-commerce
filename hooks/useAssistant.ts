@@ -4,17 +4,21 @@ import { useCallback, useRef, useState } from "react";
 
 import type { ProductCard } from "@/lib/assistant/types";
 
+/** A tool step the model took; `ms` is set once the tool finishes. */
+export type AssistantStep = { tool: string; ms?: number };
+
 export type ChatMessage = {
     role: "user" | "assistant";
     content: string;
     /** Tool steps the model took on this turn, in order (assistant turns only). */
-    steps?: string[];
+    steps?: AssistantStep[];
     /** Product cards the assistant surfaced this turn (recommendations). */
     products?: ProductCard[];
 };
 
 type WireEvent =
     | { type: "step"; tool: string }
+    | { type: "step-done"; ms: number }
     | { type: "products"; products: ProductCard[] }
     | { type: "delta"; text: string }
     | { type: "error"; message: string };
@@ -46,7 +50,7 @@ export function useAssistant() {
 
             // Live state for the in-flight assistant turn.
             let reply = "";
-            const steps: string[] = [];
+            const steps: AssistantStep[] = [];
             const products: ProductCard[] = [];
             const paint = () =>
                 setMessages([
@@ -84,8 +88,11 @@ export function useAssistant() {
 
                 const handle = (event: WireEvent) => {
                     if (event.type === "delta") reply += event.text;
-                    else if (event.type === "step") steps.push(event.tool);
-                    else if (event.type === "products") {
+                    else if (event.type === "step") steps.push({ tool: event.tool });
+                    else if (event.type === "step-done") {
+                        const last = steps[steps.length - 1];
+                        if (last && last.ms === undefined) last.ms = event.ms;
+                    } else if (event.type === "products") {
                         // Dedupe by url across tool rounds.
                         for (const p of event.products) {
                             if (!products.some((x) => x.url === p.url)) products.push(p);

@@ -1,7 +1,7 @@
 {
     "assistant": {
-        "open": "Deschide asistentul de vânzări",
-        "title": "Asistent de vânzări",
+        "open": "Deschide-l pe Bob, asistentul tău de vânzări",
+        "title": "Bob",
         "subtitle": "Întreabă despre vânzările, produsele tale și ce să faci în continuare.",
         "emptyHint": "Pot verifica vânzările și catalogul tău. Încearcă una dintre acestea:",
         "placeholder": "Întreabă despre vânzările tale…",
