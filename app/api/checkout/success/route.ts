@@ -39,5 +39,6 @@ export async function GET(req: NextRequest) {
         await clearCart();
     }
 
-    return NextResponse.redirect(`${baseUrl}/checkout/success?order=${found.id}`);
+    // The page resolves the order by its Stripe session id, so pass it through.
+    return NextResponse.redirect(`${baseUrl}/checkout/success?session_id=${sessionId}`);
 }

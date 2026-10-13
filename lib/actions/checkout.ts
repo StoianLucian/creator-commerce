@@ -90,7 +90,9 @@ export async function createCheckoutSession(): Promise<CheckoutResult> {
             })),
             customer_email: session?.user?.email ?? undefined,
             metadata: { orderId: String(orderId) },
-            success_url: `${baseUrl}/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
+            // Route through the API handler (not the page) so it can clear the
+            // cart cookie on a paid session before redirecting to the page.
+            success_url: `${baseUrl}/api/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
             cancel_url: `${baseUrl}/checkout/cancel`,
         });
 
