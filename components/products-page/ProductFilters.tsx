@@ -83,7 +83,7 @@ function PriceFilter({
   return (
     <Popover open={open} onOpenChange={handleOpenChange}>
       <PopoverTrigger
-        render={<Button variant="outline" className="h-10 min-w-40 flex-1 justify-start min-[1200px]:w-auto min-[1200px]:flex-none min-[1200px]:min-w-0" />}
+        render={<Button variant="outline" className="h-10 min-w-40 flex-1 justify-start bg-transparent min-[1200px]:w-auto min-[1200px]:flex-none min-[1200px]:min-w-0" />}
       >
         <SlidersHorizontal className="mr-2 h-4 w-4" />
         {hasRange
@@ -193,7 +193,7 @@ export function ProductFilters({
           type="text"
           placeholder={placeholder}
           aria-label={t("filters.searchAria")}
-          className="h-10 w-full rounded-lg border border-input bg-background py-2 pl-10 pr-4 text-sm transition-colors outline-none placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring"
+          className="h-10 w-full rounded-lg border border-input bg-transparent py-2 pl-10 pr-4 text-sm transition-colors outline-none placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring"
           value={search}
           onChange={(e) => setFilters((prev) => ({ ...prev, search: e.target.value }))}
         />
