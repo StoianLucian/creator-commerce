@@ -18,6 +18,9 @@ export function LogoutButton() {
                 fetchOptions: {
                     onSuccess: () => {
                         router.replace(AppPaths.LOGIN);
+                        // Clear the Router Cache so the server layout drops the
+                        // signed-in UI immediately (no manual refresh needed).
+                        router.refresh();
                     },
                 },
             });

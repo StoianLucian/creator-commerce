@@ -56,6 +56,10 @@ export function LoginForm() {
     }
 
     router.push(AppPaths.DASHBOARD)
+    // Invalidate the Router Cache so the server layout (top bar / sidebar)
+    // re-renders with the new session cookie — otherwise it keeps showing the
+    // signed-out UI until a manual refresh.
+    router.refresh()
   }
 
   return (
