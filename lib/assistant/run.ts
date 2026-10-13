@@ -14,6 +14,7 @@ import {
     type OllamaToolCall,
 } from "@/lib/ollama";
 import { ASSISTANT_TOOLS, SYSTEM_PROMPT, runTool } from "./tools";
+import type { ProductCard } from "./types";
 
 /**
  * Safety valve on the tool loop. A couple of rounds is plenty for "look at my
@@ -29,6 +30,7 @@ const MAX_TOOL_ROUNDS = 4;
  */
 export type AssistantEvent =
     | { type: "step"; tool: string }
+    | { type: "products"; products: ProductCard[] }
     | { type: "delta"; text: string };
 
 /**
@@ -80,9 +82,16 @@ export async function* runAssistant(
         for (const call of toolCalls) {
             yield { type: "step", tool: call.function.name };
             const result = await runTool(call.function.name, ownerId);
+
+            // Surface any product cards the tool produced so the UI can render
+            // them — separate from the text the model gets back.
+            if (result.products?.length) {
+                yield { type: "products", products: result.products };
+            }
+
             messages.push({
                 role: "tool",
-                content: result,
+                content: result.content,
                 tool_name: call.function.name,
             });
         }

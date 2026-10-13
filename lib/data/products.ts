@@ -28,6 +28,7 @@ export async function getStoreProducts(limit = 50) {
         with: {
             category: { columns: { name: true } },
             owner: { columns: { username: true } },
+            images: { limit: 1, columns: { imageUrl: true } },
         },
     });
 }

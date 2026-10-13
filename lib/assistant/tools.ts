@@ -12,6 +12,11 @@ import { getMySales } from "@/lib/data/orders";
 import { getProductsByOwner, getStoreProducts } from "@/lib/data/products";
 import { DashboardPaths } from "@/enums/AppPaths";
 import type { OllamaTool } from "@/lib/ollama";
+import type { ProductCard } from "./types";
+
+/** What a tool run hands back: the text the model sees, plus optional product
+ *  cards for the UI to render (never shown to the model). */
+export type ToolResult = { content: string; products?: ProductCard[] };
 
 /** Order amounts are stored in bani (minor unit); the catalog is in whole lei. */
 const baniToLei = (bani: number) => Math.round(bani) / 100;
@@ -128,26 +133,45 @@ async function getProductCatalog(ownerId: string) {
     };
 }
 
-/** Products anyone can buy across the store, for recommendations. */
-async function suggestProducts() {
+/**
+ * Products anyone can buy across the store, for recommendations. Returns the
+ * text the model reasons over (no image URLs — those are only noise to it) and
+ * the richer cards the UI renders.
+ */
+async function suggestProducts(): Promise<ToolResult> {
     const products = await getStoreProducts();
 
-    return {
+    const rows = products.map((p) => ({
+        name: p.name,
+        priceLei: p.price,
+        category: p.category?.name ?? null,
+        seller: p.owner?.username ?? null,
+        unitsSold: p.sold,
+        description: p.description ?? null,
+        imageUrl: p.images[0]?.imageUrl ?? null,
+        // Buyer-facing product page, so a recommendation can link straight to
+        // it. Null if the seller has no username to build a path from.
+        url: p.owner?.username
+            ? DashboardPaths.product(p.owner.username, p.id, p.slug)
+            : null,
+    }));
+
+    const forModel = {
         currency: "RON",
-        products: products.map((p) => ({
-            name: p.name,
-            priceLei: p.price,
-            category: p.category?.name ?? null,
-            seller: p.owner?.username ?? null,
-            unitsSold: p.sold,
-            description: p.description ?? null,
-            // Buyer-facing product page, so a recommendation can link straight
-            // to it. Null if the seller has no username to build a path from.
-            url: p.owner?.username
-                ? DashboardPaths.product(p.owner.username, p.id, p.slug)
-                : null,
-        })),
+        products: rows.map(({ imageUrl: _imageUrl, ...rest }) => rest),
     };
+
+    const cards: ProductCard[] = rows
+        .filter((p): p is typeof p & { url: string } => !!p.url)
+        .map((p) => ({
+            name: p.name,
+            priceLei: p.priceLei,
+            category: p.category,
+            url: p.url,
+            imageUrl: p.imageUrl,
+        }));
+
+    return { content: JSON.stringify(forModel), products: cards };
 }
 
 /**
@@ -159,23 +183,25 @@ async function suggestProducts() {
 export async function runTool(
     name: string,
     ownerId: string
-): Promise<string> {
+): Promise<ToolResult> {
     if (!TOOL_NAMES.has(name)) {
-        return JSON.stringify({ error: `Unknown tool: ${name}` });
+        return { content: JSON.stringify({ error: `Unknown tool: ${name}` }) };
     }
 
     try {
+        if (name === "suggest_products") return await suggestProducts();
+
         const result =
             name === "get_sold_products"
                 ? await getSoldProducts(ownerId)
-                : name === "get_product_catalog"
-                  ? await getProductCatalog(ownerId)
-                  : await suggestProducts();
+                : await getProductCatalog(ownerId);
 
-        return JSON.stringify(result);
+        return { content: JSON.stringify(result) };
     } catch (error) {
-        return JSON.stringify({
-            error: error instanceof Error ? error.message : "Tool failed to run.",
-        });
+        return {
+            content: JSON.stringify({
+                error: error instanceof Error ? error.message : "Tool failed to run.",
+            }),
+        };
     }
 }
