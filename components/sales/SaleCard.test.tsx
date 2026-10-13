@@ -42,7 +42,7 @@ describe("SaleCard", () => {
         expect(screen.getByText(/buyer@example.com/)).toBeInTheDocument();
         // total 4200 cents -> $42 (appears as the order total and the single
         // line's total, which are equal here).
-        expect(screen.getAllByText("$42").length).toBeGreaterThanOrEqual(1);
+        expect(screen.getAllByText("42 lei").length).toBeGreaterThanOrEqual(1);
     });
 
     it("renders the product line with its per-unit pricing", () => {
@@ -50,7 +50,7 @@ describe("SaleCard", () => {
 
         const link = screen.getByRole("link", { name: "Enamel Pin" });
         expect(link).toHaveAttribute("href", "/creator/lucians/1/enamel-pin");
-        expect(screen.getByText("$14 × 3")).toBeInTheDocument();
+        expect(screen.getByText("14 lei × 3")).toBeInTheDocument();
     });
 
     it("omits the buyer email when it is null", () => {

@@ -1,9 +1,10 @@
 // lib/format.ts
 
-/** Prices are stored as whole dollars, so no fractional digits are shown. */
-export const priceFormatter = new Intl.NumberFormat("en-US", {
+/** Prices are stored as whole lei, so no fractional digits are shown. */
+export const priceFormatter = new Intl.NumberFormat("ro-RO", {
     style: "currency",
-    currency: "USD",
+    currency: "RON",
+    currencyDisplay: "narrowSymbol",
     maximumFractionDigits: 0,
 });
 

@@ -37,10 +37,10 @@ export const order = pgTable(
             .unique(),
         stripePaymentIntentId: text("stripe_payment_intent_id"),
 
-        // Amounts in cents (Stripe's unit), not the whole-dollar unit
-        // `product.price` uses — converted once at checkout time.
+        // Amounts in the minor unit (bani, Stripe's unit), not the whole-leu
+        // unit `product.price` uses — converted once at checkout time.
         subtotal: integer().notNull(),
-        currency: text().notNull().default("usd"),
+        currency: text().notNull().default("ron"),
 
         createdAt: timestamp("created_at").defaultNow().notNull(),
         updatedAt: timestamp("updated_at")

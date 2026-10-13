@@ -3,13 +3,15 @@ import { describe, expect, it } from "vitest";
 import { dateFormatter, priceFormatter } from "@/lib/format";
 
 describe("priceFormatter", () => {
-    it("formats whole dollars with a $ and no fractional digits", () => {
-        expect(priceFormatter.format(1000)).toBe("$1,000");
-        expect(priceFormatter.format(0)).toBe("$0");
+    it("formats whole lei with a lei suffix and no fractional digits", () => {
+        // ro-RO uses "." as the thousands separator and a non-breaking space
+        // ( ) before the "lei" symbol.
+        expect(priceFormatter.format(1000)).toBe("1.000 lei");
+        expect(priceFormatter.format(0)).toBe("0 lei");
     });
 
-    it("rounds away any fractional part (prices are whole dollars)", () => {
-        expect(priceFormatter.format(9.99)).toBe("$10");
+    it("rounds away any fractional part (prices are whole lei)", () => {
+        expect(priceFormatter.format(9.99)).toBe("10 lei");
     });
 });
 

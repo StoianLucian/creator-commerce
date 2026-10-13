@@ -45,9 +45,9 @@ export async function createCheckoutSession(): Promise<CheckoutResult> {
                 buyerId: session?.user?.id ?? null,
                 buyerEmail: session?.user?.email ?? null,
                 status: "pending",
-                // Stripe expects cents; the cart's subtotal is whole dollars.
+                // Stripe expects the minor unit (bani); the cart's subtotal is whole lei.
                 subtotal: cart.subtotal * 100,
-                currency: "usd",
+                currency: "ron",
                 // Placeholder — replaced below once the Checkout Session
                 // exists. The column is NOT NULL + unique, so it needs a
                 // value up front; the real id can't collide with it.
@@ -80,7 +80,7 @@ export async function createCheckoutSession(): Promise<CheckoutResult> {
             line_items: cart.items.map((item) => ({
                 quantity: item.quantity,
                 price_data: {
-                    currency: "usd",
+                    currency: "ron",
                     unit_amount: item.price * 100,
                     product_data: {
                         name: item.name,

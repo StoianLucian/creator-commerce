@@ -14,7 +14,7 @@ function makeProduct(overrides: Partial<ProductDetail> = {}): ProductDetail {
         name: "Cool Shirt",
         slug: "cool-shirt",
         description: "A very cool shirt",
-        price: 2500, // whole dollars -> $2,500
+        price: 2500, // whole lei -> 2.500 lei
         status: "active",
         sold: 7,
         category: { id: 3, name: "Apparel" },
@@ -45,8 +45,8 @@ describe("ProductInfo", () => {
         expect(screen.getByText("Apparel")).toBeInTheDocument();
 
         expect(screen.getByText("Price")).toBeInTheDocument();
-        // priceFormatter: whole dollars, no fraction -> $2,500
-        expect(screen.getByText("$2,500")).toBeInTheDocument();
+        // priceFormatter: whole lei, no fraction -> 2.500 lei
+        expect(screen.getByText("2.500 lei")).toBeInTheDocument();
 
         expect(screen.getByText("Sold")).toBeInTheDocument();
         expect(screen.getByText("7 units")).toBeInTheDocument();

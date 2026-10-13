@@ -20,7 +20,7 @@ import { priceFormatter } from "@/lib/format"
 export type RevenuePoint = {
     /** `YYYY-MM-DD`. */
     date: string
-    /** Whole dollars — the chart never sees cents. */
+    /** Whole lei — the chart never sees cents. */
     revenue: number
 }
 

@@ -55,9 +55,9 @@ describe("CartLineItem", () => {
         render(<CartLineItem item={makeItem()} />);
 
         expect(screen.getByText("Cool Hat")).toBeInTheDocument();
-        expect(screen.getByText("$15 each")).toBeInTheDocument();
+        expect(screen.getByText("15 lei each")).toBeInTheDocument();
         // Line total formatted via the real priceFormatter.
-        expect(screen.getByText("$30")).toBeInTheDocument();
+        expect(screen.getByText("30 lei")).toBeInTheDocument();
         expect(screen.getByText("2")).toBeInTheDocument();
     });
 

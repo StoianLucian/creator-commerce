@@ -50,7 +50,7 @@ describe("OrderCard", () => {
         // dateFormatter (medium, UTC) -> "Jan 15, 2026"
         expect(screen.getByText(/Jan 15, 2026/)).toBeInTheDocument();
         // subtotal 5000 cents -> $50
-        expect(screen.getByText("$50")).toBeInTheDocument();
+        expect(screen.getByText("50 lei")).toBeInTheDocument();
     });
 
     it("renders each line with its name and per-unit pricing", () => {
@@ -59,8 +59,8 @@ describe("OrderCard", () => {
         expect(screen.getByText("Cool Shirt")).toBeInTheDocument();
         expect(screen.getByText("Sticker Pack")).toBeInTheDocument();
         // unitPrice 1500 cents x 2
-        expect(screen.getByText("$15 × 2")).toBeInTheDocument();
-        expect(screen.getByText("$20 × 1")).toBeInTheDocument();
+        expect(screen.getByText("15 lei × 2")).toBeInTheDocument();
+        expect(screen.getByText("20 lei × 1")).toBeInTheDocument();
     });
 
     it("links lines that have an href and leaves hrefless lines as plain text", () => {

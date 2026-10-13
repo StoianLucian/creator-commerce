@@ -168,9 +168,10 @@ export async function sendChangeEmailConfirmation(args: {
 
 /** Amounts are stored in cents (Stripe's unit); render them as money. */
 function money(cents: number, currency: string): string {
-    return new Intl.NumberFormat("en-US", {
+    return new Intl.NumberFormat("ro-RO", {
         style: "currency",
         currency: currency.toUpperCase(),
+        currencyDisplay: "narrowSymbol",
     }).format(cents / 100);
 }
 

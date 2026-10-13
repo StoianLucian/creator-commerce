@@ -6,7 +6,7 @@ import type { OrderHistoryEntry } from "@/lib/data/orders";
 import { dateFormatter, priceFormatter } from "@/lib/format";
 import { OrderStatusBadge } from "./OrderStatusBadge";
 
-/** Amounts on an order are cents; prices elsewhere are whole dollars. */
+/** Amounts on an order are the minor unit (bani); prices elsewhere are whole lei. */
 const fromCents = (cents: number) => priceFormatter.format(cents / 100);
 
 export function OrderCard({ entry }: { entry: OrderHistoryEntry }) {

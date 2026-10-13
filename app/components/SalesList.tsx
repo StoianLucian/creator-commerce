@@ -15,7 +15,7 @@ import { useSales } from "@/hooks/useSales";
 import { priceFormatter } from "@/lib/format";
 import { MyChart } from "./ChartTest";
 
-/** Amounts on an order are cents; prices elsewhere are whole dollars. */
+/** Amounts on an order are the minor unit (bani); prices elsewhere are whole lei. */
 const fromCents = (cents: number) => priceFormatter.format(cents / 100);
 
 function SalesList() {

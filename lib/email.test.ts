@@ -119,7 +119,7 @@ describe("email senders (with API key)", () => {
                 },
             ],
             subtotal: 1000,
-            currency: "usd",
+            currency: "ron",
         });
 
         const { body, headers } = readCall(fetchMock);
@@ -145,7 +145,7 @@ describe("email senders (with API key)", () => {
                     lineTotal: 500,
                 },
             ],
-            currency: "usd",
+            currency: "ron",
         });
 
         const { body, headers } = readCall(fetchMock);
@@ -185,7 +185,7 @@ describe("email senders (fetch failures)", () => {
                 orderId: 1,
                 items: [],
                 subtotal: 0,
-                currency: "usd",
+                currency: "ron",
             })
         ).resolves.toBeUndefined();
 

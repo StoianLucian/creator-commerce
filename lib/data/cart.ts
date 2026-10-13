@@ -13,7 +13,7 @@ export type CartItem = {
     quantity: number;
     name: string;
     slug: string;
-    /** Unit price, in whole dollars, as stored on the product. */
+    /** Unit price, in whole lei, as stored on the product. */
     price: number;
     lineTotal: number;
     imageUrl: string | null;

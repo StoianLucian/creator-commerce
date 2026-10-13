@@ -8,6 +8,12 @@ const nextConfig: NextConfig = {
         hostname: "**.ufs.sh",
         pathname: "/f/**",
       },
+      {
+        // eMAG product images used by the demo seed data.
+        protocol: "https",
+        hostname: "s13emagst.akamaized.net",
+        pathname: "/products/**",
+      },
     ],
   },
 };

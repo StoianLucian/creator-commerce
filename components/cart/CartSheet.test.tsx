@@ -97,8 +97,8 @@ describe("CartSheet", () => {
         render(<CartSheet />);
 
         expect(screen.getAllByTestId("line-item")).toHaveLength(2);
-        // Real priceFormatter output for whole-dollar subtotal.
-        expect(screen.getByText("$45")).toBeInTheDocument();
+        // Real priceFormatter output for whole-leu subtotal.
+        expect(screen.getByText("45 lei")).toBeInTheDocument();
         expect(screen.getByRole("button", { name: /checkout/i })).toBeInTheDocument();
         expect(screen.queryByText("Your cart is empty")).toBeNull();
     });
